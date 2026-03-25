@@ -10,27 +10,34 @@ interface SectionHeaderProps {
 export default function SectionHeader({ title, subtitle, action }: SectionHeaderProps) {
   return (
     <motion.div
-      initial={{ opacity: 0, y: -10 }}
+      initial={{ opacity: 0, y: -8 }}
       animate={{ opacity: 1, y: 0 }}
-      className="sticky top-0 z-40 px-6 pt-6 pb-5 flex items-center justify-between"
+      transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+      className="sticky top-0 z-40 px-6 pt-7 pb-5 flex items-end justify-between"
       style={{
-        background: 'rgba(255,255,255,0.75)',
-        backdropFilter: 'blur(24px)',
-        WebkitBackdropFilter: 'blur(24px)',
-        borderBottom: '1px solid rgba(220, 228, 255, 0.35)',
+        background: 'rgba(230,240,255,0.72)',
+        backdropFilter: 'blur(28px)',
+        WebkitBackdropFilter: 'blur(28px)',
+        borderBottom: '1px solid rgba(180,210,255,0.30)',
       }}
     >
       <div>
-        <h1 className="text-[1.65rem] font-serif font-semibold tracking-tight text-foreground leading-none">
+        <h1
+          className="font-serif font-semibold text-foreground leading-none"
+          style={{ fontSize: '1.8rem', letterSpacing: '-0.03em' }}
+        >
           {title}
         </h1>
         {subtitle && (
-          <p className="text-xs text-muted-foreground/80 font-medium mt-1 tracking-wide italic">
+          <p
+            className="text-[11px] mt-1.5 italic font-light tracking-[0.06em]"
+            style={{ color: 'hsl(218,30%,58%)' }}
+          >
             {subtitle}
           </p>
         )}
       </div>
-      {action && <div>{action}</div>}
+      {action && <div className="mb-0.5">{action}</div>}
     </motion.div>
   );
 }

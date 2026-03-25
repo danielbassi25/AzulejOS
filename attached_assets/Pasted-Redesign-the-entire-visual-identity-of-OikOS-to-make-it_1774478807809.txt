@@ -1,0 +1,99 @@
+Redesign the entire visual identity of OikOS to make it extremely aesthetic, dreamy, elegant, feminine, and distinctive, while still premium and minimal.
+
+Important direction:
+The app should no longer rely on pink tones. Shift the full visual identity toward elegant blue tones only.
+
+New visual direction:
+- aesthetic, dreamy, girly in a refined high-end way
+- editorial, romantic, soft luxury
+- should feel like a mix of:
+  - an intimate digital diary
+  - a premium iOS app
+  - a fashion/editorial object
+- not childish
+- not generic SaaS
+- not plain minimal
+- not overly dark
+
+Color palette:
+- powder blue
+- ice blue
+- periwinkle
+- mist gray
+- pale silver
+- soft white
+- deep midnight navy for contrast
+Avoid pink almost entirely.
+
+Design goals:
+- make the app feel highly curated and visually memorable
+- give it a strong signature identity
+- create a dreamy blue atmosphere across all pages
+- increase softness, elegance, and femininity
+- make it feel “aesthetic aesthetic”
+
+Global visual upgrades:
+- introduce layered blue gradients across backgrounds and cards
+- add subtle pearl/glass effects
+- use soft glow in blue tones
+- create more depth and dimension in cards
+- use stronger visual hierarchy
+- add more negative space and air
+- refine corners, borders, and shadows to feel softer and more luxurious
+- add subtle texture/grain for warmth
+- improve transitions and animations so everything feels fluid and delicate
+
+Typography:
+- titles should feel more editorial, elegant, and expressive
+- keep body text readable and clean
+- create stronger contrast between headings and content
+- make section titles feel like a real brand language
+
+Section-specific direction:
+
+1. System
+- should feel like a serene control room
+- more ethereal blue gradients
+- more refined hero area
+- elegant stat cards
+- make the quote card stunning and memorable
+
+2. Saudade
+- this section should feel cinematic and emotional
+- stronger visual identity than the rest
+- memory cards should feel like keepsakes, not generic cards
+- improve overlays, title placement, spacing, and image treatment
+- use dreamy blue-tinted overlays
+- make the page feel like an archive of beautiful moments
+
+3. Letters
+- should feel precious and intimate
+- open letters should feel like preserved pieces
+- locked letters should feel sacred, sealed, and desirable
+- add subtle blur, glow, and “paper artifact” feeling in a modern way
+
+4. Build
+- should feel aspirational and clean
+- elegant progress design
+- more emotional and lifestyle-oriented, less checklist-like
+
+5. Play
+- should feel airy, soft, fun, and beautiful
+- improve category pills and question cards
+- make the question card feel iconic and share-worthy
+
+6. Score
+- should feel polished and stylish
+- less like a gamification dashboard, more like a premium shared ritual
+- improve score visualization and milestone cards
+
+Bottom navigation:
+- redesign the bottom nav to feel more signature and luxurious
+- stronger active state
+- more glass, blur, softness, and polish
+- should feel like a beautiful physical object
+
+Important:
+Do not change the app structure or functionality.
+This is a visual redesign only.
+Focus on making the app much more beautiful, blue-toned, aesthetic, feminine, and emotionally distinctive.

@@ -10,51 +10,68 @@ export default function SaudadePage() {
     <AppShell>
       <div className="relative min-h-full">
         <div
-          className="absolute top-0 left-0 right-0 h-48 -z-10 pointer-events-none"
-          style={{ background: 'linear-gradient(180deg, rgba(247,200,224,0.2) 0%, transparent 100%)' }}
+          className="absolute top-0 left-0 right-0 h-56 -z-10 pointer-events-none"
+          style={{
+            background: 'linear-gradient(180deg, rgba(140,175,255,0.22) 0%, transparent 100%)',
+          }}
         />
         <SectionHeader title="Saudade" subtitle="The presence of absence" />
 
-        <div className="p-5 space-y-5">
+        <div className="p-5 space-y-5 pb-6">
           {mockMemories.map((memory, idx) => (
             <motion.div
               key={memory.id}
-              initial={{ opacity: 0, y: 24 }}
+              initial={{ opacity: 0, y: 22 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.1, type: "spring", stiffness: 200, damping: 24 }}
+              transition={{ delay: idx * 0.09, type: "spring", stiffness: 190, damping: 24 }}
             >
               <Link href={`/saudade/${memory.id}`} className="block focus:outline-none">
                 <motion.div
-                  whileHover={{ y: -4, scale: 1.01 }}
+                  whileHover={{ y: -3, scale: 1.008 }}
                   whileTap={{ scale: 0.99 }}
-                  transition={{ type: "spring", stiffness: 400, damping: 25 }}
-                  className="rounded-2xl overflow-hidden relative"
+                  transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                  className="rounded-2xl overflow-hidden"
                   style={{
-                    boxShadow: '0 8px 32px rgba(107,140,255,0.10), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.8) inset',
-                    background: 'white',
+                    background: 'rgba(245,250,255,0.95)',
+                    border: '1px solid rgba(180,210,255,0.5)',
+                    boxShadow: '0 8px 32px rgba(80,120,220,0.09), 0 2px 8px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.9) inset',
                   }}
                 >
-                  {/* Cinematic image */}
-                  <div className="relative h-44 w-full">
+                  {/* Cinematic hero image */}
+                  <div className="relative h-48 w-full overflow-hidden">
                     <img
                       src={memory.imageUrl}
                       alt={memory.title}
                       className="w-full h-full object-cover"
+                      style={{ filter: 'saturate(0.88) brightness(0.96)' }}
                     />
-                    <div className="absolute inset-0" style={{
-                      background: 'linear-gradient(to top, rgba(15,15,30,0.75) 0%, rgba(15,15,30,0.2) 50%, transparent 100%)'
-                    }} />
-                    {/* Location chip overlaid on image */}
+                    {/* Blue-tinted cinematic overlay */}
                     <div
-                      className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold text-white/95 tracking-wide"
-                      style={{ background: 'rgba(15,15,30,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
+                      className="absolute inset-0"
+                      style={{
+                        background:
+                          'linear-gradient(to top, rgba(20,35,80,0.72) 0%, rgba(40,60,120,0.25) 55%, rgba(80,110,200,0.08) 100%)',
+                      }}
+                    />
+                    {/* Location chip */}
+                    <div
+                      className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide"
+                      style={{
+                        background: 'rgba(10,20,60,0.45)',
+                        backdropFilter: 'blur(10px)',
+                        border: '1px solid rgba(180,210,255,0.25)',
+                        color: 'rgba(200,225,255,0.95)',
+                      }}
                     >
                       <MapPin className="w-2.5 h-2.5" />
                       {memory.location}
                     </div>
-                    {/* Title on image */}
-                    <div className="absolute bottom-0 left-0 right-0 px-5 pb-4">
-                      <h3 className="text-white font-serif font-semibold text-xl leading-tight" style={{ textShadow: '0 1px 8px rgba(0,0,0,0.4)' }}>
+                    {/* Title overlaid on image */}
+                    <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-8">
+                      <h3
+                        className="font-serif font-semibold text-white leading-tight"
+                        style={{ fontSize: '1.2rem', textShadow: '0 2px 12px rgba(0,0,30,0.5)' }}
+                      >
                         {memory.title}
                       </h3>
                     </div>
@@ -62,11 +79,19 @@ export default function SaudadePage() {
 
                   {/* Card body */}
                   <div className="px-5 py-4">
-                    <div className="flex items-center gap-1.5 mb-2.5">
-                      <Calendar className="w-3 h-3 text-primary/60" />
-                      <span className="text-xs font-semibold text-primary/80 tracking-wide">{memory.date}</span>
+                    <div className="flex items-center gap-1.5 mb-2">
+                      <Calendar className="w-3 h-3" style={{ color: 'hsl(220,55%,58%)' }} />
+                      <span
+                        className="text-xs font-semibold tracking-wide"
+                        style={{ color: 'hsl(220,55%,55%)' }}
+                      >
+                        {memory.date}
+                      </span>
                     </div>
-                    <p className="text-sm text-foreground/70 leading-relaxed line-clamp-2 font-light">
+                    <p
+                      className="text-sm leading-relaxed line-clamp-2 font-light"
+                      style={{ color: 'hsl(220,18%,45%)' }}
+                    >
                       {memory.preview}
                     </p>
                   </div>

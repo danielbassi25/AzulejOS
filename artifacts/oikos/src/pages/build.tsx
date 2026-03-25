@@ -10,10 +10,10 @@ export default function BuildPage() {
   const [goals, setGoals] = useState(mockGoals);
 
   const toggleGoal = (id: string) => {
-    setGoals(goals.map(g => g.id === id ? { ...g, completed: !g.completed } : g));
+    setGoals((prev) => prev.map((g) => (g.id === id ? { ...g, completed: !g.completed } : g)));
   };
 
-  const completedCount = goals.filter(g => g.completed).length;
+  const completedCount = goals.filter((g) => g.completed).length;
   const progressPercent = Math.round((completedCount / goals.length) * 100);
 
   return (
@@ -22,27 +22,47 @@ export default function BuildPage() {
         title="Build"
         subtitle="Shared horizons"
         action={
-          <div className="w-9 h-9 rounded-xl flex items-center justify-center" style={{ background: 'rgba(107,140,255,0.12)' }}>
-            <Target className="w-4 h-4 text-primary" />
+          <div
+            className="w-9 h-9 rounded-xl flex items-center justify-center"
+            style={{ background: 'rgba(100,140,255,0.12)' }}
+          >
+            <Target className="w-4 h-4" style={{ color: 'hsl(224,70%,55%)' }} />
           </div>
         }
       />
 
       <div className="p-5 space-y-5 pb-20">
-        {/* Progress Card */}
+        {/* Progress hero card */}
         <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
           <div
-            className="p-6 rounded-2xl relative overflow-hidden"
+            className="p-7 rounded-2xl relative overflow-hidden"
             style={{
-              background: 'linear-gradient(135deg, hsl(224,20%,18%) 0%, hsl(228,30%,24%) 100%)',
-              boxShadow: '0 16px 40px rgba(30,30,60,0.22), 0 0 0 1px rgba(255,255,255,0.07) inset',
+              background: 'linear-gradient(145deg, hsl(222,35%,14%) 0%, hsl(228,42%,19%) 100%)',
+              boxShadow: '0 20px 60px rgba(20,30,80,0.28), 0 0 0 1px rgba(100,140,255,0.15) inset',
             }}
           >
-            <div className="absolute top-0 right-0 w-32 h-32 rounded-full -mr-8 -mt-8 blur-3xl" style={{ background: 'rgba(107,140,255,0.3)' }} />
-            <div className="flex justify-between items-end mb-5 relative z-10">
+            {/* Glow top-right */}
+            <div
+              className="absolute top-0 right-0 w-40 h-40 -mr-12 -mt-12 pointer-events-none"
+              style={{
+                background: 'radial-gradient(circle, rgba(100,140,255,0.35) 0%, transparent 70%)',
+                filter: 'blur(24px)',
+              }}
+            />
+            <div className="flex justify-between items-end mb-6 relative z-10">
               <div>
-                <h3 className="text-xl font-serif font-semibold text-white">Progress</h3>
-                <p className="text-sm text-white/50 mt-0.5">{completedCount} of {goals.length} completed</p>
+                <h3
+                  className="font-serif font-semibold"
+                  style={{ fontSize: '1.35rem', color: 'rgba(220,235,255,0.95)' }}
+                >
+                  Progress
+                </h3>
+                <p
+                  className="text-sm mt-0.5 font-light"
+                  style={{ color: 'rgba(180,205,255,0.55)' }}
+                >
+                  {completedCount} of {goals.length} completed
+                </p>
               </div>
               <AnimatePresence mode="wait">
                 <motion.span
@@ -50,71 +70,87 @@ export default function BuildPage() {
                   initial={{ opacity: 0, y: 8 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -8 }}
-                  className="text-3xl font-serif font-bold text-primary"
+                  className="font-serif font-bold"
+                  style={{ fontSize: '2.25rem', letterSpacing: '-0.04em', color: 'hsl(220,80%,75%)' }}
                 >
                   {progressPercent}%
                 </motion.span>
               </AnimatePresence>
             </div>
-            {/* Custom progress bar */}
-            <div className="relative h-2 rounded-full overflow-hidden z-10" style={{ background: 'rgba(255,255,255,0.1)' }}>
+            {/* Progress bar */}
+            <div
+              className="h-1.5 rounded-full overflow-hidden relative z-10"
+              style={{ background: 'rgba(255,255,255,0.08)' }}
+            >
               <motion.div
                 className="absolute inset-y-0 left-0 rounded-full"
                 animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
+                transition={{ duration: 0.8, ease: [0.34, 1.4, 0.64, 1] }}
                 style={{
-                  background: 'linear-gradient(90deg, rgba(107,140,255,0.9), rgba(175,203,255,0.95))',
-                  boxShadow: '0 0 12px rgba(107,140,255,0.6)',
+                  background: 'linear-gradient(90deg, hsl(220,80%,65%), hsl(210,90%,78%))',
+                  boxShadow: '0 0 16px rgba(100,160,255,0.7)',
                 }}
               />
             </div>
           </div>
         </motion.div>
 
-        {/* Goals List */}
+        {/* Goals list */}
         <div className="space-y-2.5">
           {goals.map((goal, idx) => (
             <motion.div
               key={goal.id}
-              initial={{ opacity: 0, x: 16 }}
+              initial={{ opacity: 0, x: 14 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.045 }}
+              transition={{ delay: idx * 0.04 }}
             >
               <motion.div
                 onClick={() => toggleGoal(goal.id)}
                 whileTap={{ scale: 0.99 }}
-                className={cn(
-                  "flex items-center gap-4 p-4 rounded-xl cursor-pointer select-none transition-all duration-250",
-                )}
+                className="flex items-center gap-4 p-4 rounded-xl cursor-pointer select-none transition-all duration-200"
                 style={{
-                  background: goal.completed ? 'rgba(245,246,255,0.7)' : 'white',
-                  border: goal.completed ? '1px solid rgba(220,228,255,0.4)' : '1px solid rgba(255,255,255,0.9)',
-                  boxShadow: goal.completed ? 'none' : '0 2px 12px rgba(107,140,255,0.07), 0 0 0 1px rgba(255,255,255,0.8) inset',
+                  background: goal.completed ? 'rgba(220,232,255,0.35)' : 'rgba(245,250,255,0.95)',
+                  border: goal.completed ? '1px solid rgba(180,210,255,0.35)' : '1px solid rgba(190,215,255,0.55)',
+                  boxShadow: goal.completed ? 'none' : '0 2px 12px rgba(80,120,220,0.06), 0 0 0 1px rgba(255,255,255,0.9) inset',
                 }}
               >
                 {/* Checkbox */}
                 <motion.div
                   animate={{
-                    background: goal.completed ? 'linear-gradient(135deg, hsl(228,100%,71%), hsl(220,100%,78%))' : 'transparent',
-                    borderColor: goal.completed ? 'transparent' : 'rgba(107,140,255,0.3)',
-                    scale: goal.completed ? [1, 1.25, 1] : 1,
+                    background: goal.completed
+                      ? 'linear-gradient(135deg, hsl(220,75%,62%), hsl(210,85%,72%))'
+                      : 'transparent',
+                    borderColor: goal.completed ? 'transparent' : 'rgba(140,180,255,0.5)',
+                    scale: goal.completed ? [1, 1.22, 1] : 1,
                   }}
-                  transition={{ duration: 0.25 }}
+                  transition={{ duration: 0.22 }}
                   className="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0"
-                  style={{ boxShadow: goal.completed ? '0 2px 8px rgba(107,140,255,0.3)' : 'none' }}
+                  style={{
+                    boxShadow: goal.completed ? '0 2px 10px rgba(80,130,255,0.35)' : 'none',
+                  }}
                 >
                   <AnimatePresence>
                     {goal.completed && (
-                      <motion.div initial={{ scale: 0, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0 }}>
+                      <motion.div
+                        initial={{ scale: 0, opacity: 0 }}
+                        animate={{ scale: 1, opacity: 1 }}
+                        exit={{ scale: 0 }}
+                      >
                         <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </motion.div>
-                <p className={cn(
-                  "font-medium text-sm transition-all duration-200 flex-1",
-                  goal.completed ? "text-muted-foreground/60 line-through decoration-muted-foreground/30" : "text-foreground"
-                )}>
+
+                <p
+                  className={cn(
+                    "font-medium text-sm flex-1 transition-all duration-200",
+                    goal.completed ? "line-through decoration-[hsl(220,30%,65%)]" : ""
+                  )}
+                  style={{
+                    color: goal.completed ? 'hsl(218,22%,62%)' : 'hsl(220,22%,22%)',
+                  }}
+                >
                   {goal.text}
                 </p>
               </motion.div>

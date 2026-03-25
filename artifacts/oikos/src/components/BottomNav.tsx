@@ -16,19 +16,21 @@ export default function BottomNav() {
   const [location] = useLocation();
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50 px-4 pb-5 pt-3">
+    <div className="absolute bottom-0 left-0 right-0 z-50 px-5 pb-6 pt-2">
       <nav
-        className="flex items-center justify-between rounded-2xl px-3 py-2.5"
+        className="flex items-center justify-between rounded-[22px] px-3 py-2"
         style={{
-          background: 'rgba(255,255,255,0.82)',
-          backdropFilter: 'blur(20px)',
-          WebkitBackdropFilter: 'blur(20px)',
-          border: '1px solid rgba(255,255,255,0.9)',
-          boxShadow: '0 8px 32px rgba(107,140,255,0.12), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.6) inset',
+          background: 'rgba(230,238,255,0.78)',
+          backdropFilter: 'blur(32px)',
+          WebkitBackdropFilter: 'blur(32px)',
+          border: '1px solid rgba(200,220,255,0.7)',
+          boxShadow: '0 8px 40px rgba(80,110,220,0.14), 0 2px 8px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.8) inset',
         }}
       >
         {navItems.map((item) => {
-          const isActive = location === item.path || (location.startsWith(item.path + "/") && item.path !== "/system");
+          const isActive =
+            location === item.path ||
+            (location.startsWith(item.path + "/") && item.path !== "/system");
           const Icon = item.icon;
           return (
             <Link
@@ -40,30 +42,36 @@ export default function BottomNav() {
                 {isActive && (
                   <motion.div
                     layoutId="nav-bubble"
-                    className="absolute inset-0 rounded-full"
+                    className="absolute rounded-2xl"
                     style={{
-                      width: 36,
-                      height: 36,
-                      marginLeft: -8,
-                      marginTop: -8,
-                      background: 'linear-gradient(135deg, rgba(107,140,255,0.18), rgba(175,203,255,0.25))',
-                      boxShadow: '0 2px 8px rgba(107,140,255,0.2)',
+                      width: 40,
+                      height: 32,
+                      marginLeft: -10,
+                      marginTop: -6,
+                      background: 'linear-gradient(135deg, rgba(100,140,255,0.22), rgba(160,195,255,0.28))',
+                      boxShadow: '0 2px 12px rgba(80,120,255,0.22), 0 0 0 1px rgba(255,255,255,0.5) inset',
                     }}
-                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
+                    transition={{ type: "spring", bounce: 0.22, duration: 0.45 }}
                   />
                 )}
                 <Icon
-                  strokeWidth={isActive ? 2.5 : 1.8}
+                  strokeWidth={isActive ? 2.2 : 1.6}
                   className={cn(
-                    "w-5 h-5 transition-all duration-300 relative z-10",
-                    isActive ? "text-primary" : "text-muted-foreground/70"
+                    "w-[18px] h-[18px] transition-all duration-300 relative z-10",
+                    isActive
+                      ? "text-[hsl(224,80%,52%)]"
+                      : "text-[hsl(218,20%,58%)]"
                   )}
                 />
               </div>
-              <span className={cn(
-                "text-[9.5px] font-semibold tracking-wide transition-all duration-300",
-                isActive ? "text-primary" : "text-muted-foreground/60"
-              )}>
+              <span
+                className={cn(
+                  "text-[9px] font-semibold tracking-wider transition-all duration-300 uppercase",
+                  isActive
+                    ? "text-[hsl(224,80%,52%)]"
+                    : "text-[hsl(218,18%,62%)]"
+                )}
+              >
                 {item.label}
               </span>
             </Link>

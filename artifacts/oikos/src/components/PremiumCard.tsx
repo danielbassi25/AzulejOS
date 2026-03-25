@@ -9,20 +9,29 @@ interface PremiumCardProps extends HTMLMotionProps<"div"> {
 }
 
 export default function PremiumCard({ children, className, glass = false, ...props }: PremiumCardProps) {
+  const baseStyle = glass
+    ? {
+        background: 'rgba(220,235,255,0.45)',
+        backdropFilter: 'blur(20px)',
+        WebkitBackdropFilter: 'blur(20px)',
+        border: '1px solid rgba(200,220,255,0.6)',
+        boxShadow: '0 8px 32px rgba(80,120,220,0.08), 0 0 0 1px rgba(255,255,255,0.6) inset',
+      }
+    : {
+        background: 'rgba(248,251,255,0.92)',
+        border: '1px solid rgba(200,218,255,0.55)',
+        boxShadow: '0 4px 20px rgba(80,120,220,0.07), 0 1px 4px rgba(0,0,0,0.03), 0 0 0 1px rgba(255,255,255,0.95) inset',
+      };
+
   return (
     <motion.div
       {...props}
       className={cn(
-        "rounded-2xl border overflow-hidden transition-all duration-300",
-        glass
-          ? "backdrop-blur-xl border-white/50"
-          : "bg-white/90 border-white/70 hover:border-white",
+        "rounded-2xl overflow-hidden transition-all duration-300",
         className
       )}
       style={{
-        boxShadow: glass
-          ? '0 8px 32px rgba(107,140,255,0.10), 0 0 0 1px rgba(255,255,255,0.5) inset'
-          : '0 4px 16px rgba(107,140,255,0.08), 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.9) inset',
+        ...baseStyle,
         ...((props as any).style || {}),
       }}
     >
