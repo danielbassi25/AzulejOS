@@ -3,8 +3,9 @@ import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockGoals } from "@/data/mock";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Target } from "lucide-react";
-import { cn } from "@/lib/utils";
+import { Check } from "lucide-react";
+
+const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.18'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cline x1='12' y1='0' x2='12' y2='8'/%3E%3Cline x1='12' y1='16' x2='12' y2='24'/%3E%3Cline x1='0' y1='12' x2='8' y2='12'/%3E%3Cline x1='16' y1='12' x2='24' y2='12'/%3E%3C/g%3E%3C/svg%3E")`;
 
 export default function BuildPage() {
   const [goals, setGoals] = useState(mockGoals);
@@ -18,137 +19,123 @@ export default function BuildPage() {
 
   return (
     <AppShell>
-      <SectionHeader
-        title="Build"
-        subtitle="Shared horizons"
-        action={
-          <div
-            className="w-9 h-9 rounded-xl flex items-center justify-center"
-            style={{ background: 'rgba(100,140,255,0.12)' }}
-          >
-            <Target className="w-4 h-4" style={{ color: 'hsl(224,70%,55%)' }} />
-          </div>
-        }
-      />
+      <SectionHeader title="Build" subtitle="Shared horizons" />
 
-      <div className="p-5 space-y-5 pb-20">
-        {/* Progress hero card */}
-        <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
-          <div
-            className="p-7 rounded-2xl relative overflow-hidden"
-            style={{
-              background: 'linear-gradient(145deg, hsl(222,35%,14%) 0%, hsl(228,42%,19%) 100%)',
-              boxShadow: '0 20px 60px rgba(20,30,80,0.28), 0 0 0 1px rgba(100,140,255,0.15) inset',
-            }}
-          >
-            {/* Glow top-right */}
-            <div
-              className="absolute top-0 right-0 w-40 h-40 -mr-12 -mt-12 pointer-events-none"
-              style={{
-                background: 'radial-gradient(circle, rgba(100,140,255,0.35) 0%, transparent 70%)',
-                filter: 'blur(24px)',
-              }}
-            />
-            <div className="flex justify-between items-end mb-6 relative z-10">
-              <div>
-                <h3
-                  className="font-serif font-semibold"
-                  style={{ fontSize: '1.35rem', color: 'rgba(220,235,255,0.95)' }}
-                >
-                  Progress
-                </h3>
-                <p
-                  className="text-sm mt-0.5 font-light"
-                  style={{ color: 'rgba(180,205,255,0.55)' }}
-                >
-                  {completedCount} of {goals.length} completed
-                </p>
-              </div>
-              <AnimatePresence mode="wait">
-                <motion.span
-                  key={progressPercent}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -8 }}
-                  className="font-serif font-bold"
-                  style={{ fontSize: '2.25rem', letterSpacing: '-0.04em', color: 'hsl(220,80%,75%)' }}
-                >
-                  {progressPercent}%
-                </motion.span>
-              </AnimatePresence>
+      <div className="p-3 pb-24">
+        {/* Progress hero tile */}
+        <motion.div
+          initial={{ opacity: 0, y: 12 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="relative overflow-hidden mb-2.5 p-7"
+          style={{
+            background: 'hsl(222, 40%, 14%)',
+            backgroundImage: azulejoPattern,
+            backgroundSize: '24px 24px',
+            border: '1px solid rgba(20,50,120,0.45)',
+            borderRadius: '3px',
+            boxShadow: '3px 5px 18px rgba(10,20,60,0.28)',
+          }}
+        >
+          <div className="flex justify-between items-end mb-6">
+            <div>
+              <p className="text-[9px] uppercase tracking-[0.18em] font-bold mb-2" style={{ color: 'rgba(180,165,140,0.50)' }}>
+                ✦ &nbsp; Progress
+              </p>
+              <p className="font-serif font-light text-sm" style={{ color: 'rgba(200,190,170,0.60)' }}>
+                {completedCount} of {goals.length} built
+              </p>
             </div>
-            {/* Progress bar */}
-            <div
-              className="h-1.5 rounded-full overflow-hidden relative z-10"
-              style={{ background: 'rgba(255,255,255,0.08)' }}
-            >
+            <AnimatePresence mode="wait">
+              <motion.span
+                key={progressPercent}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -8 }}
+                className="font-serif font-bold"
+                style={{ fontSize: '2.8rem', letterSpacing: '-0.05em', color: 'hsl(42,30%,92%)', lineHeight: 1 }}
+              >
+                {progressPercent}%
+              </motion.span>
+            </AnimatePresence>
+          </div>
+
+          {/* Progress bar — tiled segments */}
+          <div className="flex gap-1">
+            {Array.from({ length: goals.length }).map((_, i) => (
               <motion.div
-                className="absolute inset-y-0 left-0 rounded-full"
-                animate={{ width: `${progressPercent}%` }}
-                transition={{ duration: 0.8, ease: [0.34, 1.4, 0.64, 1] }}
+                key={i}
+                className="flex-1 h-2"
                 style={{
-                  background: 'linear-gradient(90deg, hsl(220,80%,65%), hsl(210,90%,78%))',
-                  boxShadow: '0 0 16px rgba(100,160,255,0.7)',
+                  borderRadius: '1px',
+                  background: i < completedCount ? 'hsl(42,50%,80%)' : 'rgba(255,255,255,0.10)',
                 }}
+                animate={{ background: i < completedCount ? 'hsl(42,50%,80%)' : 'rgba(255,255,255,0.10)' }}
+                transition={{ duration: 0.3, delay: i * 0.03 }}
               />
-            </div>
+            ))}
           </div>
         </motion.div>
 
-        {/* Goals list */}
-        <div className="space-y-2.5">
+        {/* Goal tiles */}
+        <div className="px-1 py-2 mb-1">
+          <p className="text-[9px] uppercase tracking-[0.18em] font-bold" style={{ color: 'hsl(220,22%,58%)' }}>
+            ✦ &nbsp; Goals
+          </p>
+        </div>
+
+        <div className="space-y-2">
           {goals.map((goal, idx) => (
             <motion.div
               key={goal.id}
-              initial={{ opacity: 0, x: 14 }}
+              initial={{ opacity: 0, x: 12 }}
               animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: idx * 0.04 }}
+              transition={{ delay: idx * 0.05, duration: 0.35 }}
             >
               <motion.div
                 onClick={() => toggleGoal(goal.id)}
                 whileTap={{ scale: 0.99 }}
-                className="flex items-center gap-4 p-4 rounded-xl cursor-pointer select-none transition-all duration-200"
+                className="flex items-center gap-4 px-4 py-4 cursor-pointer select-none"
                 style={{
-                  background: goal.completed ? 'rgba(220,232,255,0.35)' : 'rgba(245,250,255,0.95)',
-                  border: goal.completed ? '1px solid rgba(180,210,255,0.35)' : '1px solid rgba(190,215,255,0.55)',
-                  boxShadow: goal.completed ? 'none' : '0 2px 12px rgba(80,120,220,0.06), 0 0 0 1px rgba(255,255,255,0.9) inset',
+                  background: goal.completed ? 'hsl(218, 68%, 27%)' : 'hsl(38, 30%, 99%)',
+                  border: goal.completed ? '1px solid rgba(20,50,120,0.4)' : '1px solid rgba(30,60,130,0.12)',
+                  borderRadius: '3px',
+                  boxShadow: goal.completed ? '1px 2px 8px rgba(15,30,80,0.20)' : '2px 3px 8px rgba(20,40,100,0.07)',
+                  transition: 'all 0.25s ease',
+                  backgroundImage: goal.completed ? azulejoPattern : 'none',
+                  backgroundSize: '24px 24px',
                 }}
               >
-                {/* Checkbox */}
+                {/* Tile-style checkbox */}
                 <motion.div
-                  animate={{
-                    background: goal.completed
-                      ? 'linear-gradient(135deg, hsl(220,75%,62%), hsl(210,85%,72%))'
-                      : 'transparent',
-                    borderColor: goal.completed ? 'transparent' : 'rgba(140,180,255,0.5)',
-                    scale: goal.completed ? [1, 1.22, 1] : 1,
-                  }}
-                  transition={{ duration: 0.22 }}
-                  className="w-6 h-6 rounded-full border-2 flex items-center justify-center shrink-0"
+                  className="w-6 h-6 flex items-center justify-center shrink-0"
                   style={{
-                    boxShadow: goal.completed ? '0 2px 10px rgba(80,130,255,0.35)' : 'none',
+                    borderRadius: '2px',
+                    border: goal.completed ? 'none' : '1.5px solid rgba(30,60,130,0.30)',
+                    background: goal.completed ? 'rgba(255,252,245,0.18)' : 'transparent',
                   }}
+                  animate={{ scale: goal.completed ? [1, 1.15, 1] : 1 }}
+                  transition={{ duration: 0.2 }}
                 >
                   <AnimatePresence>
                     {goal.completed && (
                       <motion.div
                         initial={{ scale: 0, opacity: 0 }}
                         animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0 }}
+                        exit={{ scale: 0, opacity: 0 }}
                       >
-                        <Check className="w-3.5 h-3.5 text-white" strokeWidth={3} />
+                        <Check className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,92%)', strokeWidth: 3 }} />
                       </motion.div>
                     )}
                   </AnimatePresence>
                 </motion.div>
 
                 <p
-                  className={cn(
-                    "font-medium text-sm flex-1 transition-all duration-200",
-                    goal.completed ? "line-through decoration-[hsl(220,30%,65%)]" : ""
-                  )}
+                  className="flex-1 font-medium text-sm"
                   style={{
-                    color: goal.completed ? 'hsl(218,22%,62%)' : 'hsl(220,22%,22%)',
+                    color: goal.completed ? 'rgba(220,210,190,0.82)' : 'hsl(222,40%,22%)',
+                    textDecoration: goal.completed ? 'line-through' : 'none',
+                    textDecorationColor: 'rgba(180,165,140,0.40)',
+                    transition: 'all 0.25s ease',
                   }}
                 >
                   {goal.text}

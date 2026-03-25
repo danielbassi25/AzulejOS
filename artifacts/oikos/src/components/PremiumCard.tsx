@@ -5,33 +5,41 @@ import { motion, HTMLMotionProps } from "framer-motion";
 interface PremiumCardProps extends HTMLMotionProps<"div"> {
   children: ReactNode;
   className?: string;
-  glass?: boolean;
+  variant?: "white" | "cobalt" | "beige" | "glass";
 }
 
-export default function PremiumCard({ children, className, glass = false, ...props }: PremiumCardProps) {
-  const baseStyle = glass
-    ? {
-        background: 'rgba(220,235,255,0.45)',
-        backdropFilter: 'blur(20px)',
-        WebkitBackdropFilter: 'blur(20px)',
-        border: '1px solid rgba(200,220,255,0.6)',
-        boxShadow: '0 8px 32px rgba(80,120,220,0.08), 0 0 0 1px rgba(255,255,255,0.6) inset',
-      }
-    : {
-        background: 'rgba(248,251,255,0.92)',
-        border: '1px solid rgba(200,218,255,0.55)',
-        boxShadow: '0 4px 20px rgba(80,120,220,0.07), 0 1px 4px rgba(0,0,0,0.03), 0 0 0 1px rgba(255,255,255,0.95) inset',
-      };
+const tileStyles = {
+  white: {
+    background: 'hsl(38, 30%, 99%)',
+    border: '1px solid rgba(30,60,130,0.12)',
+    boxShadow: '2px 3px 10px rgba(20,40,100,0.08), 0 0 0 1px rgba(255,252,245,0.9) inset',
+  },
+  cobalt: {
+    background: 'hsl(218, 70%, 28%)',
+    border: '1px solid rgba(20,50,120,0.5)',
+    boxShadow: '2px 3px 12px rgba(20,40,100,0.25)',
+  },
+  beige: {
+    background: 'hsl(40, 35%, 93%)',
+    border: '1px solid rgba(30,60,130,0.10)',
+    boxShadow: '2px 3px 8px rgba(20,40,100,0.06)',
+  },
+  glass: {
+    background: 'rgba(255,252,245,0.82)',
+    backdropFilter: 'blur(16px)',
+    WebkitBackdropFilter: 'blur(16px)',
+    border: '1px solid rgba(30,60,130,0.12)',
+    boxShadow: '2px 3px 12px rgba(20,40,100,0.08)',
+  },
+};
 
+export default function PremiumCard({ children, className, variant = "white", ...props }: PremiumCardProps) {
   return (
     <motion.div
       {...props}
-      className={cn(
-        "rounded-2xl overflow-hidden transition-all duration-300",
-        className
-      )}
+      className={cn("rounded-sm overflow-hidden tile-texture", className)}
       style={{
-        ...baseStyle,
+        ...tileStyles[variant],
         ...((props as any).style || {}),
       }}
     >

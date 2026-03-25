@@ -16,15 +16,14 @@ export default function BottomNav() {
   const [location] = useLocation();
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50 px-5 pb-6 pt-2">
+    <div className="absolute bottom-0 left-0 right-0 z-50">
+      {/* Thin border line — architectural, like a tile grout line */}
+      <div style={{ height: '1px', background: 'rgba(30,60,130,0.12)' }} />
       <nav
-        className="flex items-center justify-between rounded-[22px] px-3 py-2"
+        className="flex items-stretch"
         style={{
-          background: 'rgba(230,238,255,0.78)',
-          backdropFilter: 'blur(32px)',
-          WebkitBackdropFilter: 'blur(32px)',
-          border: '1px solid rgba(200,220,255,0.7)',
-          boxShadow: '0 8px 40px rgba(80,110,220,0.14), 0 2px 8px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.8) inset',
+          background: 'hsl(38, 25%, 99%)',
+          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
         }}
       >
         {navItems.map((item) => {
@@ -36,41 +35,36 @@ export default function BottomNav() {
             <Link
               key={item.path}
               href={item.path}
-              className="relative flex-1 flex flex-col items-center justify-center gap-0.5 py-1 cursor-pointer select-none"
+              className="relative flex-1 flex flex-col items-center justify-center py-3 cursor-pointer select-none"
+              style={{
+                background: isActive ? 'hsl(218, 70%, 28%)' : 'transparent',
+                transition: 'background 0.25s ease',
+              }}
             >
-              <div className="relative flex items-center justify-center">
-                {isActive && (
-                  <motion.div
-                    layoutId="nav-bubble"
-                    className="absolute rounded-2xl"
-                    style={{
-                      width: 40,
-                      height: 32,
-                      marginLeft: -10,
-                      marginTop: -6,
-                      background: 'linear-gradient(135deg, rgba(100,140,255,0.22), rgba(160,195,255,0.28))',
-                      boxShadow: '0 2px 12px rgba(80,120,255,0.22), 0 0 0 1px rgba(255,255,255,0.5) inset',
-                    }}
-                    transition={{ type: "spring", bounce: 0.22, duration: 0.45 }}
-                  />
-                )}
-                <Icon
-                  strokeWidth={isActive ? 2.2 : 1.6}
-                  className={cn(
-                    "w-[18px] h-[18px] transition-all duration-300 relative z-10",
-                    isActive
-                      ? "text-[hsl(224,80%,52%)]"
-                      : "text-[hsl(218,20%,58%)]"
-                  )}
+              {isActive && (
+                <motion.div
+                  layoutId="nav-active-tile"
+                  className="absolute inset-0"
+                  style={{ background: 'hsl(218, 70%, 28%)' }}
+                  transition={{ type: "spring", bounce: 0.15, duration: 0.4 }}
                 />
-              </div>
+              )}
+              <Icon
+                strokeWidth={isActive ? 2 : 1.5}
+                className="relative z-10 transition-all duration-250"
+                style={{
+                  width: 18,
+                  height: 18,
+                  color: isActive ? 'hsl(42, 30%, 95%)' : 'hsl(220, 25%, 52%)',
+                }}
+              />
               <span
-                className={cn(
-                  "text-[9px] font-semibold tracking-wider transition-all duration-300 uppercase",
-                  isActive
-                    ? "text-[hsl(224,80%,52%)]"
-                    : "text-[hsl(218,18%,62%)]"
-                )}
+                className="relative z-10 mt-1 font-semibold uppercase tracking-widest"
+                style={{
+                  fontSize: '8px',
+                  letterSpacing: '0.10em',
+                  color: isActive ? 'hsl(42, 25%, 85%)' : 'hsl(220, 20%, 58%)',
+                }}
               >
                 {item.label}
               </span>

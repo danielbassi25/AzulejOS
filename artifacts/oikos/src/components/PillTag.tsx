@@ -12,15 +12,16 @@ export default function PillTag({ children, variant = "default", icon, className
   return (
     <div
       className={cn(
-        "inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-semibold tracking-wide transition-colors",
-        variant === "default" && "bg-[rgba(210,225,255,0.6)] text-[hsl(218,35%,45%)]",
-        variant === "primary" && "bg-[rgba(100,140,255,0.12)] text-[hsl(224,70%,52%)]",
-        variant === "secondary" && "bg-[rgba(165,200,255,0.25)] text-[hsl(218,45%,42%)]",
-        variant === "outline" && "border border-[rgba(180,210,255,0.7)] text-[hsl(218,30%,40%)]",
+        "inline-flex items-center gap-1.5 px-2.5 py-1 text-[10px] font-semibold tracking-widest uppercase transition-colors",
+        variant === "default" && "bg-[hsl(40,18%,91%)] text-[hsl(220,25%,40%)]",
+        variant === "primary" && "bg-[hsl(218,70%,28%)] text-[hsl(42,30%,95%)]",
+        variant === "secondary" && "bg-[hsl(210,40%,88%)] text-[hsl(218,60%,30%)]",
+        variant === "outline" && "border border-[rgba(30,60,130,0.25)] text-[hsl(218,50%,32%)]",
         className
       )}
+      style={{ borderRadius: '2px' }}
     >
-      {icon && <span className="w-3.5 h-3.5">{icon}</span>}
+      {icon && <span className="w-3 h-3">{icon}</span>}
       {children}
     </div>
   );

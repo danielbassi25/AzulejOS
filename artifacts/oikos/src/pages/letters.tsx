@@ -2,119 +2,126 @@ import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockLetters } from "@/data/mock";
 import { motion } from "framer-motion";
-import { LockKeyhole, MailOpen, Calendar } from "lucide-react";
+import { LockKeyhole, MailOpen } from "lucide-react";
+
+// Azulejo decorative border pattern for sealed tiles
+const sealPattern = `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' stroke-width='0.5' opacity='0.18'%3E%3Crect x='2' y='2' width='16' height='16' rx='0'/%3E%3Ccircle cx='10' cy='10' r='3'/%3E%3Cline x1='10' y1='2' x2='10' y2='7'/%3E%3Cline x1='10' y1='13' x2='10' y2='18'/%3E%3Cline x1='2' y1='10' x2='7' y2='10'/%3E%3Cline x1='13' y1='10' x2='18' y2='10'/%3E%3C/g%3E%3C/svg%3E")`;
 
 export default function LettersPage() {
   return (
     <AppShell>
-      <div className="relative min-h-full">
-        {/* Subtle radial glow top-right */}
-        <div
-          className="absolute top-0 right-0 w-72 h-72 -z-10 pointer-events-none"
-          style={{
-            background: 'radial-gradient(circle, rgba(130,175,255,0.22) 0%, transparent 70%)',
-            transform: 'translate(30%,-25%)',
-            filter: 'blur(20px)',
-          }}
-        />
-        <SectionHeader title="Letters" subtitle="Words preserved in time" />
+      <SectionHeader title="Letters" subtitle="Words preserved in time" />
 
-        <div className="p-5 space-y-3 pb-16">
+      <div className="p-3 pb-10">
+        <div className="px-1 py-3 mb-1">
+          <p className="text-[9px] uppercase tracking-[0.18em] font-bold" style={{ color: 'hsl(220,22%,58%)' }}>
+            ✦ &nbsp; {mockLetters.filter(l => !l.isLocked).length} open · {mockLetters.filter(l => l.isLocked).length} sealed
+          </p>
+        </div>
+
+        {/* Mosaic tile grid — letters of varying visual weight */}
+        <div className="space-y-2.5">
           {mockLetters.map((letter, idx) => (
             <motion.div
               key={letter.id}
               initial={{ opacity: 0, y: 14 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.08, type: "spring", stiffness: 200, damping: 26 }}
+              transition={{ delay: idx * 0.09, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
             >
               {letter.isLocked ? (
-                /* Locked — sacred, sealed, desirable */
+                /* Sealed tile — cobalt with azulejo pattern, sacred feel */
                 <div
-                  className="rounded-2xl p-5 flex items-center gap-4"
+                  className="relative overflow-hidden"
                   style={{
-                    background: 'rgba(225,235,255,0.45)',
-                    border: '1.5px dashed rgba(160,195,255,0.55)',
-                    backdropFilter: 'blur(6px)',
+                    background: 'hsl(218, 65%, 26%)',
+                    backgroundImage: sealPattern,
+                    backgroundSize: '20px 20px',
+                    border: '1px solid rgba(20,50,120,0.45)',
+                    borderRadius: '3px',
+                    boxShadow: '2px 4px 12px rgba(15,30,80,0.22)',
+                    padding: '20px',
                   }}
                 >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                    style={{
-                      background: 'rgba(170,200,255,0.22)',
-                      boxShadow: '0 0 0 1px rgba(180,210,255,0.35) inset',
-                    }}
-                  >
-                    <LockKeyhole className="w-5 h-5" style={{ color: 'hsl(220,45%,62%)' }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3
-                      className="font-serif font-medium text-base truncate"
-                      style={{ color: 'hsl(220,25%,55%)' }}
-                    >
-                      {letter.title}
-                    </h3>
+                  {/* Decorative corner marks */}
+                  <div className="absolute top-2 left-2 w-3 h-3 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.22)' }} />
+                  <div className="absolute top-2 right-2 w-3 h-3 border-t border-r" style={{ borderColor: 'rgba(180,200,255,0.22)' }} />
+                  <div className="absolute bottom-2 left-2 w-3 h-3 border-b border-l" style={{ borderColor: 'rgba(180,200,255,0.22)' }} />
+                  <div className="absolute bottom-2 right-2 w-3 h-3 border-b border-r" style={{ borderColor: 'rgba(180,200,255,0.22)' }} />
+
+                  <div className="flex items-center gap-4 relative z-10">
                     <div
-                      className="flex items-center gap-1.5 mt-1.5 text-xs font-medium"
-                      style={{ color: 'hsl(218,22%,62%)' }}
+                      className="w-10 h-10 flex items-center justify-center shrink-0"
+                      style={{
+                        background: 'rgba(255,252,245,0.10)',
+                        border: '1px solid rgba(180,200,255,0.20)',
+                        borderRadius: '2px',
+                      }}
                     >
-                      <Calendar className="w-3 h-3" />
-                      <span>Unlocks {letter.unlockDate}</span>
+                      <LockKeyhole className="w-4 h-4" style={{ color: 'rgba(200,215,255,0.65)' }} />
                     </div>
-                  </div>
-                  <div
-                    className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shrink-0"
-                    style={{
-                      background: 'rgba(140,180,255,0.12)',
-                      border: '1px solid rgba(160,200,255,0.3)',
-                      color: 'hsl(220,40%,60%)',
-                    }}
-                  >
-                    Sealed
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-serif font-medium text-base truncate" style={{ color: 'rgba(220,210,190,0.80)' }}>
+                        {letter.title}
+                      </h3>
+                      <p className="text-[10px] font-semibold mt-1 uppercase tracking-wide" style={{ color: 'rgba(180,200,255,0.45)' }}>
+                        Unlocks {letter.unlockDate}
+                      </p>
+                    </div>
+                    <div
+                      className="text-[8px] font-bold uppercase tracking-widest px-2.5 py-1.5 shrink-0"
+                      style={{
+                        border: '1px solid rgba(180,200,255,0.25)',
+                        borderRadius: '2px',
+                        color: 'rgba(200,215,255,0.50)',
+                      }}
+                    >
+                      Sealed
+                    </div>
                   </div>
                 </div>
               ) : (
-                /* Open — warm, precious, glowing */
+                /* Open tile — warm white, inviting */
                 <motion.div
                   whileHover={{ y: -2 }}
-                  transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                  className="rounded-2xl p-5 flex items-center gap-4 cursor-pointer"
+                  transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                  className="cursor-pointer"
                   style={{
-                    background: 'rgba(245,250,255,0.95)',
-                    border: '1px solid rgba(180,210,255,0.55)',
-                    boxShadow: '0 4px 20px rgba(80,120,220,0.08), 0 0 0 1px rgba(255,255,255,0.95) inset',
+                    background: 'hsl(38, 30%, 99%)',
+                    border: '1px solid rgba(30,60,130,0.12)',
+                    borderRadius: '3px',
+                    boxShadow: '2px 3px 10px rgba(20,40,100,0.08)',
+                    padding: '20px',
                   }}
                 >
-                  <div
-                    className="w-12 h-12 rounded-full flex items-center justify-center shrink-0"
-                    style={{
-                      background: 'linear-gradient(135deg, rgba(100,145,255,0.18), rgba(160,200,255,0.25))',
-                    }}
-                  >
-                    <MailOpen className="w-5 h-5" style={{ color: 'hsl(224,65%,54%)' }} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <h3
-                      className="font-serif font-semibold text-base truncate text-foreground"
-                    >
-                      {letter.title}
-                    </h3>
+                  <div className="flex items-center gap-4">
+                    {/* Blue tile icon */}
                     <div
-                      className="flex items-center gap-1.5 mt-1.5 text-xs font-semibold"
-                      style={{ color: 'hsl(224,60%,54%)' }}
+                      className="w-10 h-10 flex items-center justify-center shrink-0"
+                      style={{
+                        background: 'hsl(218,70%,28%)',
+                        borderRadius: '2px',
+                      }}
                     >
-                      <Calendar className="w-3 h-3" />
-                      <span>Opened {letter.unlockDate}</span>
+                      <MailOpen className="w-4 h-4" style={{ color: 'hsl(42,30%,95%)' }} />
                     </div>
-                  </div>
-                  <div
-                    className="text-[9px] font-bold uppercase tracking-widest px-2.5 py-1 rounded-full shrink-0"
-                    style={{
-                      background: 'rgba(100,140,255,0.12)',
-                      border: '1px solid rgba(120,160,255,0.3)',
-                      color: 'hsl(224,65%,52%)',
-                    }}
-                  >
-                    Open
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-serif font-semibold text-base truncate" style={{ color: 'hsl(222,45%,16%)' }}>
+                        {letter.title}
+                      </h3>
+                      <p className="text-[10px] font-semibold mt-1 uppercase tracking-wide" style={{ color: 'hsl(218,55%,42%)' }}>
+                        Opened {letter.unlockDate}
+                      </p>
+                    </div>
+                    <div
+                      className="text-[8px] font-bold uppercase tracking-widest px-2.5 py-1.5 shrink-0"
+                      style={{
+                        background: 'hsl(218,70%,28%)',
+                        borderRadius: '2px',
+                        color: 'hsl(42,30%,95%)',
+                      }}
+                    >
+                      Open
+                    </div>
                   </div>
                 </motion.div>
               )}

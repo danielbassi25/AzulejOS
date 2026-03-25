@@ -5,13 +5,15 @@ import { motion } from "framer-motion";
 import { Trophy, Star } from "lucide-react";
 import confetti from "canvas-confetti";
 
+const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.14'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cline x1='12' y1='0' x2='12' y2='8'/%3E%3Cline x1='12' y1='16' x2='12' y2='24'/%3E%3Cline x1='0' y1='12' x2='8' y2='12'/%3E%3Cline x1='16' y1='12' x2='24' y2='12'/%3E%3C/g%3E%3C/svg%3E")`;
+
 export default function ScorePage() {
   const triggerConfetti = () => {
     confetti({
       particleCount: 120,
-      spread: 75,
+      spread: 70,
       origin: { y: 0.55 },
-      colors: ['#6B8CFF', '#93B4FF', '#B0CFFF', '#D0E6FF', '#E8F3FF', '#FFD700'],
+      colors: ['#1e3c82', '#2952a3', '#4472c4', '#f5f0e8', '#d4bc8a', '#FFD700'],
     });
   };
 
@@ -21,310 +23,234 @@ export default function ScorePage() {
 
   return (
     <AppShell>
-      <div className="relative min-h-full">
-        {/* Top ambient gradient */}
-        <div
-          className="absolute top-0 left-0 right-0 h-60 -z-10 pointer-events-none"
-          style={{
-            background:
-              'linear-gradient(160deg, rgba(120,165,255,0.18) 0%, rgba(160,200,255,0.12) 100%)',
-          }}
-        />
+      <SectionHeader
+        title="Score"
+        subtitle="A friendly competition"
+        action={
+          <motion.button
+            onClick={triggerConfetti}
+            whileTap={{ scale: 0.92 }}
+            whileHover={{ scale: 1.06 }}
+            className="flex items-center gap-2 px-3 py-2 font-bold text-[9px] uppercase tracking-widest"
+            style={{
+              background: 'rgba(255,252,245,0.12)',
+              border: '1px solid rgba(255,252,245,0.22)',
+              borderRadius: '3px',
+              color: 'rgba(220,210,190,0.85)',
+            }}
+          >
+            <Trophy className="w-3.5 h-3.5" />
+            Celebrate
+          </motion.button>
+        }
+      />
 
-        <SectionHeader
-          title="Score"
-          subtitle="A friendly competition"
-          action={
-            <motion.button
-              onClick={triggerConfetti}
-              whileTap={{ scale: 0.9 }}
-              whileHover={{ scale: 1.07 }}
-              className="w-10 h-10 rounded-xl flex items-center justify-center"
-              style={{
-                background: 'rgba(100,140,255,0.12)',
-                border: '1px solid rgba(140,180,255,0.3)',
-              }}
-            >
-              <Trophy className="w-4 h-4" style={{ color: 'hsl(224,65%,54%)' }} />
-            </motion.button>
-          }
-        />
+      <div className="p-3 pb-20 space-y-2.5">
 
-        <div className="p-5 space-y-6 pb-20">
-          {/* Scoreboard */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.97 }}
-            animate={{ opacity: 1, scale: 1 }}
-            transition={{ type: "spring", stiffness: 200, damping: 22 }}
+        {/* Mosaic scoreboard — side by side tiles */}
+        <motion.div
+          initial={{ opacity: 0, scale: 0.97 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ type: "spring", stiffness: 200, damping: 24 }}
+          className="grid grid-cols-2 gap-2.5"
+        >
+          {/* Daniel tile — beige warm */}
+          <div
+            className="p-5 flex flex-col items-center text-center"
+            style={{
+              background: 'hsl(40, 35%, 93%)',
+              border: '1px solid rgba(30,60,130,0.12)',
+              borderRadius: '3px',
+              boxShadow: '2px 3px 10px rgba(20,40,100,0.07)',
+            }}
           >
             <div
-              className="p-6 rounded-2xl"
+              className="w-14 h-14 rounded-full overflow-hidden mb-3"
               style={{
-                background: 'rgba(243,249,255,0.96)',
-                border: '1px solid rgba(180,210,255,0.55)',
-                boxShadow: '0 10px 36px rgba(80,120,220,0.09), 0 2px 6px rgba(0,0,0,0.03), 0 0 0 1px rgba(255,255,255,0.95) inset',
+                border: '2px solid hsl(218,70%,28%)',
+                boxShadow: '0 3px 10px rgba(20,40,100,0.18)',
               }}
             >
-              <div className="flex justify-between items-center mb-8 relative">
-                {/* Daniel */}
-                <div className="flex flex-col items-center gap-2 relative z-10">
-                  <div
-                    className="w-16 h-16 rounded-full overflow-hidden"
-                    style={{
-                      border: '2px solid rgba(180,210,255,0.7)',
-                      boxShadow: '0 4px 16px rgba(80,120,220,0.16)',
-                    }}
-                  >
-                    <img
-                      src={`${import.meta.env.BASE_URL}images/avatar-daniel.png`}
-                      alt="Daniel"
-                      className="w-full h-full object-cover"
-                    />
-                  </div>
-                  <p
-                    className="text-sm font-semibold"
-                    style={{ color: 'hsl(220,22%,22%)' }}
-                  >
-                    Daniel
-                  </p>
-                  <p
-                    className="font-serif font-bold"
-                    style={{ fontSize: '2rem', letterSpacing: '-0.04em', color: 'hsl(224,70%,54%)' }}
-                  >
-                    {mockScore.daniel}
-                  </p>
-                </div>
-
-                {/* VS */}
-                <div
-                  className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-9 h-9 rounded-full flex items-center justify-center text-xs font-bold z-0"
-                  style={{
-                    background: 'rgba(200,218,255,0.5)',
-                    border: '1px solid rgba(180,210,255,0.6)',
-                    color: 'hsl(218,30%,52%)',
-                  }}
-                >
-                  VS
-                </div>
-
-                {/* Sofia */}
-                <div className="flex flex-col items-center gap-2 relative z-10">
-                  <div className="relative">
-                    <div
-                      className="w-16 h-16 rounded-full overflow-hidden"
-                      style={{
-                        border: '2px solid rgba(140,185,255,0.7)',
-                        boxShadow: '0 4px 20px rgba(80,140,255,0.22)',
-                      }}
-                    >
-                      <img
-                        src={`${import.meta.env.BASE_URL}images/avatar-sofia.png`}
-                        alt="Sofia"
-                        className="w-full h-full object-cover"
-                      />
-                    </div>
-                    <motion.div
-                      className="absolute -top-1.5 -right-1.5 w-7 h-7 rounded-full flex items-center justify-center"
-                      style={{
-                        background: 'linear-gradient(135deg, #FFD700, #FFA500)',
-                        boxShadow: '0 2px 10px rgba(255,165,0,0.4)',
-                      }}
-                      animate={{ rotate: [0, 6, -6, 0] }}
-                      transition={{ duration: 3.5, repeat: Infinity }}
-                    >
-                      <Trophy className="w-3.5 h-3.5 text-white fill-white" />
-                    </motion.div>
-                  </div>
-                  <p
-                    className="text-sm font-semibold"
-                    style={{ color: 'hsl(220,22%,22%)' }}
-                  >
-                    Sofia
-                  </p>
-                  <p
-                    className="font-serif font-bold"
-                    style={{ fontSize: '2rem', letterSpacing: '-0.04em', color: 'hsl(218,45%,42%)' }}
-                  >
-                    {mockScore.sofia}
-                  </p>
-                </div>
-              </div>
-
-              {/* Layered progress bar */}
-              <div
-                className="h-3 w-full rounded-full flex overflow-hidden"
-                style={{ background: 'rgba(200,220,255,0.3)' }}
-              >
-                <motion.div
-                  className="h-full rounded-l-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${danielPercent}%` }}
-                  transition={{ duration: 1.2, ease: [0.34, 1.1, 0.64, 1], delay: 0.3 }}
-                  style={{
-                    background: 'linear-gradient(90deg, hsl(224,70%,60%), hsl(216,80%,68%))',
-                    boxShadow: '0 0 10px rgba(100,140,255,0.4)',
-                  }}
-                />
-                <motion.div
-                  className="h-full rounded-r-full"
-                  initial={{ width: 0 }}
-                  animate={{ width: `${sofiaPercent}%` }}
-                  transition={{ duration: 1.2, ease: [0.34, 1.1, 0.64, 1], delay: 0.3 }}
-                  style={{
-                    background: 'linear-gradient(90deg, hsl(210,60%,72%), hsl(205,70%,78%))',
-                    boxShadow: '0 0 10px rgba(140,190,255,0.4)',
-                  }}
-                />
-              </div>
-              <div className="flex justify-between mt-2">
-                <span
-                  className="text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: 'hsl(224,55%,55%)' }}
-                >
-                  {danielPercent.toFixed(0)}%
-                </span>
-                <span
-                  className="text-[10px] font-bold uppercase tracking-widest"
-                  style={{ color: 'hsl(210,45%,52%)' }}
-                >
-                  {sofiaPercent.toFixed(0)}%
-                </span>
-              </div>
+              <img src={`${import.meta.env.BASE_URL}images/avatar-daniel.png`} alt="Daniel" className="w-full h-full object-cover" />
             </div>
-          </motion.div>
-
-          {/* Milestones */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Trophy
-                className="w-4 h-4"
-                style={{ color: 'hsl(224,60%,56%)' }}
-              />
-              <h3
-                className="text-[10px] font-bold uppercase tracking-[0.14em]"
-                style={{ color: 'hsl(218,25%,48%)' }}
-              >
-                Milestones
-              </h3>
-            </div>
-            <div className="space-y-3">
-              {mockScore.milestones.map((milestone, idx) => (
-                <motion.div
-                  key={idx}
-                  initial={{ opacity: 0, x: -14 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 + idx * 0.1 }}
-                >
-                  <div
-                    className="p-4 rounded-xl flex items-center justify-between gap-4"
-                    style={{
-                      background: milestone.winner
-                        ? 'linear-gradient(135deg, rgba(180,215,255,0.35), rgba(160,200,255,0.2))'
-                        : 'rgba(243,249,255,0.95)',
-                      border: milestone.winner
-                        ? '1px solid rgba(160,200,255,0.55)'
-                        : '1px solid rgba(190,215,255,0.5)',
-                      boxShadow: milestone.winner
-                        ? 'none'
-                        : '0 2px 12px rgba(80,120,220,0.05), 0 0 0 1px rgba(255,255,255,0.9) inset',
-                    }}
-                  >
-                    <div>
-                      <p className="font-medium text-sm text-foreground">{milestone.title}</p>
-                      {milestone.winner ? (
-                        <p
-                          className="text-xs mt-0.5 font-semibold"
-                          style={{ color: 'hsl(218,45%,44%)' }}
-                        >
-                          Won by {milestone.winner} 🏆
-                        </p>
-                      ) : (
-                        <p
-                          className="text-xs mt-0.5"
-                          style={{ color: 'hsl(218,18%,58%)' }}
-                        >
-                          In progress...
-                        </p>
-                      )}
-                    </div>
-                    <div
-                      className="w-11 h-11 rounded-full flex items-center justify-center shrink-0 font-bold text-sm"
-                      style={{
-                        background: 'rgba(190,215,255,0.4)',
-                        color: 'hsl(222,40%,38%)',
-                      }}
-                    >
-                      {milestone.target}
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
-            </div>
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'hsl(220,25%,48%)' }}>Daniel</p>
+            <p className="font-serif font-bold" style={{ fontSize: '2.8rem', letterSpacing: '-0.05em', lineHeight: 1, color: 'hsl(218,70%,28%)' }}>
+              {mockScore.daniel}
+            </p>
+            <p className="text-[9px] font-semibold mt-2 uppercase tracking-widest" style={{ color: 'hsl(220,22%,58%)' }}>points</p>
           </div>
 
-          {/* Recent Activity */}
-          <div>
-            <div className="flex items-center gap-2 mb-4">
-              <Star
-                className="w-4 h-4"
-                style={{ color: 'hsl(224,60%,56%)' }}
-              />
-              <h3
-                className="text-[10px] font-bold uppercase tracking-[0.14em]"
-                style={{ color: 'hsl(218,25%,48%)' }}
+          {/* Sofia tile — cobalt blue */}
+          <div
+            className="relative p-5 flex flex-col items-center text-center overflow-hidden"
+            style={{
+              background: 'hsl(218, 70%, 28%)',
+              backgroundImage: azulejoPattern,
+              backgroundSize: '24px 24px',
+              border: '1px solid rgba(20,50,120,0.45)',
+              borderRadius: '3px',
+              boxShadow: '3px 4px 14px rgba(15,30,80,0.25)',
+            }}
+          >
+            <div className="relative mb-3">
+              <div
+                className="w-14 h-14 rounded-full overflow-hidden"
+                style={{
+                  border: '2px solid rgba(220,210,190,0.55)',
+                  boxShadow: '0 3px 12px rgba(10,20,60,0.30)',
+                }}
               >
-                Recent Activity
-              </h3>
+                <img src={`${import.meta.env.BASE_URL}images/avatar-sofia.png`} alt="Sofia" className="w-full h-full object-cover" />
+              </div>
+              <motion.div
+                className="absolute -top-1.5 -right-1.5 w-7 h-7 flex items-center justify-center"
+                style={{ background: '#FFD700', borderRadius: '2px', boxShadow: '0 2px 6px rgba(200,150,0,0.4)' }}
+                animate={{ rotate: [0, 5, -5, 0] }}
+                transition={{ duration: 3, repeat: Infinity }}
+              >
+                <Trophy className="w-3.5 h-3.5 fill-current" style={{ color: 'hsl(35,30%,25%)' }} />
+              </motion.div>
             </div>
-            <div className="space-y-3">
-              {mockScore.recentActivities.map((activity, idx) => (
-                <motion.div
-                  key={activity.id}
-                  initial={{ opacity: 0, y: 8 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.25 + idx * 0.05 }}
-                  className="flex items-center gap-3"
+            <p className="text-[10px] font-bold uppercase tracking-widest mb-2" style={{ color: 'rgba(200,190,165,0.65)' }}>Sofia</p>
+            <p className="font-serif font-bold" style={{ fontSize: '2.8rem', letterSpacing: '-0.05em', lineHeight: 1, color: 'hsl(42,30%,95%)' }}>
+              {mockScore.sofia}
+            </p>
+            <p className="text-[9px] font-semibold mt-2 uppercase tracking-widest" style={{ color: 'rgba(180,165,140,0.45)' }}>points</p>
+          </div>
+        </motion.div>
+
+        {/* VS divider / progress tile */}
+        <div
+          className="px-5 py-3 flex items-center gap-3"
+          style={{
+            background: 'hsl(38, 30%, 99%)',
+            border: '1px solid rgba(30,60,130,0.12)',
+            borderRadius: '3px',
+          }}
+        >
+          <span className="text-[9px] font-bold uppercase tracking-widest shrink-0" style={{ color: 'hsl(218,55%,40%)', minWidth: 28 }}>
+            {danielPercent.toFixed(0)}%
+          </span>
+          <div className="flex-1 h-3 flex overflow-hidden" style={{ borderRadius: '1px', background: 'hsl(40,18%,88%)' }}>
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${danielPercent}%` }}
+              transition={{ duration: 1.0, ease: [0.34, 1.1, 0.64, 1], delay: 0.2 }}
+              className="h-full"
+              style={{ background: 'hsl(218, 68%, 38%)', borderRadius: '1px 0 0 1px' }}
+            />
+            <motion.div
+              initial={{ width: 0 }}
+              animate={{ width: `${sofiaPercent}%` }}
+              transition={{ duration: 1.0, ease: [0.34, 1.1, 0.64, 1], delay: 0.2 }}
+              className="h-full"
+              style={{ background: 'hsl(42, 45%, 68%)', borderRadius: '0 1px 1px 0' }}
+            />
+          </div>
+          <span className="text-[9px] font-bold uppercase tracking-widest shrink-0 text-right" style={{ color: 'hsl(40,40%,45%)', minWidth: 28 }}>
+            {sofiaPercent.toFixed(0)}%
+          </span>
+        </div>
+
+        {/* Milestones */}
+        <div>
+          <div className="px-1 py-2 mb-1">
+            <p className="text-[9px] uppercase tracking-[0.18em] font-bold" style={{ color: 'hsl(220,22%,58%)' }}>
+              ✦ &nbsp; Milestones
+            </p>
+          </div>
+          <div className="space-y-2">
+            {mockScore.milestones.map((milestone, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -12 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.12 + idx * 0.09 }}
+              >
+                <div
+                  className="px-4 py-4 flex items-center justify-between gap-4"
+                  style={{
+                    background: milestone.winner ? 'hsl(218,68%,27%)' : 'hsl(38,30%,99%)',
+                    border: milestone.winner ? '1px solid rgba(20,50,120,0.40)' : '1px solid rgba(30,60,130,0.12)',
+                    borderRadius: '3px',
+                    boxShadow: milestone.winner ? '1px 2px 8px rgba(15,30,80,0.18)' : '2px 3px 8px rgba(20,40,100,0.06)',
+                  }}
                 >
-                  <div
-                    className="w-1.5 h-1.5 rounded-full shrink-0"
-                    style={{
-                      background:
-                        activity.user === 'Sofia'
-                          ? 'hsl(210,70%,65%)'
-                          : 'hsl(224,70%,62%)',
-                    }}
-                  />
-                  <div className="flex-1">
-                    <p
-                      className="text-sm"
-                      style={{ color: 'hsl(220,22%,28%)' }}
-                    >
-                      <span className="font-semibold">{activity.user}</span>{' '}
-                      <span className="font-light" style={{ color: 'hsl(218,18%,52%)' }}>
-                        {activity.action}
-                      </span>
+                  <div>
+                    <p className="font-medium text-sm" style={{ color: milestone.winner ? 'hsl(42,30%,92%)' : 'hsl(222,40%,18%)' }}>
+                      {milestone.title}
                     </p>
-                    <p
-                      className="text-[10px] mt-0.5 font-medium"
-                      style={{ color: 'hsl(218,18%,62%)' }}
-                    >
-                      {activity.date}
-                    </p>
+                    {milestone.winner ? (
+                      <p className="text-[10px] font-semibold mt-0.5" style={{ color: 'rgba(200,185,160,0.65)' }}>
+                        Won by {milestone.winner} ✦
+                      </p>
+                    ) : (
+                      <p className="text-[10px] mt-0.5" style={{ color: 'hsl(220,18%,55%)' }}>In progress...</p>
+                    )}
                   </div>
                   <div
-                    className="text-xs font-bold px-2.5 py-1 rounded-lg shrink-0"
+                    className="w-10 h-10 flex items-center justify-center shrink-0 font-bold text-sm"
                     style={{
-                      background: 'rgba(100,140,255,0.10)',
-                      color: 'hsl(224,65%,54%)',
+                      borderRadius: '3px',
+                      background: milestone.winner ? 'rgba(255,252,245,0.12)' : 'hsl(40,22%,90%)',
+                      border: milestone.winner ? '1px solid rgba(180,165,140,0.20)' : '1px solid rgba(30,60,130,0.10)',
+                      color: milestone.winner ? 'rgba(220,210,190,0.80)' : 'hsl(222,40%,28%)',
                     }}
                   >
-                    +{activity.points}
+                    {milestone.target}
                   </div>
-                </motion.div>
-              ))}
-            </div>
+                </div>
+              </motion.div>
+            ))}
           </div>
         </div>
+
+        {/* Recent Activity */}
+        <div>
+          <div className="px-1 py-2 mb-1">
+            <p className="text-[9px] uppercase tracking-[0.18em] font-bold" style={{ color: 'hsl(220,22%,58%)' }}>
+              ✦ &nbsp; Recent Activity
+            </p>
+          </div>
+          <div
+            className="divide-y"
+            style={{ borderRadius: '3px', border: '1px solid rgba(30,60,130,0.10)', overflow: 'hidden', divideColor: 'rgba(30,60,130,0.07)' }}
+          >
+            {mockScore.recentActivities.map((activity, idx) => (
+              <motion.div
+                key={activity.id}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 + idx * 0.05 }}
+                className="flex items-center gap-3 px-4 py-3"
+                style={{ background: idx % 2 === 0 ? 'hsl(38,30%,99%)' : 'hsl(40,20%,97%)' }}
+              >
+                <div
+                  className="w-1.5 h-1.5 rounded-full shrink-0"
+                  style={{ background: activity.user === 'Sofia' ? 'hsl(40,55%,58%)' : 'hsl(218,65%,38%)' }}
+                />
+                <div className="flex-1">
+                  <p className="text-sm" style={{ color: 'hsl(222,35%,22%)' }}>
+                    <span className="font-semibold">{activity.user}</span>{' '}
+                    <span className="font-light" style={{ color: 'hsl(220,18%,50%)' }}>{activity.action}</span>
+                  </p>
+                  <p className="text-[10px] mt-0.5 font-medium" style={{ color: 'hsl(220,15%,60%)' }}>{activity.date}</p>
+                </div>
+                <div
+                  className="text-[10px] font-bold px-2 py-1 shrink-0"
+                  style={{
+                    background: 'hsl(218,70%,28%)',
+                    color: 'hsl(42,30%,93%)',
+                    borderRadius: '2px',
+                  }}
+                >
+                  +{activity.points}
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+
       </div>
     </AppShell>
   );

@@ -3,102 +3,109 @@ import SectionHeader from "@/components/SectionHeader";
 import { mockMemories } from "@/data/mock";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { MapPin, Calendar } from "lucide-react";
+import { MapPin } from "lucide-react";
 
 export default function SaudadePage() {
   return (
     <AppShell>
-      <div className="relative min-h-full">
-        <div
-          className="absolute top-0 left-0 right-0 h-56 -z-10 pointer-events-none"
-          style={{
-            background: 'linear-gradient(180deg, rgba(140,175,255,0.22) 0%, transparent 100%)',
-          }}
-        />
-        <SectionHeader title="Saudade" subtitle="The presence of absence" />
+      <SectionHeader title="Saudade" subtitle="The presence of absence" />
 
-        <div className="p-5 space-y-5 pb-6">
-          {mockMemories.map((memory, idx) => (
-            <motion.div
-              key={memory.id}
-              initial={{ opacity: 0, y: 22 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: idx * 0.09, type: "spring", stiffness: 190, damping: 24 }}
-            >
-              <Link href={`/saudade/${memory.id}`} className="block focus:outline-none">
-                <motion.div
-                  whileHover={{ y: -3, scale: 1.008 }}
-                  whileTap={{ scale: 0.99 }}
-                  transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                  className="rounded-2xl overflow-hidden"
-                  style={{
-                    background: 'rgba(245,250,255,0.95)',
-                    border: '1px solid rgba(180,210,255,0.5)',
-                    boxShadow: '0 8px 32px rgba(80,120,220,0.09), 0 2px 8px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.9) inset',
-                  }}
-                >
-                  {/* Cinematic hero image */}
-                  <div className="relative h-48 w-full overflow-hidden">
+      {/* Mosaic wall of memory tiles */}
+      <div className="p-3 pb-8">
+        {/* Intro label */}
+        <div className="px-1 py-3 mb-1">
+          <p className="text-[9px] uppercase tracking-[0.18em] font-bold" style={{ color: 'hsl(220,22%,58%)' }}>
+            ✦ &nbsp; Archive of moments
+          </p>
+        </div>
+
+        {/* Mosaic: alternating full-width + 2-col layout */}
+        <div className="space-y-2.5">
+          {mockMemories.map((memory, idx) => {
+            const isFeatured = idx % 3 === 0; // every 3rd is a tall hero tile
+            return (
+              <motion.div
+                key={memory.id}
+                initial={{ opacity: 0, y: 16 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.08, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+              >
+                <Link href={`/saudade/${memory.id}`} className="block focus:outline-none">
+                  <motion.div
+                    whileHover={{ y: -2 }}
+                    whileTap={{ scale: 0.99 }}
+                    transition={{ type: "spring", stiffness: 400, damping: 30 }}
+                    className="relative overflow-hidden"
+                    style={{
+                      borderRadius: '3px',
+                      border: '1px solid rgba(30,60,130,0.15)',
+                      boxShadow: '2px 4px 12px rgba(20,40,100,0.10)',
+                      height: isFeatured ? 240 : 180,
+                    }}
+                  >
+                    {/* Image */}
                     <img
                       src={memory.imageUrl}
                       alt={memory.title}
                       className="w-full h-full object-cover"
-                      style={{ filter: 'saturate(0.88) brightness(0.96)' }}
+                      style={{ filter: 'saturate(0.82) brightness(0.88)' }}
                     />
-                    {/* Blue-tinted cinematic overlay */}
+
+                    {/* Deep cobalt gradient overlay — like azulejo glaze */}
                     <div
                       className="absolute inset-0"
                       style={{
-                        background:
-                          'linear-gradient(to top, rgba(20,35,80,0.72) 0%, rgba(40,60,120,0.25) 55%, rgba(80,110,200,0.08) 100%)',
+                        background: isFeatured
+                          ? 'linear-gradient(to top, rgba(15,30,80,0.88) 0%, rgba(15,30,80,0.45) 50%, rgba(30,60,120,0.10) 100%)'
+                          : 'linear-gradient(to top, rgba(15,30,80,0.82) 0%, rgba(15,30,80,0.35) 60%, transparent 100%)',
                       }}
                     />
-                    {/* Location chip */}
+
+                    {/* Location chip — top right */}
                     <div
-                      className="absolute top-3 right-3 flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[10px] font-semibold tracking-wide"
+                      className="absolute top-3 right-3 flex items-center gap-1 px-2 py-1 text-[9px] font-bold uppercase tracking-wide"
                       style={{
-                        background: 'rgba(10,20,60,0.45)',
-                        backdropFilter: 'blur(10px)',
-                        border: '1px solid rgba(180,210,255,0.25)',
-                        color: 'rgba(200,225,255,0.95)',
+                        background: 'rgba(15,30,80,0.55)',
+                        border: '1px solid rgba(180,200,255,0.2)',
+                        borderRadius: '2px',
+                        color: 'rgba(200,215,255,0.90)',
+                        backdropFilter: 'blur(8px)',
                       }}
                     >
                       <MapPin className="w-2.5 h-2.5" />
                       {memory.location}
                     </div>
-                    {/* Title overlaid on image */}
-                    <div className="absolute bottom-0 left-0 right-0 px-5 pb-4 pt-8">
+
+                    {/* Bottom content */}
+                    <div className="absolute bottom-0 left-0 right-0 px-4 pb-4">
+                      <p className="text-[9px] uppercase tracking-[0.14em] font-semibold mb-1.5" style={{ color: 'rgba(180,195,240,0.65)' }}>
+                        {memory.date}
+                      </p>
                       <h3
                         className="font-serif font-semibold text-white leading-tight"
-                        style={{ fontSize: '1.2rem', textShadow: '0 2px 12px rgba(0,0,30,0.5)' }}
+                        style={{ fontSize: isFeatured ? '1.35rem' : '1.05rem', textShadow: '0 2px 8px rgba(0,0,30,0.6)' }}
                       >
                         {memory.title}
                       </h3>
+                      {isFeatured && (
+                        <p className="text-xs mt-1.5 font-light leading-relaxed line-clamp-2" style={{ color: 'rgba(200,210,240,0.72)' }}>
+                          {memory.preview}
+                        </p>
+                      )}
                     </div>
-                  </div>
 
-                  {/* Card body */}
-                  <div className="px-5 py-4">
-                    <div className="flex items-center gap-1.5 mb-2">
-                      <Calendar className="w-3 h-3" style={{ color: 'hsl(220,55%,58%)' }} />
-                      <span
-                        className="text-xs font-semibold tracking-wide"
-                        style={{ color: 'hsl(220,55%,55%)' }}
-                      >
-                        {memory.date}
-                      </span>
-                    </div>
-                    <p
-                      className="text-sm leading-relaxed line-clamp-2 font-light"
-                      style={{ color: 'hsl(220,18%,45%)' }}
+                    {/* Index number — architectural detail */}
+                    <div
+                      className="absolute top-3 left-3 font-serif font-bold"
+                      style={{ fontSize: '11px', color: 'rgba(200,215,255,0.30)' }}
                     >
-                      {memory.preview}
-                    </p>
-                  </div>
-                </motion.div>
-              </Link>
-            </motion.div>
-          ))}
+                      {String(idx + 1).padStart(2, '0')}
+                    </div>
+                  </motion.div>
+                </Link>
+              </motion.div>
+            );
+          })}
         </div>
       </div>
     </AppShell>
