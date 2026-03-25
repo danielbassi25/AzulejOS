@@ -1,0 +1,188 @@
+Build a production-style mobile-first web app called OikOS using Next.js 14+, React, TypeScript, Tailwind CSS, and Supabase.
+
+Brand identity:
+- App name: OikOS
+- Tagline: Built daily.
+- Product concept: a private relationship operating system for two people, Daniel and Sofia
+- Tone: premium, intimate, minimal, emotionally warm, playful in selected sections
+- Language: English
+- Design style: Apple-inspired, elegant, soft, clean, high-end, not childish, not cheesy
+- Visual direction: rounded cards, premium spacing, subtle shadows, excellent typography hierarchy, smooth transitions, polished mobile-first layout
+- Color palette:
+  - soft blue #AFCBFF
+  - pastel pink #F7C8E0
+  - warm white #FAFAFA
+  - light gray #EAEAEA
+  - accent blue #6B8CFF
+
+Goal:
+Create a high-quality MVP that already feels like a real product, not a school project or rough prototype. The app should have clean architecture, reusable UI components, and realistic sample content. Prioritize design quality, component reusability, and future scalability.
+
+Technical requirements:
+- Use Next.js App Router
+- Use TypeScript
+- Use Tailwind CSS
+- Set up a clean folder structure
+- Create reusable UI components
+- Create a bottom mobile navigation
+- Create a clean app shell layout
+- Prepare Supabase integration using environment variables
+- Use local mock data for the initial version
+- Make the code modular and easy to extend later
+- Prepare for Vercel deployment
+- Do not add unnecessary complexity
+- Avoid overengineering auth for now, but structure the code so Supabase auth can be added later
+
+Main app sections and routes:
+1. /system
+2. /saudade
+3. /saudade/[id]
+4. /letters
+5. /build
+6. /play
+7. /score
+
+App UX requirements:
+- Mobile first
+- Should also look good on desktop
+- Bottom tab navigation on mobile
+- Elegant section headers
+- Premium card system
+- Smooth visual consistency across all pages
+- Every page should feel intentionally designed
+- Add subtle animations or transitions where appropriate
+- No clutter
+- No chat feature
+- No explicit private photo section
+- Privacy-oriented feel
+
+Pages to build:
+
+1. System page
+Create a premium home/dashboard page with:
+- welcome back message for Sofia
+- “OikOS is running”
+- “Built daily.”
+- days together card
+- next event card
+- random couple phrase card
+- quick system summary cards such as:
+  - next letter unlock
+  - current score leader
+  - active goals
+Use realistic placeholder values and polished microcopy.
+
+2. Saudade page
+Create a memory timeline / archive page.
+- Each memory should appear in a premium card/list format
+- Each memory card should include title, date, location, short preview, and optional image thumbnail
+- Clicking a memory opens a dedicated detail page at /saudade/[id]
+- The Saudade page should feel like an emotional archive, not just a list
+
+3. Saudade detail page
+Create a dedicated memory page similar to a refined personal archive page.
+Include:
+- title
+- date
+- location
+- long narrative description
+- inside joke section
+- image gallery placeholders
+- optional related memory section
+This page should feel immersive, elegant, and readable, almost like a private journal entry.
+
+4. Letters page
+Create a premium letters section.
+- Show a list of letters with locked and unlocked states
+- Each letter should include title and unlock date
+- Locked letters should be visually distinct and elegant
+- Include support for future expansion into dedicated letter detail pages
+- Add realistic sample letters
+
+5. Build page
+Create a shared goals page.
+- Show shared goals as premium checklist cards
+- Include completed and incomplete goals
+- Add progress summary
+- Use realistic goals such as trips, restaurants, small experiences, future plans
+- Make the section feel warm and forward-looking
+
+6. Play page
+Create a fun interaction page.
+- Add categories such as Conversation Starters, Would You Rather, Deep Questions
+- Show one question card at a time
+- Add a “next question” interaction using local mock data
+- Keep the design playful but still premium
+
+7. Score page
+Create a gamified score page.
+- Daniel vs Sofia points
+- progress bars
+- milestone rewards
+- recent score activity
+- leaderboard feel without looking childish
+Use realistic milestone examples such as first to 10 points wins something.
+
+Reusable components to create:
+- AppShell
+- BottomNav
+- SectionHeader
+- StatCard
+- PremiumCard
+- PillTag
+- TimelineCard
+- LockedLetterCard
+- GoalCard
+- QuestionCard
+- ScoreCard
+- MilestoneCard
+
+Project structure:
+- app/
+- components/
+- lib/
+- data/
+- types/
+
+Data modeling:
+Create TypeScript types and local mock data files for:
+- memories
+- letters
+- goals
+- questions
+- scores
+- milestones
+- dashboard summary
+
+Supabase preparation:
+- create a lib/supabase.ts client file
+- use environment variables:
+  - NEXT_PUBLIC_SUPABASE_URL
+  - NEXT_PUBLIC_SUPABASE_ANON_KEY
+- do not fully wire all CRUD yet unless needed
+- just prepare the project cleanly for future Supabase integration
+
+Design quality requirements:
+- prioritize visual polish
+- clean spacing and typography
+- high-end app feel
+- realistic copy
+- polished empty states where useful
+- polished hover/tap states
+- no generic template feel
+- avoid flat boring layout
+- make it look like a real premium product someone would actually use
+
+Deliverables:
+- full initial project structure
+- all pages and routes
+- reusable UI components
+- local mock data
+- responsive layout
+- polished MVP UI
+- clean starter architecture ready for further section-specific prompts
+
+After generating the project, also include a short explanation of:
+1. the folder structure
+2. where to edit content
+3. where Supabase will be connected later

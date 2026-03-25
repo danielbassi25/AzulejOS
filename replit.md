@@ -21,7 +21,8 @@ pnpm workspace monorepo using TypeScript. Each package manages its own dependenc
 ```text
 artifacts-monorepo/
 ├── artifacts/              # Deployable applications
-│   └── api-server/         # Express API server
+│   ├── api-server/         # Express API server
+│   └── oikos/              # OikOS — relationship operating system (React + Vite)
 ├── lib/                    # Shared libraries
 │   ├── api-spec/           # OpenAPI spec + Orval codegen config
 │   ├── api-client-react/   # Generated React Query hooks
@@ -34,6 +35,58 @@ artifacts-monorepo/
 ├── tsconfig.json           # Root TS project references
 └── package.json            # Root package with hoisted devDeps
 ```
+
+## OikOS App (`artifacts/oikos`)
+
+OikOS is a private relationship operating system for Daniel and Sofia. It is a frontend-only React + Vite SPA with local mock data.
+
+### Key files
+
+- `src/App.tsx` — Router and app shell, all 7 routes wired up
+- `src/data/mock.ts` — All mock data (memories, letters, goals, questions, scores, dashboard)
+- `src/types/index.ts` — TypeScript types for all data
+- `src/components/AppShell.tsx` — Main app shell with bottom nav
+- `src/components/BottomNav.tsx` — Mobile bottom navigation (6 tabs)
+- `src/pages/system.tsx` — Dashboard/home page
+- `src/pages/saudade.tsx` — Memory timeline
+- `src/pages/saudade-detail.tsx` — Memory detail page
+- `src/pages/letters.tsx` — Letters (locked/unlocked)
+- `src/pages/build.tsx` — Shared goals with progress
+- `src/pages/play.tsx` — Conversation questions game
+- `src/pages/score.tsx` — Gamified score with milestones
+
+### Routes
+
+- `/` → redirects to `/system`
+- `/system` — Dashboard with days counter, events, phrase
+- `/saudade` — Memory timeline
+- `/saudade/:id` — Memory detail
+- `/letters` — Letters list (locked/unlocked)
+- `/build` — Shared goals checklist
+- `/play` — Conversation starters / questions
+- `/score` — Daniel vs Sofia scoreboard
+
+### Where to edit content
+
+- **Mock data** (memories, letters, goals, questions, scores): `src/data/mock.ts`
+- **TypeScript types**: `src/types/index.ts`
+- **Design / CSS variables**: `src/index.css`
+- **Individual pages**: `src/pages/`
+- **Reusable components**: `src/components/`
+
+### Supabase integration (future)
+
+When ready to connect Supabase:
+1. Create `src/lib/supabase.ts` with the Supabase client
+2. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment variables
+3. Replace mock data imports in each page with Supabase queries
+
+### Design
+
+- Color palette: soft blue (#AFCBFF), pastel pink (#F7C8E0), warm white (#FAFAFA), accent blue (#6B8CFF)
+- Typography: Inter (sans-serif)
+- Layout: max-w-lg centered, mobile-first
+- Animations: Framer Motion
 
 ## TypeScript & Composite Projects
 

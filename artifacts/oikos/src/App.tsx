@@ -1,0 +1,54 @@
+import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { useEffect } from "react";
+import { Toaster } from "@/components/ui/toaster";
+import { TooltipProvider } from "@/components/ui/tooltip";
+import NotFound from "@/pages/not-found";
+import SystemPage from "@/pages/system";
+import SaudadePage from "@/pages/saudade";
+import SaudadeDetailPage from "@/pages/saudade-detail";
+import LettersPage from "@/pages/letters";
+import BuildPage from "@/pages/build";
+import PlayPage from "@/pages/play";
+import ScorePage from "@/pages/score";
+
+const queryClient = new QueryClient();
+
+function HomeRedirect() {
+  const [, setLocation] = useLocation();
+  useEffect(() => {
+    setLocation("/system");
+  }, [setLocation]);
+  return null;
+}
+
+function Router() {
+  return (
+    <Switch>
+      <Route path="/" component={HomeRedirect} />
+      <Route path="/system" component={SystemPage} />
+      <Route path="/saudade/:id" component={SaudadeDetailPage} />
+      <Route path="/saudade" component={SaudadePage} />
+      <Route path="/letters" component={LettersPage} />
+      <Route path="/build" component={BuildPage} />
+      <Route path="/play" component={PlayPage} />
+      <Route path="/score" component={ScorePage} />
+      <Route component={NotFound} />
+    </Switch>
+  );
+}
+
+function App() {
+  return (
+    <QueryClientProvider client={queryClient}>
+      <TooltipProvider>
+        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+          <Router />
+        </WouterRouter>
+        <Toaster />
+      </TooltipProvider>
+    </QueryClientProvider>
+  );
+}
+
+export default App;
