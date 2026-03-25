@@ -12,41 +12,41 @@ export default function SectionHeader({ title, subtitle, action }: SectionHeader
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ duration: 0.35 }}
+      transition={{ duration: 0.4 }}
       className="relative overflow-hidden"
       style={{
-        background: 'hsl(218, 70%, 28%)',
-        borderBottom: '1px solid rgba(30,60,130,0.20)',
-        padding: '28px 24px 24px',
+        background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)',
+        borderBottom: '1px solid rgba(15,40,110,0.35)',
+        padding: '32px 24px 28px',
       }}
     >
-      {/* Subtle azulejo pattern overlay */}
+      {/* Very subtle light leak top-right — warmth, not pattern */}
       <div
-        className="absolute inset-0 pointer-events-none opacity-[0.06]"
+        className="absolute top-0 right-0 w-48 h-48 pointer-events-none"
         style={{
-          backgroundImage: `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='1'%3E%3Cpath d='M0 0h20v20H0zM20 20h20v20H20z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")`,
-          backgroundSize: '20px 20px',
+          background: 'radial-gradient(ellipse at top right, rgba(255,252,245,0.06) 0%, transparent 65%)',
         }}
       />
+
       <div className="flex items-end justify-between relative z-10">
         <div>
           <h1
             className="font-serif font-semibold leading-none"
             style={{
-              fontSize: '2.1rem',
-              letterSpacing: '-0.02em',
-              color: 'hsl(42, 30%, 95%)',
+              fontSize: '2.4rem',
+              letterSpacing: '-0.025em',
+              color: 'hsl(42, 30%, 96%)',
             }}
           >
             {title}
           </h1>
           {subtitle && (
             <p
-              className="italic font-light mt-1.5"
+              className="font-serif italic mt-2"
               style={{
-                fontSize: '0.75rem',
-                letterSpacing: '0.04em',
-                color: 'rgba(220, 210, 190, 0.70)',
+                fontSize: '0.78rem',
+                letterSpacing: '0.02em',
+                color: 'rgba(215, 205, 185, 0.58)',
               }}
             >
               {subtitle}

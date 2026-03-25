@@ -12,119 +12,143 @@ export default function SaudadeDetailPage() {
   return (
     <AppShell>
       <div className="relative">
-        {/* Hero tile — full bleed image with cobalt glaze */}
-        <div className="relative overflow-hidden" style={{ height: 300 }}>
+        {/* Hero image */}
+        <div className="relative overflow-hidden" style={{ height: 320 }}>
           <img
             src={memory.imageUrl}
             alt={memory.title}
             className="w-full h-full object-cover"
-            style={{ filter: 'saturate(0.80) brightness(0.85)' }}
+            style={{ filter: 'saturate(0.78) brightness(0.84)' }}
           />
           <div
             className="absolute inset-0"
             style={{
-              background: 'linear-gradient(to bottom, rgba(15,30,80,0.45) 0%, rgba(15,30,80,0.30) 30%, hsl(42,28%,97%) 100%)',
+              background: 'linear-gradient(to bottom, rgba(12,25,72,0.40) 0%, rgba(12,25,72,0.28) 30%, hsl(42,28%,97%) 100%)',
             }}
           />
 
-          {/* Back button */}
+          {/* Back */}
           <Link
             href="/saudade"
             className="absolute top-5 left-4 flex items-center gap-2"
             style={{
-              background: 'rgba(15,30,80,0.40)',
-              backdropFilter: 'blur(12px)',
-              border: '1px solid rgba(180,200,255,0.2)',
+              background: 'rgba(12,25,72,0.38)',
+              backdropFilter: 'blur(14px)',
+              border: '1px solid rgba(180,200,255,0.18)',
               borderRadius: '3px',
-              padding: '7px 12px',
-              color: 'rgba(220,230,255,0.95)',
+              padding: '7px 14px',
+              color: 'rgba(220,230,255,0.92)',
             }}
           >
             <ArrowLeft className="w-4 h-4" />
-            <span className="text-[10px] font-bold uppercase tracking-widest">Back</span>
+            <span className="font-sans font-bold uppercase tracking-widest" style={{ fontSize: '9px' }}>Back</span>
           </Link>
 
-          {/* Index number */}
-          <div className="absolute top-5 right-5 font-serif font-bold" style={{ fontSize: '14px', color: 'rgba(200,215,255,0.28)' }}>
+          {/* Index */}
+          <div
+            className="absolute top-5 right-5 font-serif font-medium"
+            style={{ fontSize: '13px', color: 'rgba(200,215,255,0.24)' }}
+          >
             {String(idx + 1).padStart(2, '0')}
           </div>
         </div>
 
-        {/* Content area */}
-        <div className="px-4 -mt-6 relative z-10 pb-16 space-y-3">
+        {/* Content */}
+        <div className="px-4 -mt-8 relative z-10 pb-16 space-y-3">
 
           {/* Title tile */}
           <motion.div
             initial={{ opacity: 0, y: 16 }}
             animate={{ opacity: 1, y: 0 }}
-            className="p-6"
+            className="px-6 py-6"
             style={{
-              background: 'hsl(38, 30%, 99%)',
-              border: '1px solid rgba(30,60,130,0.12)',
-              borderRadius: '3px',
-              boxShadow: '2px 4px 14px rgba(20,40,100,0.10)',
+              background: 'hsl(38,30%,99%)',
+              border: '1px solid rgba(30,60,130,0.10)',
+              borderRadius: '4px',
+              boxShadow: '0 1px 0 rgba(255,255,255,0.92) inset, 3px 6px 18px rgba(20,40,100,0.10)',
             }}
           >
             <h1
-              className="font-serif font-semibold leading-tight mb-4"
-              style={{ fontSize: '1.65rem', letterSpacing: '-0.03em', color: 'hsl(222,45%,16%)' }}
+              className="font-serif font-semibold leading-tight"
+              style={{ fontSize: '1.75rem', letterSpacing: '-0.03em', color: 'hsl(222,45%,16%)' }}
             >
               {memory.title}
             </h1>
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide"
-                style={{ background: 'hsl(40,35%,91%)', borderRadius: '2px', color: 'hsl(220,35%,38%)' }}>
+            <div className="flex flex-wrap items-center gap-2 mt-4">
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1.5 font-sans font-semibold uppercase tracking-wide"
+                style={{
+                  fontSize: '9px',
+                  background: 'hsl(40,30%,93%)',
+                  borderRadius: '2px',
+                  color: 'hsl(220,28%,40%)',
+                }}
+              >
                 <Calendar className="w-3 h-3" />
                 {memory.date}
               </div>
-              <div className="flex items-center gap-1.5 px-2.5 py-1.5 text-[10px] font-semibold uppercase tracking-wide"
-                style={{ background: 'hsl(218,70%,28%)', borderRadius: '2px', color: 'hsl(42,30%,95%)' }}>
+              <div
+                className="flex items-center gap-1.5 px-2.5 py-1.5 font-sans font-semibold uppercase tracking-wide"
+                style={{
+                  fontSize: '9px',
+                  background: 'hsl(218,70%,28%)',
+                  borderRadius: '2px',
+                  color: 'hsl(42,30%,96%)',
+                }}
+              >
                 <MapPin className="w-3 h-3" />
                 {memory.location}
               </div>
             </div>
           </motion.div>
 
-          {/* Content tile */}
+          {/* Narrative — warm beige, journal feel */}
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.12 }}
-            className="p-6"
+            className="px-6 py-7"
             style={{
-              background: 'hsl(40, 35%, 93%)',
-              border: '1px solid rgba(30,60,130,0.09)',
-              borderRadius: '3px',
+              background: 'hsl(40, 28%, 95%)',
+              border: '1px solid rgba(30,60,130,0.07)',
+              borderRadius: '4px',
             }}
           >
             <p
-              className="font-serif leading-[1.85]"
-              style={{ fontSize: '1.02rem', color: 'hsl(222,30%,28%)', letterSpacing: '0.01em' }}
+              className="font-serif leading-[1.90]"
+              style={{ fontSize: '1.02rem', color: 'hsl(222,28%,28%)', letterSpacing: '0.01em' }}
             >
               {memory.content}
             </p>
           </motion.div>
 
-          {/* Inside jokes — cobalt tiles */}
+          {/* Inside jokes */}
           <motion.div
             initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.20 }}
           >
-            <p className="px-1 pb-2 text-[9px] uppercase tracking-[0.18em] font-bold" style={{ color: 'hsl(220,22%,55%)' }}>
-              ✦ &nbsp; Inside Jokes
-            </p>
+            <div className="flex items-center gap-3 px-1 pb-2.5">
+              <div style={{ width: 16, height: 1, background: 'rgba(30,60,130,0.16)' }} />
+              <p className="font-sans font-semibold uppercase tracking-[0.18em]"
+                style={{ fontSize: '8.5px', color: 'hsl(220,20%,56%)' }}>
+                Inside Jokes
+              </p>
+              <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
+            </div>
             <div className="space-y-2">
               {memory.insideJokes.map((joke, i) => (
                 <div
                   key={i}
-                  className="px-5 py-4 text-sm font-medium"
+                  className="px-5 py-4 font-sans font-medium"
                   style={{
+                    fontSize: '0.87rem',
                     background: i % 2 === 0 ? 'hsl(218,70%,28%)' : 'hsl(38,30%,99%)',
-                    border: '1px solid rgba(30,60,130,0.15)',
-                    borderRadius: '3px',
-                    color: i % 2 === 0 ? 'hsl(42,30%,93%)' : 'hsl(222,40%,22%)',
-                    boxShadow: '1px 2px 6px rgba(20,40,100,0.08)',
+                    border: '1px solid rgba(30,60,130,0.10)',
+                    borderRadius: '4px',
+                    color: i % 2 === 0 ? 'hsl(42,30%,94%)' : 'hsl(222,38%,22%)',
+                    boxShadow: '1px 2px 8px rgba(20,40,100,0.07)',
+                    lineHeight: 1.6,
                   }}
                 >
                   {joke}

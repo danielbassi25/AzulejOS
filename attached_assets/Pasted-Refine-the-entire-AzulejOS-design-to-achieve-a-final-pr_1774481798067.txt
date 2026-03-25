@@ -1,0 +1,157 @@
+Refine the entire AzulejOS design to achieve a final, premium, editorial-level aesthetic.
+
+DO NOT change structure or features.
+Focus only on visual refinement, balance, and identity.
+
+---
+
+CORE DIRECTION:
+AzulejOS should feel like a Mediterranean digital artifact:
+a mix of Portuguese azulejos, Italian editorial elegance, and modern iOS refinement.
+
+Not a tech product → a curated emotional object.
+
+---
+
+1. PATTERN USAGE (CRITICAL FIX)
+
+- Reduce overuse of tile patterns
+- Keep azulejo patterns ONLY in:
+  • hero sections
+  • key highlight tiles
+  • special moments (quotes, milestones)
+
+- Remove patterns from:
+  • standard cards
+  • lists
+  • secondary UI elements
+
+- Introduce clean ceramic / ivory backgrounds
+
+Goal:
+Create contrast, breathing space, and visual hierarchy.
+
+---
+
+2. TILE DESIGN (MAKE THEM REAL)
+
+- Tiles must feel like real ceramic objects:
+  • subtle texture (very light grain)
+  • thin borders
+  • soft inner shadows
+  • gentle imperfections
+
+- Avoid flat digital look
+- Avoid repetitive pattern overlays
+
+Goal:
+Each tile should feel tactile and collectible.
+
+---
+
+3. COLOR SYSTEM (DEPTH + WARMTH)
+
+- Primary: deep azulejo blue
+- Secondary: dusty / faded blue tones
+- Background: warm ivory / ceramic white
+- Accent: very subtle beige / gold (minimal, elegant)
+
+- Avoid full-blue screens
+- Always create contrast between sections
+
+Goal:
+Warm Mediterranean palette, not cold UI.
+
+---
+
+4. TYPOGRAPHY (MAJOR UPGRADE)
+
+- Titles:
+  • use high-end editorial serif (Playfair Display / Canela style)
+  • large, expressive, emotional
+
+- Numbers (e.g. "1379"):
+  • iconic, oversized, elegant
+  • strong visual presence
+
+- Body text:
+  • clean sans-serif (light, airy)
+  • refined spacing
+
+- Use:
+  • italics for quotes
+  • subtle letter spacing for labels
+
+Goal:
+Feel like a luxury magazine, not an app.
+
+---
+
+5. VISUAL HIERARCHY
+
+- Each screen must have ONE dominant element
+- Reduce noise in secondary components
+- Increase spacing between sections
+
+Examples:
+• System → focus on days counter
+• Saudade → focus on one memory at a time
+• Play → focus on the card
+
+Goal:
+Calm, premium, intentional layout.
+
+---
+
+6. DEPTH & LIGHT
+
+- Add soft shadows (not heavy)
+- Add subtle light gradients across surfaces
+- Introduce gentle glow on important elements
+
+- Avoid flat UI
+
+Goal:
+Soft, dreamy, dimensional interface.
+
+---
+
+7. MICRO-INTERACTIONS
+
+- Smooth, slow transitions
+- Slight hover glow
+- Gentle scale/float on tiles
+- Elegant button feedback
+
+Goal:
+Everything feels soft, alive, and intentional.
+
+---
+
+8. ICONS & DETAILS
+
+- Use thin, elegant line icons
+- Consistent stroke and style
+- Avoid generic icon sets
+
+- Add subtle decorative details:
+  • fine dividers
+  • small ornamental touches (very minimal)
+
+---
+
+FINAL GOAL:
+
+AzulejOS should feel:
+- aesthetic
+- intimate
+- timeless
+- feminine but elegant
+- artistic but not overloaded
+
+It should look like something between:
+• a luxury iOS app
+• a Mediterranean home interior
+• a personal archive of love
+
+Make it feel unique, recognizable, and emotionally designed.
