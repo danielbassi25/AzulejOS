@@ -13,12 +13,18 @@ export default function PremiumCard({ children, className, glass = false, ...pro
     <motion.div
       {...props}
       className={cn(
-        "rounded-[1.25rem] border overflow-hidden transition-all duration-300",
-        glass 
-          ? "bg-white/60 dark:bg-black/60 backdrop-blur-md border-white/20 dark:border-white/10 shadow-lg shadow-black/5" 
-          : "bg-card border-border/50 shadow-sm hover:shadow-md",
+        "rounded-2xl border overflow-hidden transition-all duration-300",
+        glass
+          ? "backdrop-blur-xl border-white/50"
+          : "bg-white/90 border-white/70 hover:border-white",
         className
       )}
+      style={{
+        boxShadow: glass
+          ? '0 8px 32px rgba(107,140,255,0.10), 0 0 0 1px rgba(255,255,255,0.5) inset'
+          : '0 4px 16px rgba(107,140,255,0.08), 0 1px 3px rgba(0,0,0,0.04), 0 0 0 1px rgba(255,255,255,0.9) inset',
+        ...((props as any).style || {}),
+      }}
     >
       {children}
     </motion.div>

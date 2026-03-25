@@ -1,0 +1,77 @@
+Upgrade the visual identity and emotional design of the OikOS app to make it feel unique, premium, and deeply personal.
+
+Current issue:
+The UI looks clean but too generic and similar to a standard Tailwind template. It lacks emotional depth, personality, and visual storytelling.
+
+Goal:
+Transform OikOS into a distinctive, memorable product with strong visual identity and differentiated sections.
+
+Global improvements:
+- Introduce a subtle gradient background across the app (soft blue to soft pink)
+- Add light grain/noise texture for warmth
+- Improve shadows: softer, more layered, more “floating card” feel
+- Increase use of blur and glassmorphism selectively (not everywhere)
+- Improve spacing and breathing room
+- Add subtle micro-interactions (hover, tap, transitions)
+- Use slightly more expressive typography hierarchy
+- Avoid making everything look the same
+
+Section-specific visual identity:
+
+1. System (calm + clean + stable)
+- Keep it minimal and structured
+- Add a soft gradient header background
+- Make it feel like a “control center”
+- Introduce a subtle animated “heartbeat” or pulse effect on the system status
+
+2. Saudade (emotional + cinematic)
+- This is the most important section
+- Add image overlays with gradient fade
+- Make cards feel like “memories” not UI elements
+- Use warmer tones
+- Add slight parallax or hover depth
+- Improve typography for titles (more elegant, slightly serif feeling if possible)
+- Make the detail page feel like a journal entry (more whitespace, better readability)
+
+3. Letters (intimate + timeless)
+- Make locked letters feel precious, not just disabled
+- Add soft glow or blur for locked items
+- Introduce subtle paper or handwritten feel (very light, not kitsch)
+- Improve hierarchy between opened vs locked
+
+4. Build (forward + structured)
+- Keep it more structured
+- Improve progress bar design (more premium)
+- Add subtle motion when completing a goal
+- Make completed items feel rewarding
+
+5. Play (light + playful)
+- Add more color accents
+- Make buttons more dynamic
+- Add subtle animations when switching questions
+
+6. Score (competitive + dynamic)
+- Make the score bar more visually engaging
+- Add slight animation to score changes
+- Highlight leader more clearly but elegantly
+- Improve milestone cards to feel like achievements
+
+Components improvements:
+- Refine all cards to feel more premium (padding, radius, shadow)
+- Improve bottom navigation:
+  - active tab glow
+  - smoother transitions
+- Add slight animation when switching tabs
+
+Typography:
+- Keep Inter for body
+- Introduce a more expressive font for titles (Playfair Display or similar)
+- Increase contrast between titles and body text
+
+Do not:
+- Do not make it flashy or childish
+- Do not overuse gradients or effects
+- Do not break existing structure
+
+Focus:
+Make the app feel like something emotionally meaningful, not just functional.

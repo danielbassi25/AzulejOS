@@ -16,34 +16,53 @@ export default function BottomNav() {
   const [location] = useLocation();
 
   return (
-    <div className="fixed bottom-0 left-0 right-0 z-50 md:absolute md:bottom-4 md:left-4 md:right-4 flex justify-center">
-      <nav className="w-full md:w-auto bg-white/80 dark:bg-black/80 backdrop-blur-xl border-t md:border border-border/50 md:rounded-full px-2 py-3 md:py-2 flex items-center justify-between md:justify-center md:gap-2 md:shadow-lg md:shadow-primary/5">
+    <div className="absolute bottom-0 left-0 right-0 z-50 px-4 pb-5 pt-3">
+      <nav
+        className="flex items-center justify-between rounded-2xl px-3 py-2.5"
+        style={{
+          background: 'rgba(255,255,255,0.82)',
+          backdropFilter: 'blur(20px)',
+          WebkitBackdropFilter: 'blur(20px)',
+          border: '1px solid rgba(255,255,255,0.9)',
+          boxShadow: '0 8px 32px rgba(107,140,255,0.12), 0 2px 8px rgba(0,0,0,0.06), 0 0 0 1px rgba(255,255,255,0.6) inset',
+        }}
+      >
         {navItems.map((item) => {
-          // Precise matching for root or details
-          const isActive = location === item.path || (location.startsWith(item.path) && item.path !== "/system");
+          const isActive = location === item.path || (location.startsWith(item.path + "/") && item.path !== "/system");
           const Icon = item.icon;
-          
           return (
-            <Link key={item.path} href={item.path} className="relative group flex-1 md:flex-none flex flex-col items-center justify-center w-14 h-12 md:w-16 md:h-12 cursor-pointer tap-highlight-transparent">
-              <div className="relative flex items-center justify-center z-10">
+            <Link
+              key={item.path}
+              href={item.path}
+              className="relative flex-1 flex flex-col items-center justify-center gap-0.5 py-1 cursor-pointer select-none"
+            >
+              <div className="relative flex items-center justify-center">
                 {isActive && (
                   <motion.div
-                    layoutId="bubble"
-                    className="absolute inset-0 bg-primary/10 rounded-full w-10 h-10 -ml-2 -mt-2"
-                    transition={{ type: "spring", bounce: 0.2, duration: 0.6 }}
+                    layoutId="nav-bubble"
+                    className="absolute inset-0 rounded-full"
+                    style={{
+                      width: 36,
+                      height: 36,
+                      marginLeft: -8,
+                      marginTop: -8,
+                      background: 'linear-gradient(135deg, rgba(107,140,255,0.18), rgba(175,203,255,0.25))',
+                      boxShadow: '0 2px 8px rgba(107,140,255,0.2)',
+                    }}
+                    transition={{ type: "spring", bounce: 0.25, duration: 0.5 }}
                   />
                 )}
-                <Icon 
-                  strokeWidth={isActive ? 2.5 : 2} 
+                <Icon
+                  strokeWidth={isActive ? 2.5 : 1.8}
                   className={cn(
-                    "w-[22px] h-[22px] transition-colors duration-300",
-                    isActive ? "text-primary" : "text-muted-foreground group-hover:text-foreground"
-                  )} 
+                    "w-5 h-5 transition-all duration-300 relative z-10",
+                    isActive ? "text-primary" : "text-muted-foreground/70"
+                  )}
                 />
               </div>
               <span className={cn(
-                "text-[10px] mt-1 font-medium transition-all duration-300 z-10",
-                isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-70"
+                "text-[9.5px] font-semibold tracking-wide transition-all duration-300",
+                isActive ? "text-primary" : "text-muted-foreground/60"
               )}>
                 {item.label}
               </span>
