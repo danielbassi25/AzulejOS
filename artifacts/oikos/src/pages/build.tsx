@@ -3,7 +3,7 @@ import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { getAllGoals, isCustomItem, deleteCustomGoal, updateCustomGoal } from "@/data/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Plus, Plane, Film, UtensilsCrossed, Sparkles, Pencil } from "lucide-react";
+import { Check, Plus, Plane, Film, UtensilsCrossed, Sparkles, Pencil, Shuffle, ArrowDownUp, Layers } from "lucide-react";
 import { Link } from "wouter";
 import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Goal } from "@/types";
@@ -253,11 +253,11 @@ export default function BuildPage() {
         )}
 
         {goals.length > 1 && (
-          <div className="flex items-center gap-1.5 mb-3">
+          <div className="flex items-center justify-center gap-2 mb-3">
             {([
-              { mode: 'shuffle' as const, label: 'Shuffle' },
-              { mode: 'date' as const, label: 'Date' },
-              { mode: 'type' as const, label: 'Type' },
+              { mode: 'shuffle' as const, label: 'Shuffle', icon: Shuffle },
+              { mode: 'date' as const, label: 'Date', icon: ArrowDownUp },
+              { mode: 'type' as const, label: 'Type', icon: Layers },
             ]).map(btn => (
               <motion.button key={btn.mode} whileTap={{ scale: 0.93 }}
                 onClick={() => {
@@ -269,15 +269,16 @@ export default function BuildPage() {
                   }
                 }}
                 style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700,
-                  letterSpacing: '0.12em', textTransform: 'uppercase',
-                  background: sortMode === btn.mode ? 'hsl(218,70%,28%)' : 'hsl(40,22%,95%)',
-                  color: sortMode === btn.mode ? 'hsl(42,30%,94%)' : 'hsl(222,30%,40%)',
+                  fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+                  letterSpacing: '0.10em', textTransform: 'uppercase',
+                  background: sortMode === btn.mode ? 'hsl(218,70%,28%)' : 'rgba(30,60,130,0.06)',
+                  color: sortMode === btn.mode ? 'hsl(42,30%,96%)' : 'hsl(220,18%,55%)',
                   border: sortMode === btn.mode ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.08)',
-                  borderRadius: '3px', padding: '6px 12px',
+                  borderRadius: '3px', padding: '5px 8px',
+                  display: 'flex', alignItems: 'center', gap: '3px',
                 }}
               >
-                {btn.label}
+                <btn.icon className="w-2.5 h-2.5" /> {btn.label}
               </motion.button>
             ))}
           </div>
