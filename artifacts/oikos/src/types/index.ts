@@ -1,3 +1,5 @@
+export type MemoryColor = "cobalt" | "teal" | "rose" | "navy";
+
 export interface Memory {
   id: string;
   title: string;
@@ -10,6 +12,7 @@ export interface Memory {
   tags?: string[];
   mood?: string;
   gallery?: string[];
+  memoryColor?: MemoryColor;
 }
 
 export type NoteType = "note" | "open-when" | "invite" | "pillar";

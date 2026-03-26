@@ -6,24 +6,16 @@ import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { MapPin, Plus, Sparkles, Pencil } from "lucide-react";
 import EditDeleteModal from "@/components/EditDeleteModal";
-import type { Memory } from "@/types";
+import type { Memory, MemoryColor } from "@/types";
 
-const TAG_COLORS: Record<string, { bg: string; color: string; lightBg: string; lightColor: string }> = {
-  trip: { bg: 'rgba(30,80,180,0.60)', color: 'rgba(200,215,255,0.92)', lightBg: 'rgba(30,80,180,0.10)', lightColor: 'rgb(30,80,180)' },
-  milestone: { bg: 'rgba(180,140,60,0.55)', color: 'rgba(255,250,220,0.92)', lightBg: 'rgba(180,140,60,0.12)', lightColor: 'rgb(180,140,60)' },
-  tender: { bg: 'rgba(160,60,80,0.45)', color: 'rgba(255,220,225,0.90)', lightBg: 'rgba(160,60,80,0.10)', lightColor: 'rgb(160,60,80)' },
-  funny: { bg: 'rgba(60,140,100,0.50)', color: 'rgba(210,255,230,0.92)', lightBg: 'rgba(60,140,100,0.10)', lightColor: 'rgb(60,140,100)' },
-  routine: { bg: 'rgba(100,80,160,0.50)', color: 'rgba(230,220,255,0.92)', lightBg: 'rgba(100,80,160,0.10)', lightColor: 'rgb(100,80,160)' },
+const MEMORY_COLOR_MAP: Record<string, { bg: string; gradient: string; border: string; label: string }> = {
+  cobalt:  { bg: 'hsl(218,70%,28%)', gradient: 'hsl(218,72%,32%)', border: 'rgba(15,45,115,0.40)', label: 'Everyday' },
+  teal:    { bg: 'hsl(168,45%,28%)', gradient: 'hsl(168,48%,32%)', border: 'rgba(10,80,65,0.40)', label: 'Adventure' },
+  rose:    { bg: 'hsl(338,45%,38%)', gradient: 'hsl(338,48%,42%)', border: 'rgba(130,25,55,0.40)', label: 'Romance' },
+  navy:    { bg: 'hsl(222,52%,18%)', gradient: 'hsl(222,55%,22%)', border: 'rgba(10,20,60,0.40)', label: 'Milestone' },
 };
 
-
-const MOOD_EMOJI: Record<string, string> = {
-  magical: '\u2728', nostalgic: '\uD83C\uDF19', adventurous: '\u26F0\uFE0F', euphoric: '\uD83C\uDF86', peaceful: '\uD83D\uDD4A\uFE0F',
-  joyful: '\u2600\uFE0F', tender: '\uD83D\uDC9B', grateful: '\uD83D\uDE4F', playful: '\uD83C\uDFAD', hopeful: '\uD83C\uDF31',
-};
-
-const TAG_OPTIONS = ["trip", "milestone", "tender", "funny", "routine"];
-const MOOD_OPTIONS = ["magical", "nostalgic", "adventurous", "euphoric", "peaceful", "grateful", "bittersweet"];
+const COLOR_OPTIONS: MemoryColor[] = ['cobalt', 'teal', 'rose', 'navy'];
 
 function parseDate(dateStr: string): Date {
   const d = new Date(dateStr);
@@ -63,8 +55,7 @@ export default function SaudadePage() {
       date: memory.date,
       location: memory.location,
       content: memory.content || '',
-      mood: memory.mood || '',
-      tags: (memory.tags || []).join(', '),
+      memoryColor: memory.memoryColor || 'cobalt',
     });
     setShowDeleteConfirm(false);
   };
@@ -76,8 +67,7 @@ export default function SaudadePage() {
       date: editValues.date,
       location: editValues.location,
       content: editValues.content,
-      mood: editValues.mood || undefined,
-      tags: editValues.tags ? editValues.tags.split(',').map(t => t.trim()).filter(Boolean) : [],
+      memoryColor: (editValues.memoryColor as MemoryColor) || 'cobalt',
     });
     setEditingMemory(null);
     reload();
@@ -178,12 +168,12 @@ export default function SaudadePage() {
 
               {group.items.map((memory, mi) => {
                 const idx = ++globalIdx;
-                const moodEmoji = memory.mood ? MOOD_EMOJI[memory.mood] || '\u2726' : '';
                 const isCustom = isCustomItem(memory.id);
+                const mc = MEMORY_COLOR_MAP[memory.memoryColor || 'cobalt'] || MEMORY_COLOR_MAP.cobalt;
 
                 return (
                   <motion.div key={memory.id} {...tile(idx)} className="relative mb-5">
-                    <div className="absolute" style={{ left: '-24px', top: '24px', width: '12px', height: '12px', borderRadius: '50%', background: 'hsl(42,28%,97%)', border: '2px solid rgba(30,60,130,0.25)', boxShadow: '0 1px 4px rgba(15,30,80,0.08)' }} />
+                    <div className="absolute" style={{ left: '-24px', top: '24px', width: '12px', height: '12px', borderRadius: '50%', background: mc.bg, border: `2px solid hsl(42,28%,97%)`, boxShadow: '0 1px 4px rgba(15,30,80,0.08)' }} />
 
                     <div className="absolute" style={{ left: '-28px', top: '42px' }}>
                       <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.08em', color: 'hsl(220,16%,62%)', textAlign: 'center', width: '20px', lineHeight: 1.2 }}>
@@ -203,20 +193,13 @@ export default function SaudadePage() {
                             <img src={memory.imageUrl} alt={memory.title} className="w-full h-full object-cover"
                               style={{ filter: 'saturate(0.80) brightness(0.88)' }} />
                             <div className="absolute inset-0" style={{
-                              background: 'linear-gradient(to top, rgba(12,25,72,0.78) 0%, rgba(18,38,96,0.20) 60%, transparent 100%)',
+                              background: `linear-gradient(to top, ${mc.bg}cc 0%, ${mc.bg}33 60%, transparent 100%)`,
                             }} />
 
                             <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1"
                               style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(12,25,72,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(180,200,255,0.18)', borderRadius: '2px', color: 'rgba(200,215,255,0.88)' }}>
                               <MapPin className="w-2.5 h-2.5" />{memory.location}
                             </div>
-
-                            {moodEmoji && (
-                              <div className="absolute top-2.5 left-2.5 w-6 h-6 flex items-center justify-center"
-                                style={{ background: 'rgba(12,25,72,0.40)', backdropFilter: 'blur(8px)', borderRadius: '3px', border: '1px solid rgba(180,200,255,0.15)', fontSize: '12px' }}>
-                                {moodEmoji}
-                              </div>
-                            )}
 
                             <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
                               <h3 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.15rem', letterSpacing: '0.01em', lineHeight: 1.2, color: 'rgba(240,238,232,0.96)', textShadow: '0 2px 10px rgba(0,0,30,0.50)' }}>
@@ -225,38 +208,23 @@ export default function SaudadePage() {
                             </div>
                           </div>
 
-                          <div className="px-4 py-3.5">
+                          <div className="relative px-4 py-3.5">
+                            <div className="absolute top-0 left-0 right-0" style={{ height: '3px', background: `linear-gradient(90deg, ${mc.bg}, ${mc.gradient})` }} />
                             <div className="flex items-center justify-between mb-2">
                               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'hsl(220,16%,62%)' }}>
                                 {memory.date}
                               </p>
-                              {memory.gallery && memory.gallery.length > 1 && (
-                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 600, color: 'hsl(218,50%,42%)' }}>
-                                  {memory.gallery.length} photos
-                                </p>
-                              )}
+                              <span style={{
+                                fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+                                letterSpacing: '0.10em', textTransform: 'uppercase',
+                                color: mc.bg, opacity: 0.70,
+                              }}>
+                                {mc.label}
+                              </span>
                             </div>
                             <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 400, lineHeight: 1.55, color: 'hsl(220,15%,45%)' }} className="line-clamp-2">
                               {memory.preview}
                             </p>
-
-                            {memory.tags && memory.tags.length > 0 && (
-                              <div className="flex gap-1.5 mt-3">
-                                {memory.tags.map(tag => {
-                                  const tc = TAG_COLORS[tag] || { lightBg: 'rgba(100,100,140,0.10)', lightColor: 'rgb(100,100,140)' };
-                                  return (
-                                    <span key={tag} style={{
-                                      fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
-                                      letterSpacing: '0.10em', textTransform: 'uppercase',
-                                      background: tc.lightBg, color: tc.lightColor,
-                                      borderRadius: '2px', padding: '2.5px 7px',
-                                    }}>
-                                      {tag}
-                                    </span>
-                                  );
-                                })}
-                              </div>
-                            )}
                           </div>
                         </motion.div>
                       </Link>
@@ -269,8 +237,8 @@ export default function SaudadePage() {
                           style={{
                             bottom: 12, right: 12,
                             width: 32, height: 32, borderRadius: '4px',
-                            background: 'hsl(218,70%,28%)',
-                            border: '1px solid rgba(15,45,115,0.42)',
+                            background: mc.bg,
+                            border: `1px solid ${mc.border}`,
                             boxShadow: '0 2px 8px rgba(12,25,72,0.22)',
                           }}
                         >
@@ -306,8 +274,7 @@ export default function SaudadePage() {
           { key: 'date', label: 'Date', type: 'text', placeholder: 'March 15, 2024' },
           { key: 'location', label: 'Location', type: 'text', placeholder: 'Lisbon, Portugal' },
           { key: 'content', label: 'Story', type: 'textarea', placeholder: 'The story...', rows: 4 },
-          { key: 'mood', label: 'Mood', type: 'select', options: MOOD_OPTIONS },
-          { key: 'tags', label: 'Tags (comma separated)', type: 'text', placeholder: 'trip, milestone' },
+          { key: 'memoryColor', label: 'Color', type: 'select', options: COLOR_OPTIONS },
         ]}
         values={editValues}
         onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}

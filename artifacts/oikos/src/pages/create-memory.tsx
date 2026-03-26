@@ -3,9 +3,14 @@ import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save, Camera, X } from "lucide-react";
+import type { MemoryColor } from "@/types";
 
-const TAG_OPTIONS = ["trip", "milestone", "tender", "funny", "routine"];
-const MOOD_OPTIONS = ["magical", "nostalgic", "adventurous", "euphoric", "peaceful", "grateful", "bittersweet"];
+const MEMORY_COLORS: { key: MemoryColor; label: string; bg: string; border: string }[] = [
+  { key: 'cobalt', label: 'Everyday', bg: 'hsl(218,70%,28%)', border: 'rgba(15,45,115,0.40)' },
+  { key: 'teal', label: 'Adventure', bg: 'hsl(168,45%,28%)', border: 'rgba(10,80,65,0.40)' },
+  { key: 'rose', label: 'Romance', bg: 'hsl(338,45%,38%)', border: 'rgba(130,25,55,0.40)' },
+  { key: 'navy', label: 'Milestone', bg: 'hsl(222,52%,18%)', border: 'rgba(10,20,60,0.40)' },
+];
 
 export default function CreateMemoryPage() {
   const [, setLocation] = useLocation();
@@ -14,15 +19,10 @@ export default function CreateMemoryPage() {
   const [location, setLocationVal] = useState("");
   const [content, setContent] = useState("");
   const [insideJokes, setInsideJokes] = useState("");
-  const [selectedTags, setSelectedTags] = useState<string[]>([]);
-  const [mood, setMood] = useState("");
+  const [memoryColor, setMemoryColor] = useState<MemoryColor>("cobalt");
   const [saved, setSaved] = useState(false);
   const [coverImage, setCoverImage] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  const toggleTag = (tag: string) => {
-    setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
-  };
 
   const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -51,8 +51,7 @@ export default function CreateMemoryPage() {
       content: content.trim(),
       insideJokes: insideJokes.split('\n').filter(j => j.trim()),
       imageUrl: coverImage || '',
-      tags: selectedTags,
-      mood: mood || undefined,
+      memoryColor,
     };
     try {
       const existing = JSON.parse(localStorage.getItem("oikos-custom-memories") || "[]");
@@ -181,39 +180,32 @@ export default function CreateMemoryPage() {
         </div>
 
         <div>
-          <label style={labelStyle}>Mood</label>
-          <div className="flex flex-wrap gap-2">
-            {MOOD_OPTIONS.map(m => (
-              <button key={m} onClick={() => setMood(mood === m ? '' : m)}
-                className="transition-all duration-200"
+          <label style={labelStyle}>Color</label>
+          <div className="grid grid-cols-4 gap-2">
+            {MEMORY_COLORS.map(c => (
+              <motion.button key={c.key} whileTap={{ scale: 0.93 }}
+                onClick={() => setMemoryColor(c.key)}
                 style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase',
-                  background: mood === m ? 'hsl(218,70%,28%)' : 'hsl(40,22%,95%)',
-                  color: mood === m ? 'hsl(42,30%,94%)' : 'hsl(222,30%,30%)',
-                  border: mood === m ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.06)',
-                  borderRadius: '3px', padding: '7px 14px',
+                  display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '6px',
+                  padding: '10px 4px', borderRadius: '4px',
+                  background: memoryColor === c.key ? c.bg : 'hsl(40,22%,95%)',
+                  border: memoryColor === c.key ? `1.5px solid ${c.border}` : '1.5px solid rgba(30,60,130,0.08)',
+                  boxShadow: memoryColor === c.key ? '0 2px 8px rgba(12,25,72,0.18)' : 'none',
+                }}
+              >
+                <div style={{
+                  width: 20, height: 20, borderRadius: '50%',
+                  background: c.bg,
+                  border: memoryColor === c.key ? '2px solid rgba(255,252,245,0.50)' : `2px solid ${c.border}`,
+                }} />
+                <span style={{
+                  fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+                  letterSpacing: '0.10em', textTransform: 'uppercase',
+                  color: memoryColor === c.key ? 'hsl(42,30%,94%)' : 'hsl(222,30%,40%)',
                 }}>
-                {m}
-              </button>
-            ))}
-          </div>
-        </div>
-
-        <div>
-          <label style={labelStyle}>Tags</label>
-          <div className="flex flex-wrap gap-2">
-            {TAG_OPTIONS.map(tag => (
-              <button key={tag} onClick={() => toggleTag(tag)}
-                className="transition-all duration-200"
-                style={{
-                  fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase',
-                  background: selectedTags.includes(tag) ? 'hsl(218,70%,28%)' : 'hsl(40,22%,95%)',
-                  color: selectedTags.includes(tag) ? 'hsl(42,30%,94%)' : 'hsl(222,30%,30%)',
-                  border: selectedTags.includes(tag) ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.06)',
-                  borderRadius: '3px', padding: '7px 14px',
-                }}>
-                {tag}
-              </button>
+                  {c.label}
+                </span>
+              </motion.button>
             ))}
           </div>
         </div>
