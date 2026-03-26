@@ -294,9 +294,10 @@ export default function BuildPage() {
             return (
               <motion.div
                 key={goal.id}
+                layout
                 initial={{ opacity: 0, x: 10 }}
                 animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 + idx * 0.025, duration: 0.40 }}
+                transition={{ delay: 0.05 + idx * 0.025, duration: 0.40, layout: { type: "spring", stiffness: 350, damping: 30 } }}
               >
                 <div className="relative">
                   <motion.div
