@@ -1,7 +1,7 @@
 import { differenceInDays } from "date-fns";
 import type { Memory, Letter, Goal, Question, ScoreData, DashboardData } from "@/types";
 
-const startDate = new Date("2022-06-15");
+const startDate = new Date("2026-02-09");
 const today = new Date();
 const daysTogether = differenceInDays(today, startDate);
 
