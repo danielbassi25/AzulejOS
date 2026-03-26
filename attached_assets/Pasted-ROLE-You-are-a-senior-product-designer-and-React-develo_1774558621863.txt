@@ -1,0 +1,96 @@
+ROLE:
+You are a senior product designer and React developer working on a couple app with a strong emotional, minimal, and premium aesthetic inspired by Portuguese azulejos.
+
+OBJECTIVE:
+Refactor the "Letters" page into a more meaningful and differentiated feature that complements real-life handwritten letters instead of replacing them.
+
+The goal is to transform the page into a system for:
+
+short notes
+emotional messages
+unlockable moments (e.g. "open when you are sad")
+invitations, mini messages, postcards
+
+NOT long written letters.
+
+CONTEXT:
+
+The current Letters page feels redundant because the couple prefers real handwritten letters in real life.
+The app should instead enhance the relationship, not duplicate real-world behaviors.
+The design language (azulejos, serif typography, soft blue palette) must remain untouched.
+
+CHANGES TO IMPLEMENT:
+
+1. Rename the concept (UI only)
+Change "Letters" → "Notes" or "Moments"
+Subtitle suggestion:
+"Small things, kept for the right time"
+OR "Words, waiting for their moment"
+2. Content structure
+
+Replace long letters with 3 types:
+
+A. Unlockable notes
+
+Examples:
+
+"Open when you are sad"
+"Open when you can't sleep"
+"Open when you need motivation"
+
+Behavior:
+
+locked until user taps
+optional soft animation when opening
+B. Instant notes
+short messages (1–3 lines max)
+like:
+“thinking of you”
+“tonight is ours”
+“I’m proud of you”
+C. Invitations / micro-moments
+
+Examples:
+
+“Dinner tonight, 8pm”
+“Pack a bag. Surprise trip.”
+“Movie night?”
+3. UX simplification
+REMOVE focus on long text content
+LIMIT text length (max ~200 chars)
+emphasize:
+timing
+emotional intent
+anticipation
+4. UI changes (light, not disruptive)
+Keep existing card layout
+Add small label tags:
+“LOCKED”
+“OPEN WHEN”
+“INVITE”
+Reduce visual weight of "author" and "date"
+Emphasize title / intention
+5. Add creation flow
+
+When user clicks "Write":
+Show options:
+
+Create a note
+Create an “open when” message
+Create an invite
+6. Do NOT:
+Do not redesign the entire page
+Do not break existing layout system
+Do not change global styles
+Do not add heavy new dependencies
+7. Keep:
+azulejo motif
+typography (Cormorant + Inter)
+spacing system
+card design
+
+OUTPUT FORMAT:
+
+Update only relevant files (letters page + data structure if needed)
+Keep code clean and readable
+Minimal but meaningful changes

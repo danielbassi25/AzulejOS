@@ -12,6 +12,8 @@ export interface Memory {
   gallery?: string[];
 }
 
+export type NoteType = "note" | "open-when" | "invite";
+
 export interface Letter {
   id: string;
   title: string;
@@ -22,6 +24,7 @@ export interface Letter {
   category?: string;
   content?: string;
   mood?: string;
+  noteType?: NoteType;
 }
 
 export interface Goal {

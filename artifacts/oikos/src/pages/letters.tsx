@@ -3,15 +3,26 @@ import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { getAllLetters, isCustomItem, deleteCustomLetter, updateCustomLetter } from "@/data/store";
 import { motion } from "framer-motion";
-import { LockKeyhole, MailOpen, PenLine, Pencil, Clock } from "lucide-react";
+import { LockKeyhole, MessageSquare, Sparkles, CalendarHeart, PenLine, Pencil, Clock } from "lucide-react";
 import { Link } from "wouter";
 import EditDeleteModal from "@/components/EditDeleteModal";
-import type { Letter } from "@/types";
+import type { Letter, NoteType } from "@/types";
 
 const sealPattern = `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.4' opacity='0.14'%3E%3Ccircle cx='10' cy='10' r='3.5'/%3E%3Cline x1='10' y1='0' x2='10' y2='6.5'/%3E%3Cline x1='10' y1='13.5' x2='10' y2='20'/%3E%3Cline x1='0' y1='10' x2='6.5' y2='10'/%3E%3Cline x1='13.5' y1='10' x2='20' y2='10'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const CATEGORY_OPTIONS = ["anniversary", "reassurance", "hard day", "future", "just because", "gratitude"];
-const MOOD_OPTIONS = ["hopeful", "grateful", "tender", "comforting", "celebratory", "playful"];
+
+function noteTypeLabel(t?: NoteType): string {
+  if (t === "open-when") return "Open When";
+  if (t === "invite") return "Invite";
+  return "Note";
+}
+
+function noteTypeIcon(t?: NoteType) {
+  if (t === "open-when") return Sparkles;
+  if (t === "invite") return CalendarHeart;
+  return MessageSquare;
+}
 
 export default function LettersPage() {
   const [letters, setLetters] = useState(() => getAllLetters());
@@ -22,9 +33,7 @@ export default function LettersPage() {
   const reload = useCallback(() => setLetters(getAllLetters()), []);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setLetters(getAllLetters());
-    }, 60000);
+    const interval = setInterval(() => { setLetters(getAllLetters()); }, 60000);
     return () => clearInterval(interval);
   }, []);
 
@@ -35,7 +44,6 @@ export default function LettersPage() {
       content: letter.content || '',
       author: letter.author || 'Daniel',
       category: letter.category || '',
-      mood: letter.mood || '',
     });
     setShowDeleteConfirm(false);
   };
@@ -47,7 +55,6 @@ export default function LettersPage() {
       content: editValues.content,
       author: editValues.author,
       category: editValues.category || undefined,
-      mood: editValues.mood || undefined,
     });
     setEditingLetter(null);
     reload();
@@ -60,17 +67,17 @@ export default function LettersPage() {
     reload();
   };
 
-  const openLetters = letters.filter(l => !l.isLocked);
-  const sealedLetters = letters.filter(l => l.isLocked);
+  const openNotes = letters.filter(l => !l.isLocked);
+  const sealedNotes = letters.filter(l => l.isLocked);
 
   return (
     <AppShell>
-      <SectionHeader title="Letters" subtitle="Words preserved in time"
+      <SectionHeader title="Notes" subtitle="Small things, kept for the right time"
         action={
           <Link href="/letters/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '3px', color: 'rgba(215,205,185,0.70)', padding: '6px 12px' }}>
-              <PenLine className="w-3 h-3" /> Write
+              <PenLine className="w-3 h-3" /> New
             </motion.div>
           </Link>
         }
@@ -80,14 +87,26 @@ export default function LettersPage() {
         <div className="flex items-center gap-3 mb-5">
           <div style={{ width: 20, height: 1, background: 'rgba(30,60,130,0.16)' }} />
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'hsl(220,18%,60%)' }}>
-            {openLetters.length} open · {sealedLetters.length} sealed
+            {openNotes.length} open · {sealedNotes.length} sealed
           </p>
           <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
         </div>
 
+        {letters.length === 0 && (
+          <div className="text-center py-16">
+            <MessageSquare className="w-8 h-8 mx-auto mb-4" style={{ color: 'rgba(30,60,130,0.15)' }} />
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '1.05rem', color: 'hsl(220,18%,58%)', lineHeight: 1.6 }}>
+              No notes yet.<br />Write something small that matters.
+            </p>
+          </div>
+        )}
+
         <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           {letters.map((letter, idx) => {
             const isCustom = isCustomItem(letter.id);
+            const TypeIcon = noteTypeIcon(letter.noteType);
+            const typeLabel = noteTypeLabel(letter.noteType);
+
             return (
               <motion.div
                 key={letter.id}
@@ -105,7 +124,7 @@ export default function LettersPage() {
                           backgroundImage: `${sealPattern}, linear-gradient(140deg, hsl(220,68%,24%) 0%, hsl(218,70%,28%) 100%)`,
                           backgroundSize: '20px 20px, 100% 100%',
                           border: '1px solid rgba(15,45,115,0.52)', borderRadius: '4px',
-                          boxShadow: '2px 4px 14px rgba(12,25,72,0.24)', padding: '20px 22px',
+                          boxShadow: '2px 4px 14px rgba(12,25,72,0.24)', padding: '18px 20px',
                         }}
                       >
                         <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
@@ -113,32 +132,36 @@ export default function LettersPage() {
                         <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
                         <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
 
-                        <div className="flex items-center gap-4 relative z-10">
-                          <div className="w-10 h-10 flex items-center justify-center shrink-0"
+                        <div className="flex items-start gap-2 mb-2 relative z-10">
+                          <span style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                            background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(180,200,255,0.16)',
+                            borderRadius: '2px', padding: '3px 8px', color: 'rgba(195,210,255,0.50)',
+                          }}>
+                            {typeLabel}
+                          </span>
+                          <span style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                            border: '1px solid rgba(180,200,255,0.12)',
+                            borderRadius: '2px', padding: '3px 8px', color: 'rgba(195,210,255,0.35)',
+                          }}>
+                            Sealed
+                          </span>
+                        </div>
+
+                        <div className="flex items-center gap-3 relative z-10">
+                          <div className="w-9 h-9 flex items-center justify-center shrink-0"
                             style={{ background: 'rgba(255,252,245,0.09)', border: '1px solid rgba(180,200,255,0.16)', borderRadius: '3px' }}>
-                            <LockKeyhole className="w-4 h-4" style={{ color: 'rgba(200,215,255,0.58)' }} />
+                            <LockKeyhole className="w-4 h-4" style={{ color: 'rgba(200,215,255,0.55)' }} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: '1.08rem', letterSpacing: '0.015em', color: 'rgba(222,210,192,0.76)' }}>
+                            <h3 className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.05rem', letterSpacing: '0.015em', color: 'rgba(222,210,192,0.80)' }}>
                               {letter.title}
                             </h3>
-                            <div className="flex items-center gap-2" style={{ marginTop: '5px' }}>
-                              <p className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(175,190,240,0.38)' }}>
-                                {letter.lockedUntil && <Clock className="w-2.5 h-2.5" />}
-                                Unlocks {letter.unlockDate}
-                              </p>
-                              {letter.category && (
-                                <>
-                                  <div style={{ width: 1, height: 8, background: 'rgba(180,200,255,0.15)' }} />
-                                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(175,190,240,0.30)' }}>
-                                    {letter.category}
-                                  </p>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="shrink-0" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', border: '1px solid rgba(180,200,255,0.18)', borderRadius: '2px', color: 'rgba(195,210,255,0.42)', padding: '5px 10px' }}>
-                            Sealed
+                            <p className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(175,190,240,0.35)', marginTop: '4px' }}>
+                              {letter.lockedUntil && <Clock className="w-2.5 h-2.5" />}
+                              Unlocks {letter.unlockDate}
+                            </p>
                           </div>
                         </div>
                       </div>
@@ -148,14 +171,9 @@ export default function LettersPage() {
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(letter); }}
                         whileTap={{ scale: 0.90 }}
                         className="absolute flex items-center justify-center z-10"
-                        style={{
-                          bottom: 8, right: 8,
-                          width: 30, height: 30, borderRadius: '4px',
-                          background: 'rgba(255,252,245,0.14)',
-                          border: '1px solid rgba(180,200,255,0.20)',
-                        }}
+                        style={{ bottom: 8, right: 8, width: 28, height: 28, borderRadius: '4px', background: 'rgba(255,252,245,0.12)', border: '1px solid rgba(180,200,255,0.18)' }}
                       >
-                        <Pencil className="w-3 h-3" style={{ color: 'rgba(200,215,255,0.70)' }} />
+                        <Pencil className="w-3 h-3" style={{ color: 'rgba(200,215,255,0.65)' }} />
                       </motion.button>
                     )}
                   </div>
@@ -167,35 +185,51 @@ export default function LettersPage() {
                         transition={{ type: "spring", stiffness: 380, damping: 30 }}
                         style={{
                           background: 'hsl(38, 30%, 99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px',
-                          boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 12px rgba(20,40,100,0.06)', padding: '20px 22px',
+                          boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 12px rgba(20,40,100,0.06)', padding: '18px 20px',
                         }}
                       >
-                        <div className="flex items-center gap-4">
-                          <div className="w-10 h-10 flex items-center justify-center shrink-0"
+                        <div className="flex items-start gap-2 mb-2">
+                          <span style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                            background: 'hsl(218,70%,28%)', borderRadius: '2px', padding: '3px 8px', color: 'hsl(42,30%,94%)',
+                          }}>
+                            {typeLabel}
+                          </span>
+                          {letter.category && (
+                            <span style={{
+                              fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase',
+                              border: '1px solid rgba(30,60,130,0.10)', borderRadius: '2px', padding: '3px 8px', color: 'hsl(220,18%,55%)',
+                            }}>
+                              {letter.category}
+                            </span>
+                          )}
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                          <div className="w-9 h-9 flex items-center justify-center shrink-0"
                             style={{ background: 'hsl(218,70%,28%)', borderRadius: '3px' }}>
-                            <MailOpen className="w-4 h-4" style={{ color: 'hsl(42,30%,96%)' }} />
+                            <TypeIcon className="w-4 h-4" style={{ color: 'hsl(42,30%,96%)' }} />
                           </div>
                           <div className="flex-1 min-w-0">
-                            <h3 className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.10rem', letterSpacing: '0.015em', color: 'hsl(222,45%,16%)' }}>
+                            <h3 className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.05rem', letterSpacing: '0.015em', color: 'hsl(222,45%,16%)' }}>
                               {letter.title}
                             </h3>
-                            <div className="flex items-center gap-2" style={{ marginTop: '5px' }}>
-                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'hsl(218,48%,42%)' }}>
-                                By {letter.author || 'Unknown'} · {letter.unlockDate}
+                            {letter.content && (
+                              <p className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.82rem', color: 'hsl(220,16%,52%)', marginTop: '3px' }}>
+                                {letter.content}
                               </p>
-                              {letter.category && (
-                                <>
-                                  <div style={{ width: 1, height: 8, background: 'rgba(30,60,130,0.12)' }} />
-                                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(220,18%,58%)' }}>
-                                    {letter.category}
-                                  </p>
-                                </>
-                              )}
-                            </div>
+                            )}
                           </div>
-                          <div className="shrink-0" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(218,70%,28%)', color: 'hsl(42,30%,96%)', borderRadius: '2px', padding: '5px 10px' }}>
-                            Read
-                          </div>
+                        </div>
+
+                        <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: '1px solid rgba(30,60,130,0.06)' }}>
+                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,62%)' }}>
+                            {letter.author}
+                          </span>
+                          <div style={{ width: 1, height: 8, background: 'rgba(30,60,130,0.10)' }} />
+                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,62%)' }}>
+                            {letter.unlockDate}
+                          </span>
                         </div>
                       </motion.div>
                     </Link>
@@ -204,13 +238,7 @@ export default function LettersPage() {
                         onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(letter); }}
                         whileTap={{ scale: 0.90 }}
                         className="absolute flex items-center justify-center z-10"
-                        style={{
-                          bottom: 8, right: 8,
-                          width: 30, height: 30, borderRadius: '4px',
-                          background: 'hsl(218,70%,28%)',
-                          border: '1px solid rgba(15,45,115,0.42)',
-                          boxShadow: '0 2px 6px rgba(12,25,72,0.18)',
-                        }}
+                        style={{ bottom: 8, right: 8, width: 28, height: 28, borderRadius: '4px', background: 'hsl(218,70%,28%)', border: '1px solid rgba(15,45,115,0.42)', boxShadow: '0 2px 6px rgba(12,25,72,0.18)' }}
                       >
                         <Pencil className="w-3 h-3" style={{ color: 'hsl(42,30%,94%)' }} />
                       </motion.button>
@@ -228,13 +256,12 @@ export default function LettersPage() {
         onClose={() => setEditingLetter(null)}
         onSave={handleSave}
         onDelete={() => setShowDeleteConfirm(true)}
-        title="Edit Letter"
+        title="Edit Note"
         fields={[
-          { key: 'title', label: 'Title', type: 'text', placeholder: 'Letter title' },
+          { key: 'title', label: 'Title', type: 'text', placeholder: 'Note title' },
           { key: 'author', label: 'From', type: 'select', options: ['Daniel', 'Sofia'] },
-          { key: 'content', label: 'Letter', type: 'textarea', placeholder: 'Your letter...', rows: 6 },
+          { key: 'content', label: 'Message', type: 'textarea', placeholder: 'Your message...', rows: 4 },
           { key: 'category', label: 'Category', type: 'select', options: CATEGORY_OPTIONS },
-          { key: 'mood', label: 'Mood', type: 'select', options: MOOD_OPTIONS },
         ]}
         values={editValues}
         onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
