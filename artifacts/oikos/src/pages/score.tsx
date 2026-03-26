@@ -70,7 +70,9 @@ function pushSnapshot(d: number, s: number) {
   saveSnapshotsLS(list);
 }
 
-const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.10'%3E%3Ccircle cx='30' cy='30' r='12' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='6' stroke-width='0.4'/%3E%3Cpath d='M30 0v18M30 42v18M0 30h18M42 30h60' stroke-width='0.4'/%3E%3Cpath d='M30 18l-12 12 12 12 12-12z' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`;
+const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.06'%3E%3Ccircle cx='40' cy='40' r='16' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='8' stroke-width='0.35'/%3E%3Cpath d='M40 24l-16 16 16 16 16-16z' stroke-width='0.4'/%3E%3Cpath d='M40 0v24M40 56v24M0 40h24M56 40h24' stroke-width='0.3'/%3E%3Ccircle cx='0' cy='0' r='6' stroke-width='0.3'/%3E%3Ccircle cx='80' cy='0' r='6' stroke-width='0.3'/%3E%3Ccircle cx='0' cy='80' r='6' stroke-width='0.3'/%3E%3Ccircle cx='80' cy='80' r='6' stroke-width='0.3'/%3E%3Cpath d='M20 20l-8 8M60 20l8 8M20 60l-8-8M60 60l8-8' stroke-width='0.3'/%3E%3C/g%3E%3C/svg%3E")`;
+
+const azulejoPatternLight = `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' opacity='0.035'%3E%3Ccircle cx='40' cy='40' r='16' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='8' stroke-width='0.35'/%3E%3Cpath d='M40 24l-16 16 16 16 16-16z' stroke-width='0.4'/%3E%3Cpath d='M40 0v24M40 56v24M0 40h24M56 40h24' stroke-width='0.3'/%3E%3Ccircle cx='0' cy='0' r='6' stroke-width='0.3'/%3E%3Ccircle cx='80' cy='0' r='6' stroke-width='0.3'/%3E%3Ccircle cx='0' cy='80' r='6' stroke-width='0.3'/%3E%3Ccircle cx='80' cy='80' r='6' stroke-width='0.3'/%3E%3Cpath d='M20 20l-8 8M60 20l8 8M20 60l-8-8M60 60l8-8' stroke-width='0.3'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const EASE = [0.22, 1, 0.36, 1];
 
@@ -387,25 +389,28 @@ export default function ScorePage() {
         {/* Palmares */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.04, ease: EASE }}
           className="grid grid-cols-2 gap-3">
-          {[{ name: 'Daniel', wins: danielWins, avatar: 'avatar-daniel.png', light: true }, { name: 'Sofia', wins: sofiaWins, avatar: 'avatar-sofia.png', light: false }].map(p => (
+          {[{ name: 'Daniel', wins: danielWins, avatar: 'avatar-daniel.png', dark: false }, { name: 'Sofia', wins: sofiaWins, avatar: 'avatar-sofia.png', dark: true }].map(p => (
             <div key={p.name} className="relative overflow-hidden px-4 py-5 flex flex-col items-center"
               style={{
-                background: p.light ? 'hsl(38,30%,99%)' : 'linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)',
-                backgroundImage: p.light ? 'none' : azulejoPattern,
-                backgroundSize: p.light ? 'auto' : '60px 60px',
-                border: p.light ? '1px solid rgba(30,60,130,0.08)' : '1px solid rgba(15,45,115,0.50)',
-                borderRadius: '4px', boxShadow: p.light ? '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)' : '3px 5px 18px rgba(12,25,72,0.26)',
+                backgroundColor: p.dark ? 'hsl(222,48%,18%)' : 'hsl(38,30%,99%)',
+                backgroundImage: p.dark ? `${azulejoPattern}, linear-gradient(155deg, hsl(222,48%,18%) 0%, hsl(220,52%,22%) 100%)` : azulejoPatternLight,
+                backgroundSize: p.dark ? '80px 80px, 100% 100%' : '80px 80px',
+                border: p.dark ? '1px solid rgba(40,65,140,0.35)' : '1px solid rgba(30,60,130,0.08)',
+                borderRadius: '4px',
+                boxShadow: p.dark ? '0 6px 20px rgba(10,18,50,0.30)' : '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)',
               }}>
-              {!p.light && <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: 50, background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)' }} />}
-              <div className="w-14 h-14 rounded-full overflow-hidden mb-3" style={{ border: p.light ? '2.5px solid hsl(218,68%,30%)' : '2.5px solid rgba(220,210,192,0.50)', boxShadow: p.light ? '0 3px 12px rgba(15,30,80,0.12)' : '0 3px 12px rgba(0,0,0,0.25)' }}>
+              <div className="w-16 h-16 rounded-full overflow-hidden mb-3" style={{
+                border: p.dark ? '3px solid rgba(255,215,0,0.30)' : '3px solid hsl(218,60%,32%)',
+                boxShadow: p.dark ? '0 4px 16px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,215,0,0.10)' : '0 4px 16px rgba(15,30,80,0.14)',
+              }}>
                 <img src={`${import.meta.env.BASE_URL}images/${p.avatar}`} alt={p.name} className="w-full h-full object-cover" />
               </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: p.light ? 'hsl(220,20%,54%)' : 'rgba(195,182,160,0.60)', marginBottom: '4px' }}>{p.name}</p>
-              <div className="flex items-center gap-1.5">
-                <Trophy className="w-4.5 h-4.5" style={{ color: '#FFD700' }} />
-                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2rem', letterSpacing: '-0.03em', color: p.light ? 'hsl(218,70%,28%)' : 'hsl(42,32%,96%)' }}>{p.wins}</span>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: p.dark ? 'rgba(210,200,180,0.70)' : 'hsl(220,20%,48%)', marginBottom: '6px' }}>{p.name}</p>
+              <div className="flex items-center gap-2">
+                <Trophy className="w-5 h-5" style={{ color: '#FFD700' }} />
+                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.2rem', letterSpacing: '-0.03em', color: p.dark ? 'hsl(42,32%,96%)' : 'hsl(218,70%,28%)' }}>{p.wins}</span>
               </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', letterSpacing: '0.12em', textTransform: 'uppercase', color: p.light ? 'hsl(220,16%,64%)' : 'rgba(175,162,142,0.42)', marginTop: '3px' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.12em', textTransform: 'uppercase', color: p.dark ? 'rgba(200,190,170,0.45)' : 'hsl(220,16%,60%)', marginTop: '4px' }}>
                 {p.wins === 1 ? 'trophy' : 'trophies'} won
               </p>
             </div>
@@ -417,7 +422,7 @@ export default function ScorePage() {
           className="grid grid-cols-2 gap-3">
           {/* Daniel */}
           <div className="p-5 flex flex-col items-center text-center"
-            style={{ backgroundColor: 'hsl(38,26%,97%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)', backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='12' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='6' stroke-width='0.4'/%3E%3Cpath d='M30 18l-12 12 12 12 12-12z' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`, backgroundSize: '60px 60px' }}>
+            style={{ backgroundColor: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)', backgroundImage: azulejoPatternLight, backgroundSize: '80px 80px' }}>
             <div className="relative" style={{ marginBottom: '8px' }}>
               {leader === 'Daniel' && (
                 <motion.div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFD700', borderRadius: '2px', boxShadow: '0 2px 6px rgba(180,130,0,0.35)', zIndex: 1 }}
@@ -426,14 +431,14 @@ export default function ScorePage() {
                 </motion.div>
               )}
             </div>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'hsl(220,20%,54%)', marginBottom: '4px' }}>Daniel</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'hsl(220,20%,48%)', marginBottom: '4px' }}>Daniel</p>
             <AnimatePresence mode="wait">
               <motion.p key={scores.daniel} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
                 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.6rem', letterSpacing: '-0.04em', lineHeight: 1, color: 'hsl(218,70%,28%)' }}>
                 {scores.daniel}
               </motion.p>
             </AnimatePresence>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(220,16%,64%)', marginTop: '4px', marginBottom: '8px' }}>points</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(220,16%,60%)', marginTop: '4px', marginBottom: '8px' }}>points</p>
             <div className="flex items-center gap-2">
               <motion.button onClick={() => addPoint('daniel', -1)} whileTap={{ scale: 0.88 }} className="flex items-center justify-center"
                 style={{ width: 34, height: 34, borderRadius: '4px', background: 'hsl(40,22%,93%)', border: '1px solid rgba(30,60,130,0.08)' }}>
@@ -447,8 +452,7 @@ export default function ScorePage() {
           </div>
           {/* Sofia */}
           <div className="relative overflow-hidden p-5 flex flex-col items-center text-center"
-            style={{ backgroundColor: 'hsl(220,70%,26%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)`, backgroundSize: '60px 60px, 100% 100%', border: '1px solid rgba(15,45,115,0.50)', borderRadius: '4px', boxShadow: '3px 5px 18px rgba(12,25,72,0.26)' }}>
-            <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: 50, background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)' }} />
+            style={{ backgroundColor: 'hsl(222,48%,18%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(222,48%,18%) 0%, hsl(220,52%,22%) 100%)`, backgroundSize: '80px 80px, 100% 100%', border: '1px solid rgba(40,65,140,0.35)', borderRadius: '4px', boxShadow: '0 6px 20px rgba(10,18,50,0.30)' }}>
             <div className="relative" style={{ marginBottom: '8px' }}>
               {leader === 'Sofia' && (
                 <motion.div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFD700', borderRadius: '2px', boxShadow: '0 2px 6px rgba(180,130,0,0.35)', zIndex: 1 }}
@@ -457,21 +461,21 @@ export default function ScorePage() {
                 </motion.div>
               )}
             </div>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(195,182,160,0.55)', marginBottom: '4px' }}>Sofia</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(210,200,180,0.65)', marginBottom: '4px' }}>Sofia</p>
             <AnimatePresence mode="wait">
               <motion.p key={scores.sofia} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.6rem', letterSpacing: '-0.04em', lineHeight: 1, color: 'hsl(42,32%,96%)' }}>
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.6rem', letterSpacing: '-0.04em', lineHeight: 1, color: 'hsl(42,36%,95%)' }}>
                 {scores.sofia}
               </motion.p>
             </AnimatePresence>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(175,162,142,0.38)', marginTop: '4px', marginBottom: '8px' }}>points</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(200,190,170,0.45)', marginTop: '4px', marginBottom: '8px' }}>points</p>
             <div className="flex items-center gap-2">
               <motion.button onClick={() => addPoint('sofia', -1)} whileTap={{ scale: 0.88 }} className="flex items-center justify-center"
-                style={{ width: 34, height: 34, borderRadius: '4px', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(180,200,255,0.16)' }}>
-                <Minus className="w-3.5 h-3.5" style={{ color: 'rgba(200,215,255,0.55)' }} />
+                style={{ width: 34, height: 34, borderRadius: '4px', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(180,200,255,0.18)' }}>
+                <Minus className="w-3.5 h-3.5" style={{ color: 'rgba(210,220,255,0.60)' }} />
               </motion.button>
               <motion.button onClick={() => addPoint('sofia', 1)} whileTap={{ scale: 0.88 }} className="flex items-center justify-center"
-                style={{ width: 34, height: 34, borderRadius: '4px', background: 'rgba(255,252,245,0.14)', border: '1px solid rgba(180,200,255,0.22)', boxShadow: '0 2px 8px rgba(10,20,60,0.18)' }}>
+                style={{ width: 34, height: 34, borderRadius: '4px', background: 'rgba(255,252,245,0.15)', border: '1px solid rgba(180,200,255,0.25)', boxShadow: '0 2px 8px rgba(10,20,60,0.22)' }}>
                 <Plus className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)' }} />
               </motion.button>
             </div>
@@ -487,60 +491,92 @@ export default function ScorePage() {
               <motion.div initial={{ width: 0 }} animate={{ width: `${danielPercent}%` }} transition={{ duration: 0.8, ease: [0.34, 1.1, 0.64, 1] }}
                 style={{ height: '100%', background: 'hsl(218,65%,38%)', borderRadius: '2px 0 0 2px' }} />
               <motion.div initial={{ width: 0 }} animate={{ width: `${sofiaPercent}%` }} transition={{ duration: 0.8, ease: [0.34, 1.1, 0.64, 1] }}
-                style={{ height: '100%', background: 'hsl(38,48%,64%)', borderRadius: '0 2px 2px 0' }} />
+                style={{ height: '100%', background: 'hsl(28,60%,55%)', borderRadius: '0 2px 2px 0' }} />
             </div>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(38,42%,48%)', minWidth: 30, textAlign: 'right' }}>{sofiaPercent.toFixed(0)}%</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(28,50%,45%)', minWidth: 30, textAlign: 'right' }}>{sofiaPercent.toFixed(0)}%</span>
           </div>
         )}
 
         {/* Score History Chart */}
-        {snapshots.length >= 1 && (
-          <div>
-            <SectionDivider label="Score Evolution" />
-            <div className="px-5 py-5" style={{ background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 3px 10px rgba(20,40,100,0.05)' }}>
-              <div className="flex items-center gap-4 mb-3">
-                <div className="flex items-center gap-1.5">
-                  <div style={{ width: 10, height: 3, borderRadius: '1px', background: 'hsl(218,65%,38%)' }} />
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, color: 'hsl(220,18%,54%)' }}>Daniel</span>
+        {snapshots.length >= 1 && (() => {
+          const chartMargin = { top: 16, right: 16, bottom: 32, left: 36 };
+          const chartW = 320;
+          const chartH = 180;
+          const plotW = chartW - chartMargin.left - chartMargin.right;
+          const plotH = chartH - chartMargin.top - chartMargin.bottom;
+          const yMax = Math.max(maxSnap, 1);
+          const yTicks = (() => {
+            if (yMax <= 5) return Array.from({ length: yMax + 1 }, (_, i) => i);
+            const step = Math.ceil(yMax / 4);
+            const ticks = [];
+            for (let v = 0; v <= yMax; v += step) ticks.push(v);
+            if (ticks[ticks.length - 1] < yMax) ticks.push(yMax);
+            return ticks;
+          })();
+          const toX = (i: number) => chartMargin.left + (snapshots.length === 1 ? plotW / 2 : (i / (snapshots.length - 1)) * plotW);
+          const toY = (v: number) => chartMargin.top + plotH - (v / yMax) * plotH;
+          return (
+            <div>
+              <SectionDivider label="Score Evolution" />
+              <div className="px-4 py-5" style={{ background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 3px 10px rgba(20,40,100,0.05)' }}>
+                <div className="flex items-center justify-end gap-4 mb-2">
+                  <div className="flex items-center gap-1.5">
+                    <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(218,65%,38%)' }} />
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Daniel</span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(28,60%,55%)' }} />
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Sofia</span>
+                  </div>
                 </div>
-                <div className="flex items-center gap-1.5">
-                  <div style={{ width: 10, height: 3, borderRadius: '1px', background: 'hsl(38,48%,58%)' }} />
-                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, color: 'hsl(220,18%,54%)' }}>Sofia</span>
-                </div>
-              </div>
-              <div style={{ position: 'relative', width: '100%', height: 120 }}>
-                <svg viewBox={`0 0 ${Math.max(36, (snapshots.length - 1) * 36)} 110`} className="w-full h-full" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
-                  {[0, 27.5, 55, 82.5, 110].map(y => (
-                    <line key={y} x1="0" y1={y} x2={Math.max(36, (snapshots.length - 1) * 36)} y2={y} stroke="rgba(30,60,130,0.06)" strokeWidth="0.5" />
+                <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full" style={{ overflow: 'visible' }}>
+                  {yTicks.map(v => (
+                    <g key={`yt-${v}`}>
+                      <line x1={chartMargin.left} y1={toY(v)} x2={chartMargin.left + plotW} y2={toY(v)} stroke="rgba(30,60,130,0.07)" strokeWidth="0.5" strokeDasharray={v === 0 ? 'none' : '3,3'} />
+                      <text x={chartMargin.left - 8} y={toY(v) + 3} textAnchor="end" style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, fill: 'hsl(220,14%,56%)' }}>{v}</text>
+                    </g>
                   ))}
+                  <line x1={chartMargin.left} y1={chartMargin.top} x2={chartMargin.left} y2={chartMargin.top + plotH} stroke="rgba(30,60,130,0.10)" strokeWidth="0.5" />
+                  <line x1={chartMargin.left} y1={chartMargin.top + plotH} x2={chartMargin.left + plotW} y2={chartMargin.top + plotH} stroke="rgba(30,60,130,0.10)" strokeWidth="0.5" />
+                  {snapshots.map((s, i) => (
+                    <text key={`xl-${i}`} x={toX(i)} y={chartMargin.top + plotH + 16} textAnchor="middle" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 500, fill: 'hsl(220,14%,56%)' }}>{s.date}</text>
+                  ))}
+                  <text x={12} y={chartMargin.top + plotH / 2} textAnchor="middle" transform={`rotate(-90, 12, ${chartMargin.top + plotH / 2})`} style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, fill: 'hsl(220,14%,52%)', letterSpacing: '0.06em', textTransform: 'uppercase' } as React.CSSProperties}>points</text>
                   {snapshots.length > 1 && (
                     <>
-                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        points={snapshots.map((s, i) => `${i * 36},${110 - (s.daniel / maxSnap) * 100}`).join(' ')}
+                      <defs>
+                        <linearGradient id="danielFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(218,65%,38%)" stopOpacity="0.12" />
+                          <stop offset="100%" stopColor="hsl(218,65%,38%)" stopOpacity="0" />
+                        </linearGradient>
+                        <linearGradient id="sofiaFill" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="0%" stopColor="hsl(28,60%,55%)" stopOpacity="0.10" />
+                          <stop offset="100%" stopColor="hsl(28,60%,55%)" stopOpacity="0" />
+                        </linearGradient>
+                      </defs>
+                      <path d={`M${toX(0)},${toY(snapshots[0].daniel)} ${snapshots.map((s, i) => `L${toX(i)},${toY(s.daniel)}`).join(' ')} L${toX(snapshots.length - 1)},${toY(0)} L${toX(0)},${toY(0)} Z`} fill="url(#danielFill)" />
+                      <path d={`M${toX(0)},${toY(snapshots[0].sofia)} ${snapshots.map((s, i) => `L${toX(i)},${toY(s.sofia)}`).join(' ')} L${toX(snapshots.length - 1)},${toY(0)} L${toX(0)},${toY(0)} Z`} fill="url(#sofiaFill)" />
+                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
+                        points={snapshots.map((s, i) => `${toX(i)},${toY(s.daniel)}`).join(' ')}
                         fill="none" stroke="hsl(218,65%,38%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                        points={snapshots.map((s, i) => `${i * 36},${110 - (s.sofia / maxSnap) * 100}`).join(' ')}
-                        fill="none" stroke="hsl(38,48%,58%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        points={snapshots.map((s, i) => `${toX(i)},${toY(s.sofia)}`).join(' ')}
+                        fill="none" stroke="hsl(28,60%,55%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </>
                   )}
                   {snapshots.map((s, i) => (
-                    <motion.circle key={`d-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 + i * 0.05 }}
-                      cx={snapshots.length === 1 ? 18 : i * 36} cy={110 - (s.daniel / maxSnap) * 100} r="4" fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                    <motion.circle key={`d-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 + i * 0.04 }}
+                      cx={toX(i)} cy={toY(s.daniel)} r="4" fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                   {snapshots.map((s, i) => (
-                    <motion.circle key={`s-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + i * 0.05 }}
-                      cx={snapshots.length === 1 ? 18 : i * 36} cy={110 - (s.sofia / maxSnap) * 100} r="4" fill="hsl(38,48%,58%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                    <motion.circle key={`s-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 + i * 0.04 }}
+                      cx={toX(i)} cy={toY(s.sofia)} r="4" fill="hsl(28,60%,55%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                 </svg>
-                <div className="flex justify-between" style={{ marginTop: '6px' }}>
-                  {snapshots.map((s, i) => (
-                    <span key={i} style={{ fontFamily: 'Inter, sans-serif', fontSize: '6.5px', fontWeight: 500, color: 'hsl(220,14%,62%)', width: 36, textAlign: 'center' }}>{s.date}</span>
-                  ))}
-                </div>
               </div>
             </div>
-          </div>
-        )}
+          );
+        })()}
 
         {/* Season History (collapsible) */}
         <AnimatePresence>
