@@ -2,8 +2,8 @@ import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockDashboard } from "@/data/mock";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Sun, Moon, CloudSun, MapPin, Calendar, Clock, Pencil, X, Check } from "lucide-react";
-import { useState, useMemo, useEffect, useCallback } from "react";
+import { Sparkles, Sun, Moon, CloudSun, MapPin, Calendar, Pencil, X, Check } from "lucide-react";
+import { useState, useEffect, useCallback } from "react";
 import { differenceInDays, differenceInHours, differenceInMinutes, format } from "date-fns";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
@@ -15,6 +15,8 @@ const tile = (i: number) => ({
 });
 
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.13'%3E%3Ccircle cx='16' cy='16' r='5'/%3E%3Cline x1='16' y1='0' x2='16' y2='11'/%3E%3Cline x1='16' y1='21' x2='16' y2='32'/%3E%3Cline x1='0' y1='16' x2='11' y2='16'/%3E%3Cline x1='21' y1='16' x2='32' y2='16'/%3E%3Cline x1='3' y1='3' x2='10' y2='10'/%3E%3Cline x1='22' y1='22' x2='29' y2='29'/%3E%3Cline x1='29' y1='3' x2='22' y2='10'/%3E%3Cline x1='10' y1='22' x2='3' y2='29'/%3E%3C/g%3E%3C/svg%3E")`;
+
+const azulejoLight = `url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' stroke-width='0.5' opacity='0.035'%3E%3Ccircle cx='16' cy='16' r='5'/%3E%3Cline x1='16' y1='0' x2='16' y2='11'/%3E%3Cline x1='16' y1='21' x2='16' y2='32'/%3E%3Cline x1='0' y1='16' x2='11' y2='16'/%3E%3Cline x1='21' y1='16' x2='32' y2='16'/%3E%3Cline x1='3' y1='3' x2='10' y2='10'/%3E%3Cline x1='22' y1='22' x2='29' y2='29'/%3E%3Cline x1='29' y1='3' x2='22' y2='10'/%3E%3Cline x1='10' y1='22' x2='3' y2='29'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const bgPattern = `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' stroke-width='0.35' opacity='0.045'%3E%3Ccircle cx='20' cy='20' r='7'/%3E%3Cline x1='20' y1='0' x2='20' y2='13'/%3E%3Cline x1='20' y1='27' x2='20' y2='40'/%3E%3Cline x1='0' y1='20' x2='13' y2='20'/%3E%3Cline x1='27' y1='20' x2='40' y2='20'/%3E%3Cline x1='4' y1='4' x2='12' y2='12'/%3E%3Cline x1='28' y1='28' x2='36' y2='36'/%3E%3Cline x1='36' y1='4' x2='28' y2='12'/%3E%3Cline x1='12' y1='28' x2='4' y2='36'/%3E%3C/g%3E%3C/svg%3E")`;
 
@@ -61,6 +63,32 @@ function useCountdown(targetDate: string) {
   return { days, hours: Math.max(0, hours), minutes: Math.max(0, minutes), passed: false };
 }
 
+function CountdownUnit({ value, label, large }: { value: number; label: string; large?: boolean }) {
+  return (
+    <div className="text-center">
+      <span style={{
+        fontFamily: "'Cormorant Garamond', Georgia, serif",
+        fontWeight: 700,
+        fontSize: large ? '3.2rem' : '2rem',
+        lineHeight: 0.9,
+        color: 'hsl(42,32%,97%)',
+        textShadow: '0 3px 16px rgba(10,25,70,0.30)',
+      }}>
+        {value}
+      </span>
+      <p style={{
+        fontFamily: 'Inter, sans-serif',
+        fontSize: '7px',
+        fontWeight: 600,
+        letterSpacing: '0.16em',
+        textTransform: 'uppercase' as const,
+        color: 'rgba(200,185,160,0.40)',
+        marginTop: '4px',
+      }}>{label}</p>
+    </div>
+  );
+}
+
 export default function DashboardPage() {
   const data = mockDashboard;
   const greeting = getGreeting();
@@ -99,28 +127,44 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <SectionHeader
-        title="Dashboard"
-        action={
-          <motion.div
-            className="flex items-center gap-2 px-3 py-1.5"
-            style={{ background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '2px' }}
-            animate={{ opacity: [1, 0.5, 1] }}
-            transition={{ duration: 3.2, repeat: Infinity }}
-          >
-            <motion.span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shrink-0"
-              animate={{ scale: [1, 1.5, 1] }} transition={{ duration: 2.4, repeat: Infinity }} />
-            <span style={{ fontSize: '9px', fontFamily: 'Inter, sans-serif', fontWeight: 600, letterSpacing: '0.14em', color: 'rgba(215,205,185,0.72)', textTransform: 'uppercase' }}>Online</span>
-          </motion.div>
-        }
-      />
+      <SectionHeader title="Dashboard" />
 
       <div style={{ backgroundImage: bgPattern, backgroundSize: '40px 40px', minHeight: '100%' }}>
         <div className="px-4 pt-4 pb-10" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
 
-          {/* ═══ COMPACT TOP: Greeting + Days Counter side by side ═══ */}
+          {/* ═══ GREETING — white card ═══ */}
           <motion.div
             {...tile(0)}
+            className="flex items-center gap-4 px-5 py-4"
+            style={{
+              backgroundColor: 'hsl(38,30%,99%)',
+              backgroundImage: azulejoLight,
+              backgroundSize: '32px 32px',
+              border: '1px solid rgba(30,60,130,0.08)',
+              borderRadius: '4px',
+              boxShadow: '0 1px 0 rgba(255,255,255,0.9) inset, 2px 4px 14px rgba(20,40,100,0.06)',
+            }}
+          >
+            <div className="w-11 h-11 rounded-full overflow-hidden shrink-0"
+              style={{ border: '2px solid hsl(218,68%,30%)', boxShadow: '0 2px 10px rgba(20,40,100,0.18)' }}>
+              <img src={`${import.meta.env.BASE_URL}images/avatar-sofia.png`} alt="Sofia" className="w-full h-full object-cover" />
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="flex items-center gap-1.5">
+                <GreetingIcon className="w-3 h-3" style={{ color: 'hsl(40,55%,52%)' }} />
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'hsl(220,18%,58%)' }}>
+                  {greeting.text}
+                </p>
+              </div>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.6rem', letterSpacing: '0.02em', lineHeight: 1.15, color: 'hsl(222,45%,16%)', marginTop: '2px' }}>
+                Sofia.
+              </p>
+            </div>
+          </motion.div>
+
+          {/* ═══ DAYS TOGETHER — cobalt card ═══ */}
+          <motion.div
+            {...tile(1)}
             className="relative overflow-hidden"
             style={{
               backgroundColor: 'hsl(220,70%,26%)',
@@ -128,7 +172,7 @@ export default function DashboardPage() {
               backgroundSize: '32px 32px, 100% 100%',
               border: '1px solid rgba(15,45,115,0.50)', borderRadius: '4px',
               boxShadow: '0 10px 36px rgba(15,30,80,0.28), 0 1px 0 rgba(255,255,255,0.08) inset',
-              padding: '20px 22px 18px',
+              padding: '22px 24px 20px',
             }}
           >
             <div className="absolute top-0 left-1/2 -translate-x-1/2 pointer-events-none"
@@ -138,48 +182,27 @@ export default function DashboardPage() {
             <div className="absolute bottom-0 left-0 w-8 h-8 border-t border-r" style={{ borderColor: 'rgba(180,200,255,0.08)' }} />
             <div className="absolute bottom-0 right-0 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.08)' }} />
 
-            <div className="relative z-10 flex items-center gap-4">
-              <div className="w-11 h-11 rounded-full overflow-hidden shrink-0"
-                style={{ border: '2px solid rgba(200,190,170,0.25)', boxShadow: '0 2px 10px rgba(0,0,0,0.3)' }}>
-                <img src={`${import.meta.env.BASE_URL}images/avatar-sofia.png`} alt="Sofia" className="w-full h-full object-cover" />
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <GreetingIcon className="w-2.5 h-2.5" style={{ color: 'rgba(200,185,160,0.50)' }} />
-                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.45)' }}>
-                    {greeting.text}
-                  </p>
-                </div>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.55rem', letterSpacing: '0.02em', lineHeight: 1.15, color: 'hsl(42, 32%, 97%)', marginTop: '1px' }}>
-                  Sofia.
-                </p>
-              </div>
+            <p className="relative z-10 text-center" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.35)', marginBottom: '14px' }}>
+              ✦ &nbsp;Time Together&nbsp; ✦
+            </p>
+
+            <div className="relative z-10 flex items-end justify-center gap-4">
+              <CountdownUnit value={years} label="years" />
+              <div style={{ width: 1, height: 36, background: 'rgba(200,185,160,0.15)', marginBottom: 6 }} />
+              <CountdownUnit value={months} label="months" large />
+              <div style={{ width: 1, height: 36, background: 'rgba(200,185,160,0.15)', marginBottom: 6 }} />
+              <CountdownUnit value={remainDays} label="days" />
             </div>
 
-            <div className="relative z-10 mx-auto" style={{ width: '100%', height: 1, background: 'rgba(200,185,160,0.12)', marginTop: '16px', marginBottom: '14px' }} />
-
-            <div className="relative z-10 flex items-end justify-between">
-              <div>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.35)', marginBottom: '6px' }}>
-                  ✦ &nbsp;Time Together&nbsp; ✦
-                </p>
-                <div className="flex items-baseline" style={{ gap: '6px' }}>
-                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '4.2rem', letterSpacing: '-0.04em', lineHeight: 0.88, color: 'hsl(42, 32%, 97%)', textShadow: '0 3px 20px rgba(10,25,70,0.35)' }}>
-                    {data.daysTogether}
-                  </span>
-                  <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.1rem', color: 'rgba(200,188,165,0.38)' }}>days</span>
-                </div>
-              </div>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.7rem', letterSpacing: '0.03em', color: 'rgba(195,182,160,0.28)', paddingBottom: '4px', textAlign: 'right', maxWidth: '45%' }}>
-                {years > 0 && `${years}y`}{years > 0 && months > 0 && ' '}{months > 0 && `${months}m`}{(years > 0 || months > 0) && remainDays > 0 && ' '}{remainDays > 0 && `${remainDays}d`}
-                <br />Daniel & Sofia
-              </p>
-            </div>
+            <div className="relative z-10 mx-auto" style={{ width: 36, height: 1, background: 'rgba(200,185,160,0.15)', marginTop: '16px', marginBottom: '10px' }} />
+            <p className="relative z-10 text-center" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.72rem', letterSpacing: '0.03em', color: 'rgba(195,182,160,0.30)' }}>
+              {data.daysTogether} days — Daniel & Sofia
+            </p>
           </motion.div>
 
-          {/* ═══ QUOTE — compact ═══ */}
+          {/* ═══ QUOTE ═══ */}
           <motion.div
-            {...tile(1)}
+            {...tile(2)}
             className="relative overflow-hidden"
             style={{
               backgroundColor: 'hsl(222,42%,13%)',
@@ -193,7 +216,7 @@ export default function DashboardPage() {
               <Sparkles className="w-6 h-6" style={{ color: 'hsl(42,50%,80%)' }} />
             </div>
             <div className="flex gap-2">
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '1.8rem', color: 'rgba(200,185,160,0.10)', lineHeight: 1, shrink: 0 }}>"</div>
+              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '1.8rem', color: 'rgba(200,185,160,0.10)', lineHeight: 1 }}>"</div>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.95rem', letterSpacing: '0.01em', lineHeight: 1.65, color: 'rgba(222,212,194,0.82)', position: 'relative', zIndex: 1, paddingTop: '4px' }}>
                 {data.randomPhrase}
               </p>
@@ -315,7 +338,7 @@ export default function DashboardPage() {
             ) : hasMeeting ? (
               <motion.div
                 key="meeting"
-                {...tile(2)}
+                {...tile(3)}
                 className="relative overflow-hidden cursor-pointer"
                 onClick={startEdit}
                 style={{
@@ -332,27 +355,12 @@ export default function DashboardPage() {
                 </div>
 
                 {countdown && !countdown.passed && (
-                  <div className="relative z-10 flex items-end justify-center gap-3 mb-3">
-                    <div className="text-center">
-                      <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '3rem', lineHeight: 0.9, color: 'hsl(42,32%,97%)', textShadow: '0 3px 16px rgba(10,25,70,0.30)' }}>
-                        {countdown.days}
-                      </span>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.40)', marginTop: '4px' }}>days</p>
-                    </div>
-                    <div style={{ width: 1, height: 32, background: 'rgba(200,185,160,0.15)', marginBottom: 8 }} />
-                    <div className="text-center">
-                      <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2rem', lineHeight: 0.9, color: 'rgba(240,235,225,0.80)' }}>
-                        {countdown.hours}
-                      </span>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.40)', marginTop: '4px' }}>hrs</p>
-                    </div>
-                    <div style={{ width: 1, height: 32, background: 'rgba(200,185,160,0.15)', marginBottom: 8 }} />
-                    <div className="text-center">
-                      <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2rem', lineHeight: 0.9, color: 'rgba(240,235,225,0.80)' }}>
-                        {countdown.minutes}
-                      </span>
-                      <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.40)', marginTop: '4px' }}>min</p>
-                    </div>
+                  <div className="relative z-10 flex items-end justify-center gap-4 mb-4">
+                    <CountdownUnit value={countdown.days} label="days" large />
+                    <div style={{ width: 1, height: 36, background: 'rgba(200,185,160,0.15)', marginBottom: 6 }} />
+                    <CountdownUnit value={countdown.hours} label="hours" />
+                    <div style={{ width: 1, height: 36, background: 'rgba(200,185,160,0.15)', marginBottom: 6 }} />
+                    <CountdownUnit value={countdown.minutes} label="min" />
                   </div>
                 )}
 
@@ -393,7 +401,7 @@ export default function DashboardPage() {
             ) : (
               <motion.div
                 key="empty"
-                {...tile(2)}
+                {...tile(3)}
                 className="cursor-pointer"
                 onClick={startEdit}
                 style={{
