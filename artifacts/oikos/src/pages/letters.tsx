@@ -87,6 +87,7 @@ export default function LettersPage() {
   const [quickDeleteId, setQuickDeleteId] = useState<string | null>(null);
   const [sortMode, setSortMode] = useState<SortMode>("date");
   const [shuffleSeed, setShuffleSeed] = useState(() => Date.now());
+  const [filterType, setFilterType] = useState<string>("all");
 
   const reload = useCallback(() => setLetters(getAllLetters()), []);
 
@@ -95,7 +96,12 @@ export default function LettersPage() {
     return () => clearInterval(interval);
   }, []);
 
-  const sortedLetters = useMemo(() => sortLetters(letters, sortMode, shuffleSeed), [letters, sortMode, shuffleSeed]);
+  const filteredLetters = useMemo(() => {
+    if (filterType === 'all') return letters;
+    return letters.filter(l => (l.noteType || 'note') === filterType);
+  }, [letters, filterType]);
+
+  const sortedLetters = useMemo(() => sortLetters(filteredLetters, sortMode, shuffleSeed), [filteredLetters, sortMode, shuffleSeed]);
 
   const handleShuffle = () => {
     setShuffleSeed(Date.now());
@@ -163,22 +169,50 @@ export default function LettersPage() {
         <div className="flex items-center justify-center gap-3 mb-4">
           <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'hsl(220,18%,60%)' }}>
-            {letters.length} {letters.length === 1 ? 'tile' : 'tiles'}
+            {filterType !== 'all' ? `${sortedLetters.length} of ${letters.length}` : letters.length} {letters.length === 1 ? 'tile' : 'tiles'}
           </p>
           <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
         </div>
 
         {letters.length > 1 && (
-          <div className="flex items-center justify-center gap-2 mb-5">
-            <motion.button whileTap={{ scale: 0.93 }} onClick={handleShuffle} style={sortBtnStyle(sortMode === 'shuffle')}>
-              <Shuffle className="w-2.5 h-2.5" /> Shuffle
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.93 }} onClick={() => setSortMode('date')} style={sortBtnStyle(sortMode === 'date')}>
-              <ArrowDownUp className="w-2.5 h-2.5" /> Date
-            </motion.button>
-            <motion.button whileTap={{ scale: 0.93 }} onClick={() => setSortMode('type')} style={sortBtnStyle(sortMode === 'type')}>
-              <Layers className="w-2.5 h-2.5" /> Type
-            </motion.button>
+          <div className="flex flex-col gap-2 mb-5">
+            <div className="flex items-center justify-center gap-2">
+              <motion.button whileTap={{ scale: 0.93 }} onClick={handleShuffle} style={sortBtnStyle(sortMode === 'shuffle')}>
+                <Shuffle className="w-2.5 h-2.5" /> Shuffle
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.93 }} onClick={() => setSortMode('date')} style={sortBtnStyle(sortMode === 'date')}>
+                <ArrowDownUp className="w-2.5 h-2.5" /> Date
+              </motion.button>
+              <motion.button whileTap={{ scale: 0.93 }} onClick={() => setSortMode('type')} style={sortBtnStyle(sortMode === 'type')}>
+                <Layers className="w-2.5 h-2.5" /> Type
+              </motion.button>
+            </div>
+            <div className="flex items-center justify-center gap-1.5">
+              {([
+                { key: 'all', label: 'All' },
+                { key: 'note', label: 'Note' },
+                { key: 'open-when', label: 'Open When' },
+                { key: 'invite', label: 'Invite' },
+                { key: 'pillar', label: 'Pillar' },
+              ] as const).map(f => {
+                const count = f.key === 'all' ? letters.length : letters.filter(l => (l.noteType || 'note') === f.key).length;
+                return (
+                  <motion.button key={f.key} whileTap={{ scale: 0.93 }}
+                    onClick={() => setFilterType(f.key)}
+                    style={{
+                      fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+                      letterSpacing: '0.10em', textTransform: 'uppercase',
+                      background: filterType === f.key ? 'hsl(218,70%,28%)' : 'rgba(30,60,130,0.06)',
+                      color: filterType === f.key ? 'hsl(42,30%,96%)' : 'hsl(220,18%,55%)',
+                      border: filterType === f.key ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.08)',
+                      borderRadius: '3px', padding: '5px 7px',
+                    }}
+                  >
+                    {f.label} ({count})
+                  </motion.button>
+                );
+              })}
+            </div>
           </div>
         )}
 
