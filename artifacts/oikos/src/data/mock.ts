@@ -109,86 +109,11 @@ export const mockMemories: Memory[] = [
 ];
 
 export const mockLetters: Letter[] = [
-  {
-    id: "let-1",
-    title: "Letter No. 1 — Hello, Us",
-    unlockDate: "Jan 1, 2024",
-    isLocked: false,
-    author: "Daniel",
-    category: "anniversary",
-    mood: "hopeful",
-    content: "Dear Sofia,\n\nI'm writing this on a Tuesday evening. You're asleep on the couch with your book half-open on your chest, and I keep looking at you thinking about how strange and wonderful it is that this is my life now.\n\nI don't know exactly when it happened — when you went from being someone I wanted to know to someone I couldn't imagine not knowing. But it happened, and I'm grateful every single day.\n\nThis is the first of many letters I'll write you. Some will be for celebrations, some for hard days, some just because. I want you to always have proof that you were loved — not in some abstract, poetic way, but in the specific, daily, stubborn way that real love works.\n\nYou are my favorite person. It's that simple.\n\nWith all of me,\nDaniel",
-  },
-  {
-    id: "let-2",
-    title: "Letter No. 2 — Six Months",
-    unlockDate: "Jul 1, 2024",
-    isLocked: false,
-    author: "Sofia",
-    category: "anniversary",
-    mood: "grateful",
-    content: "My Daniel,\n\nSix months. It feels like both forever and a breath at the same time.\n\nI want you to know that the things I love most about us aren't the trips or the grand gestures (though those are beautiful too). It's the mornings. The way you make coffee without asking. The way you always leave the good pillow for me. The way you listen — really listen — when I talk about something that matters to me.\n\nYou make ordinary life feel extraordinary. That's not a small thing. That's everything.\n\nI'm building something with you. I don't know exactly what it looks like yet, but I know it's real, and I know it's good.\n\nSempre,\nSofia",
-  },
-  {
-    id: "let-3",
-    title: "Letter No. 3 — The Small Things",
-    unlockDate: "Oct 15, 2024",
-    isLocked: false,
-    author: "Daniel",
-    category: "reassurance",
-    mood: "tender",
-    content: "Sofia,\n\nI've been thinking about the small things. The ones that don't make it into photo albums or stories we tell friends, but that make up the actual texture of us.\n\nLike how you always hum in the kitchen. How you touch my shoulder when you walk past me. The way you say 'tell me everything' when I come home. How you fold my sweaters differently than your own — gentler, somehow.\n\nI notice these things. I hold onto them. They're the proof of something bigger than any grand declaration could capture.\n\nYou are loved in the details.\n\nAlways,\nDaniel",
-  },
-  {
-    id: "let-4",
-    title: "Letter No. 4 — One Year",
-    unlockDate: "Jan 1, 2025",
-    isLocked: true,
-    author: "Sofia",
-    category: "anniversary",
-    mood: "celebratory",
-    content: "To be revealed when unlocked...",
-  },
-  {
-    id: "let-5",
-    title: "Letter No. 5 — To the Future",
-    unlockDate: "Jan 1, 2026",
-    isLocked: true,
-    author: "Daniel",
-    category: "future",
-    mood: "hopeful",
-    content: "To be revealed when unlocked...",
-  },
-  {
-    id: "let-6",
-    title: "Letter No. 6 — For a Hard Day",
-    unlockDate: "Anytime",
-    isLocked: false,
-    author: "Sofia",
-    category: "hard day",
-    mood: "comforting",
-    content: "Daniel,\n\nIf you're reading this, something is heavy today. I may or may not know about it yet — but either way, I want you to hear this:\n\nYou are doing better than you think. You carry more than you show, and I see that. I see you.\n\nWhatever it is — a bad day at work, a worry you can't shake, a feeling you can't name — you don't have to fix it alone. Come sit with me. We'll figure it out, or we won't, and either way I'll be right here.\n\nYou are not a burden. You are my person.\n\nI love you on the easy days and the hard ones.\n\nYours,\nSofia",
-  },
+ 
 ];
 
 export const mockGoals: Goal[] = [
-  { id: "goal-1", text: "Take a pottery class together", completed: true, category: "Activities" },
-  { id: "goal-2", text: "Go to a fado concert", completed: false, category: "Activities" },
-  { id: "goal-3", text: "Learn to surf in Ericeira", completed: false, category: "Activities" },
-  { id: "goal-4", text: "Take a cooking class in Bologna", completed: false, category: "Activities" },
-  { id: "goal-5", text: "Weekend in Seville", completed: false, category: "Travel" },
-  { id: "goal-6", text: "Spend a week in the Azores", completed: false, category: "Travel" },
-  { id: "goal-7", text: "Visit Douro Valley wine country", completed: true, category: "Travel" },
-  { id: "goal-8", text: "Hike Rota Vicentina (3-day section)", completed: false, category: "Travel" },
-  { id: "goal-9", text: "Road trip through Tuscany", completed: false, category: "Travel" },
-  { id: "goal-10", text: "Watch every Almodóvar film", completed: false, category: "Movies" },
-  { id: "goal-11", text: "Cinema Paradiso on a rainy Sunday", completed: true, category: "Movies" },
-  { id: "goal-12", text: "Marathon all Studio Ghibli films", completed: false, category: "Movies" },
-  { id: "goal-13", text: "Watch the Before trilogy back to back", completed: true, category: "Movies" },
-  { id: "goal-14", text: "Find our 'regular' restaurant in Lisbon", completed: false, category: "Food" },
-  { id: "goal-15", text: "Cook a proper Sunday roast together", completed: true, category: "Food" },
-  { id: "goal-16", text: "Make fresh pasta from scratch", completed: false, category: "Food" },
-  { id: "goal-17", text: "Try every pastel de nata in Belém", completed: false, category: "Food" },
+
 ];
 
 export const mockQuestions: Question[] = [
