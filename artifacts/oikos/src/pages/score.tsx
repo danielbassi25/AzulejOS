@@ -643,7 +643,7 @@ export default function ScorePage() {
               exit={{ y: '100%' }}
               transition={{ type: 'spring', stiffness: 320, damping: 34 }}
               className="w-full max-w-md"
-              style={{ background: 'hsl(42,28%,97%)', borderRadius: '12px 12px 0 0', maxHeight: '85vh', overflowY: 'auto', paddingBottom: 'env(safe-area-inset-bottom, 16px)' }}
+              style={{ background: 'hsl(42,28%,97%)', borderRadius: '12px 12px 0 0', maxHeight: '85vh', overflowY: 'auto', paddingBottom: '80px' }}
               onClick={e => e.stopPropagation()}
             >
               <div className="flex items-center justify-between px-5 pt-5 pb-3"

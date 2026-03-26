@@ -64,6 +64,7 @@ export default function EditDeleteModal({
               borderRadius: '12px 12px 0 0',
               maxHeight: '85vh',
               overflowY: 'auto',
+              paddingBottom: '80px',
             }}
             onClick={e => e.stopPropagation()}
           >
