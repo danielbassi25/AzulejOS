@@ -284,7 +284,7 @@ export default function PlayPage() {
         </div>
 
         <div className="flex flex-col items-center px-4 pt-6 pb-4">
-          <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '4/5' }}>
+          <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '5/4' }}>
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={`${currentQuestion?.id}-${currentIndex}`}
@@ -312,17 +312,17 @@ export default function PlayPage() {
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.11)' }} />
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-9">
-                  <div className="absolute top-6 left-0 right-0 flex justify-center">
+                  <div className="absolute top-5 left-0 right-0 flex justify-center">
                     <span style={{
-                      fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-                      border: '1px solid rgba(180,200,255,0.16)', borderRadius: '2px',
-                      color: 'rgba(195,210,255,0.46)', padding: '4px 12px',
+                      fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
+                      background: 'rgba(255,252,245,0.14)', border: '1px solid rgba(255,252,245,0.22)', borderRadius: '2px',
+                      color: 'hsl(42,30%,92%)', padding: '4px 12px',
                     }}>
                       {currentQuestion?.category}
                     </span>
                   </div>
 
-                  <div className="absolute top-6 right-5 flex flex-col gap-2">
+                  <div className="absolute top-5 right-5 flex flex-col gap-2">
                     {isFav && <Heart className="w-3 h-3 fill-current" style={{ color: 'rgba(220,180,140,0.55)' }} />}
                     {isAns && <Check className="w-3 h-3" style={{ color: 'rgba(140,220,180,0.50)' }} />}
                   </div>
@@ -331,7 +331,7 @@ export default function PlayPage() {
                     <motion.button
                       onClick={() => currentQuestion && openEdit(currentQuestion)}
                       whileTap={{ scale: 0.90 }}
-                      className="absolute top-6 left-5 flex items-center justify-center z-10"
+                      className="absolute top-5 left-5 flex items-center justify-center z-10"
                       style={{
                         width: 26, height: 26, borderRadius: '4px',
                         background: 'rgba(255,252,245,0.12)',
@@ -342,8 +342,6 @@ export default function PlayPage() {
                     </motion.button>
                   )}
 
-                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem', color: 'rgba(200,185,160,0.16)', lineHeight: 1, marginBottom: '20px' }}>{'\u2726'}</div>
-
                   <h2 style={{
                     fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 500,
                     fontSize: '1.48rem', letterSpacing: '0.01em', lineHeight: 1.42, color: 'hsl(42,30%,96%)',
@@ -351,9 +349,9 @@ export default function PlayPage() {
                     "{currentQuestion?.text}"
                   </h2>
 
-                  <p className="absolute bottom-6" style={{
+                  <p className="absolute bottom-5" style={{
                     fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
-                    color: 'rgba(175,162,140,0.28)',
+                    color: 'rgba(255,252,245,0.30)',
                   }}>
                     {(currentIndex % filteredQuestions.length) + 1} / {filteredQuestions.length}
                   </p>
