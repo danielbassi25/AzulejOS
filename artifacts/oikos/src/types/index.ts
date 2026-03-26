@@ -44,6 +44,32 @@ export interface ScoreData {
   history: { week: string; daniel: number; sofia: number }[];
 }
 
+export interface Milestone {
+  id: string;
+  title: string;
+  reward: string;
+  targetPoints: number;
+  completed: boolean;
+  winner: string | null;
+}
+
+export interface Activity {
+  id: string;
+  user: string;
+  action: string;
+  points: number;
+  date: string;
+}
+
+export interface SeasonResult {
+  id: string;
+  month: string;
+  year: number;
+  danielPoints: number;
+  sofiaPoints: number;
+  winner: string;
+}
+
 export interface DashboardData {
   daysTogether: number;
   nextEvent: { name: string; daysAway: number };
