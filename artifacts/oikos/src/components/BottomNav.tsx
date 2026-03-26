@@ -3,7 +3,7 @@ import { Home, Heart, Mail, Target, Dices, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 const navItems = [
-  { path: "/system", icon: Home, label: "System" },
+  { path: "/dashboard", icon: Home, label: "Home" },
   { path: "/saudade", icon: Heart, label: "Saudade" },
   { path: "/letters", icon: Mail, label: "Letters" },
   { path: "/build", icon: Target, label: "Build" },
@@ -28,7 +28,7 @@ export default function BottomNav() {
         {navItems.map((item, i) => {
           const isActive =
             location === item.path ||
-            (location.startsWith(item.path + "/") && item.path !== "/system");
+            (location.startsWith(item.path + "/") && item.path !== "/dashboard");
           const Icon = item.icon;
           return (
             <Link

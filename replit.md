@@ -47,7 +47,7 @@ OikOS is a private relationship operating system for Daniel and Sofia. It is a f
 - `src/types/index.ts` — TypeScript types for all data
 - `src/components/AppShell.tsx` — Main app shell with bottom nav
 - `src/components/BottomNav.tsx` — Mobile bottom navigation (6 tabs)
-- `src/pages/system.tsx` — Dashboard/home page
+- `src/pages/dashboard.tsx` — Dashboard/home page (renamed from system.tsx)
 - `src/pages/saudade.tsx` — Memory timeline (vertical timeline layout with year groupings)
 - `src/pages/saudade-detail.tsx` — Memory detail page
 - `src/pages/letters.tsx` — Letters (locked/unlocked)
@@ -57,8 +57,8 @@ OikOS is a private relationship operating system for Daniel and Sofia. It is a f
 
 ### Routes
 
-- `/` → redirects to `/system`
-- `/system` — Dashboard with days counter, events, memory of the day, score summary, suggestions
+- `/` → redirects to `/dashboard`
+- `/dashboard` — Dashboard with greeting, days counter, quote, pulse stats, upcoming events, memory of the day, ritual actions
 - `/saudade` — Memory timeline with color-coded tag badges
 - `/saudade/:id` — Memory detail
 - `/letters` — Letters list (locked/unlocked) with author & category info

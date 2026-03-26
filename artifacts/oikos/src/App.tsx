@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/not-found";
-import SystemPage from "@/pages/system";
+import DashboardPage from "@/pages/dashboard";
 import SaudadePage from "@/pages/saudade";
 import SaudadeDetailPage from "@/pages/saudade-detail";
 import LettersPage from "@/pages/letters";
@@ -20,7 +20,7 @@ const queryClient = new QueryClient();
 function HomeRedirect() {
   const [, setLocation] = useLocation();
   useEffect(() => {
-    setLocation("/system");
+    setLocation("/dashboard");
   }, [setLocation]);
   return null;
 }
@@ -29,7 +29,7 @@ function Router() {
   return (
     <Switch>
       <Route path="/" component={HomeRedirect} />
-      <Route path="/system" component={SystemPage} />
+      <Route path="/dashboard" component={DashboardPage} />
       <Route path="/saudade/new" component={CreateMemoryPage} />
       <Route path="/saudade/:id" component={SaudadeDetailPage} />
       <Route path="/saudade" component={SaudadePage} />
