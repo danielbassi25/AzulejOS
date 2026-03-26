@@ -355,57 +355,61 @@ export default function ScorePage() {
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, ease: EASE }}
           className="relative overflow-hidden px-5 py-4"
           style={{ backgroundColor: 'hsl(222,42%,13%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(222,42%,13%) 0%, hsl(220,40%,17%) 100%)`, backgroundSize: '60px 60px, 100% 100%', border: '1px solid rgba(15,40,110,0.52)', borderRadius: '4px', boxShadow: '0 8px 30px rgba(10,20,60,0.28)' }}>
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-3">
             <div>
               <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'rgba(180,165,140,0.45)' }}>Current Season</p>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.35rem', color: 'hsl(42,32%,94%)', marginTop: '4px' }}>{scores.currentSeason}</p>
             </div>
-            <div className="flex items-center gap-1.5">
-              <motion.button onClick={openEditCurrentSeason} whileTap={{ scale: 0.92 }} className="flex items-center justify-center"
-                style={{ width: 28, height: 28, borderRadius: '3px', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(255,252,245,0.16)' }}>
-                <Pencil className="w-3 h-3" style={{ color: 'rgba(215,205,185,0.55)' }} />
+          </div>
+          <div className="grid grid-cols-4 gap-2">
+            {[
+              { label: 'Rename', icon: Pencil, onClick: openEditCurrentSeason },
+              { label: 'New', icon: Plus, onClick: () => setShowNewSeason(true) },
+              { label: 'History', icon: Crown, onClick: () => setShowSeasonHistory(!showSeasonHistory) },
+              { label: 'End', icon: RotateCcw, onClick: () => setShowEndSeason(true) },
+            ].map(btn => (
+              <motion.button key={btn.label} onClick={btn.onClick} whileTap={{ scale: 0.92 }}
+                className="flex flex-col items-center gap-1.5 py-2.5"
+                style={{
+                  fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase',
+                  background: 'rgba(255,252,245,0.06)', border: '1px solid rgba(255,252,245,0.12)', borderRadius: '4px',
+                  color: 'rgba(215,205,185,0.55)',
+                }}>
+                <btn.icon className="w-3.5 h-3.5" />
+                {btn.label}
               </motion.button>
-              <motion.button onClick={() => setShowNewSeason(true)} whileTap={{ scale: 0.92 }} className="flex items-center gap-1"
-                style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(255,252,245,0.16)', borderRadius: '3px', color: 'rgba(215,205,185,0.55)', padding: '5px 8px' }}>
-                <Plus className="w-2.5 h-2.5" /> New
-              </motion.button>
-              <motion.button onClick={() => setShowSeasonHistory(!showSeasonHistory)} whileTap={{ scale: 0.92 }} className="flex items-center gap-1"
-                style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(255,252,245,0.16)', borderRadius: '3px', color: 'rgba(215,205,185,0.55)', padding: '5px 8px' }}>
-                <Crown className="w-2.5 h-2.5" /> History
-              </motion.button>
-              <motion.button onClick={() => setShowEndSeason(true)} whileTap={{ scale: 0.92 }} className="flex items-center gap-1"
-                style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(255,252,245,0.16)', borderRadius: '3px', color: 'rgba(215,205,185,0.55)', padding: '5px 8px' }}>
-                <RotateCcw className="w-2.5 h-2.5" /> End
-              </motion.button>
-            </div>
+            ))}
           </div>
         </motion.div>
 
         {/* Palmares */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.04, ease: EASE }}
           className="grid grid-cols-2 gap-3">
-          {[{ name: 'Daniel', wins: danielWins, avatar: 'avatar-daniel.png', dark: false }, { name: 'Sofia', wins: sofiaWins, avatar: 'avatar-sofia.png', dark: true }].map(p => (
+          {[
+            { name: 'Daniel', wins: danielWins, avatar: 'avatar-daniel.png', bg: 'hsl(218,70%,28%)', bgGrad: 'hsl(218,72%,32%)', borderColor: 'rgba(15,45,115,0.50)', ringColor: 'hsl(42,36%,70%)', textColor: 'hsl(42,32%,96%)', subColor: 'rgba(210,200,180,0.50)' },
+            { name: 'Sofia', wins: sofiaWins, avatar: 'avatar-sofia.png', bg: 'hsl(338,45%,38%)', bgGrad: 'hsl(336,42%,42%)', borderColor: 'rgba(120,20,50,0.50)', ringColor: 'hsl(42,36%,78%)', textColor: 'hsl(42,32%,96%)', subColor: 'rgba(225,200,195,0.50)' },
+          ].map(p => (
             <div key={p.name} className="relative overflow-hidden px-4 py-5 flex flex-col items-center"
               style={{
-                backgroundColor: p.dark ? 'hsl(222,48%,18%)' : 'hsl(38,30%,99%)',
-                backgroundImage: p.dark ? `${azulejoPattern}, linear-gradient(155deg, hsl(222,48%,18%) 0%, hsl(220,52%,22%) 100%)` : azulejoPatternLight,
-                backgroundSize: p.dark ? '80px 80px, 100% 100%' : '80px 80px',
-                border: p.dark ? '1px solid rgba(40,65,140,0.35)' : '1px solid rgba(30,60,130,0.08)',
+                backgroundColor: p.bg,
+                backgroundImage: `${azulejoPattern}, linear-gradient(155deg, ${p.bg} 0%, ${p.bgGrad} 100%)`,
+                backgroundSize: '80px 80px, 100% 100%',
+                border: `1px solid ${p.borderColor}`,
                 borderRadius: '4px',
-                boxShadow: p.dark ? '0 6px 20px rgba(10,18,50,0.30)' : '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)',
+                boxShadow: '0 6px 20px rgba(10,18,50,0.30)',
               }}>
               <div className="w-16 h-16 rounded-full overflow-hidden mb-3" style={{
-                border: p.dark ? '3px solid hsl(338,45%,42%)' : '3px solid hsl(218,60%,32%)',
-                boxShadow: p.dark ? '0 4px 16px rgba(120,25,50,0.25), 0 0 0 1px rgba(160,50,70,0.12)' : '0 4px 16px rgba(15,30,80,0.14)',
+                border: `3px solid ${p.ringColor}`,
+                boxShadow: '0 4px 16px rgba(0,0,0,0.20)',
               }}>
                 <img src={`${import.meta.env.BASE_URL}images/${p.avatar}`} alt={p.name} className="w-full h-full object-cover" />
               </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: p.dark ? 'rgba(210,200,180,0.70)' : 'hsl(220,20%,48%)', marginBottom: '6px' }}>{p.name}</p>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(255,252,245,0.70)', marginBottom: '6px' }}>{p.name}</p>
               <div className="flex items-center gap-2">
                 <Trophy className="w-5 h-5" style={{ color: '#FFD700' }} />
-                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.2rem', letterSpacing: '-0.03em', color: p.dark ? 'hsl(42,32%,96%)' : 'hsl(218,70%,28%)' }}>{p.wins}</span>
+                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.2rem', letterSpacing: '-0.03em', color: p.textColor }}>{p.wins}</span>
               </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.12em', textTransform: 'uppercase', color: p.dark ? 'rgba(200,190,170,0.45)' : 'hsl(220,16%,60%)', marginTop: '4px' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.12em', textTransform: 'uppercase', color: p.subColor, marginTop: '4px' }}>
                 {p.wins === 1 ? 'trophy' : 'trophies'} won
               </p>
             </div>
@@ -415,9 +419,9 @@ export default function ScorePage() {
         {/* Scoreboard */}
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.08, ease: EASE }}
           className="grid grid-cols-2 gap-3">
-          {/* Daniel */}
-          <div className="p-5 flex flex-col items-center text-center"
-            style={{ backgroundColor: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)', backgroundImage: azulejoPatternLight, backgroundSize: '80px 80px' }}>
+          {/* Daniel — Teal */}
+          <div className="relative overflow-hidden p-5 flex flex-col items-center text-center"
+            style={{ backgroundColor: 'hsl(168,45%,28%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(168,45%,28%) 0%, hsl(166,42%,32%) 100%)`, backgroundSize: '80px 80px, 100% 100%', border: '1px solid rgba(15,80,70,0.50)', borderRadius: '4px', boxShadow: '0 6px 20px rgba(10,40,35,0.30)' }}>
             <div className="relative" style={{ marginBottom: '8px' }}>
               {leader === 'Daniel' && (
                 <motion.div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFD700', borderRadius: '2px', boxShadow: '0 2px 6px rgba(180,130,0,0.35)', zIndex: 1 }}
@@ -426,28 +430,28 @@ export default function ScorePage() {
                 </motion.div>
               )}
             </div>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'hsl(220,20%,48%)', marginBottom: '4px' }}>Daniel</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: 'rgba(220,240,235,0.70)', marginBottom: '4px' }}>Daniel</p>
             <AnimatePresence mode="wait">
               <motion.p key={scores.daniel} initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -8 }}
-                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.6rem', letterSpacing: '-0.04em', lineHeight: 1, color: 'hsl(218,70%,28%)' }}>
+                style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.6rem', letterSpacing: '-0.04em', lineHeight: 1, color: 'hsl(42,32%,96%)' }}>
                 {scores.daniel}
               </motion.p>
             </AnimatePresence>
-            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(220,16%,60%)', marginTop: '4px', marginBottom: '8px' }}>points</p>
+            <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(200,230,220,0.45)', marginTop: '4px', marginBottom: '8px' }}>points</p>
             <div className="flex items-center gap-2">
               <motion.button onClick={() => addPoint('daniel', -1)} whileTap={{ scale: 0.88 }} className="flex items-center justify-center"
-                style={{ width: 34, height: 34, borderRadius: '4px', background: 'hsl(40,22%,93%)', border: '1px solid rgba(30,60,130,0.08)' }}>
-                <Minus className="w-3.5 h-3.5" style={{ color: 'hsl(220,18%,50%)' }} />
+                style={{ width: 34, height: 34, borderRadius: '4px', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(180,230,220,0.20)' }}>
+                <Minus className="w-3.5 h-3.5" style={{ color: 'rgba(220,240,235,0.60)' }} />
               </motion.button>
               <motion.button onClick={() => addPoint('daniel', 1)} whileTap={{ scale: 0.88 }} className="flex items-center justify-center"
-                style={{ width: 34, height: 34, borderRadius: '4px', background: 'hsl(218,70%,28%)', border: '1px solid rgba(15,45,115,0.42)', boxShadow: '0 2px 8px rgba(12,25,72,0.20)' }}>
+                style={{ width: 34, height: 34, borderRadius: '4px', background: 'rgba(255,252,245,0.15)', border: '1px solid rgba(180,230,220,0.28)', boxShadow: '0 2px 8px rgba(10,40,35,0.22)' }}>
                 <Plus className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)' }} />
               </motion.button>
             </div>
           </div>
-          {/* Sofia */}
+          {/* Sofia — Navy */}
           <div className="relative overflow-hidden p-5 flex flex-col items-center text-center"
-            style={{ backgroundColor: 'hsl(222,48%,18%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(222,48%,18%) 0%, hsl(220,52%,22%) 100%)`, backgroundSize: '80px 80px, 100% 100%', border: '1px solid rgba(40,65,140,0.35)', borderRadius: '4px', boxShadow: '0 6px 20px rgba(10,18,50,0.30)' }}>
+            style={{ backgroundColor: 'hsl(222,52%,18%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(222,52%,18%) 0%, hsl(220,50%,22%) 100%)`, backgroundSize: '80px 80px, 100% 100%', border: '1px solid rgba(15,35,90,0.55)', borderRadius: '4px', boxShadow: '0 6px 20px rgba(10,18,50,0.30)' }}>
             <div className="relative" style={{ marginBottom: '8px' }}>
               {leader === 'Sofia' && (
                 <motion.div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFD700', borderRadius: '2px', boxShadow: '0 2px 6px rgba(180,130,0,0.35)', zIndex: 1 }}

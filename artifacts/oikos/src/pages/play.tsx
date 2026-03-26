@@ -12,6 +12,13 @@ const CATEGORIES = ["All", "Favorites", "Deep", "Spicy", "Playful", "Memories", 
 
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.45' opacity='0.11'%3E%3Ccircle cx='18' cy='18' r='6'/%3E%3Cline x1='18' y1='0' x2='18' y2='12'/%3E%3Cline x1='18' y1='24' x2='18' y2='36'/%3E%3Cline x1='0' y1='18' x2='12' y2='18'/%3E%3Cline x1='24' y1='18' x2='36' y2='18'/%3E%3Cline x1='3.5' y1='3.5' x2='11' y2='11'/%3E%3Cline x1='25' y1='25' x2='32.5' y2='32.5'/%3E%3Cline x1='32.5' y1='3.5' x2='25' y2='11'/%3E%3Cline x1='11' y1='25' x2='3.5' y2='32.5'/%3E%3C/g%3E%3C/svg%3E")`;
 
+const CARD_COLORS = [
+  { bg: 'hsl(218,70%,28%)', gradient: 'hsl(218,72%,32%)', border: 'rgba(15,45,115,0.50)' },
+  { bg: 'hsl(222,52%,18%)', gradient: 'hsl(220,50%,22%)', border: 'rgba(15,35,90,0.55)' },
+  { bg: 'hsl(338,45%,38%)', gradient: 'hsl(336,42%,42%)', border: 'rgba(120,20,50,0.50)' },
+  { bg: 'hsl(168,45%,28%)', gradient: 'hsl(166,42%,32%)', border: 'rgba(15,80,70,0.50)' },
+];
+
 function useLocalStorageSet(key: string): [Set<string>, (fn: (prev: Set<string>) => Set<string>) => void] {
   const [set, setSet] = useState<Set<string>>(() => {
     try { const stored = localStorage.getItem(key); return stored ? new Set(JSON.parse(stored)) : new Set(); }
@@ -36,6 +43,7 @@ export default function PlayPage() {
   const [newQuestionText, setNewQuestionText] = useState("");
   const [newQuestionCategory, setNewQuestionCategory] = useState("Deep");
   const shuffleSeedRef = useRef(0);
+  const [cardColorIndex, setCardColorIndex] = useState(0);
   const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -72,6 +80,13 @@ export default function PlayPage() {
       let next = prev;
       while (next === prev) {
         next = Math.floor(Math.random() * filteredQuestions.length);
+      }
+      return next;
+    });
+    setCardColorIndex(prev => {
+      let next = prev;
+      while (next === prev) {
+        next = Math.floor(Math.random() * CARD_COLORS.length);
       }
       return next;
     });
@@ -128,6 +143,7 @@ export default function PlayPage() {
     return map;
   }, [allQuestions, favorites]);
 
+  const cardColor = CARD_COLORS[cardColorIndex];
   const isFav = currentQuestion ? favorites.has(currentQuestion.id) : false;
   const isAns = currentQuestion ? answered.has(currentQuestion.id) : false;
   const isCurrentCustom = currentQuestion ? isCustomItem(currentQuestion.id) : false;
@@ -278,10 +294,10 @@ export default function PlayPage() {
                 exit={{ opacity: 0, x: -90 * direction, scale: 0.94, rotate: -2.5 * direction }}
                 transition={{ type: "spring", stiffness: 250, damping: 28 }}
                 style={{
-                  backgroundColor: 'hsl(220,70%,26%)',
-                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)`,
+                  backgroundColor: cardColor.bg,
+                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, ${cardColor.bg} 0%, ${cardColor.gradient} 100%)`,
                   backgroundSize: '36px 36px, 100% 100%',
-                  border: '1px solid rgba(15,45,115,0.50)',
+                  border: `1px solid ${cardColor.border}`,
                   borderRadius: '4px',
                   boxShadow: '4px 8px 30px rgba(12,25,72,0.28), -1px -1px 0 rgba(255,255,255,0.06) inset',
                   touchAction: 'pan-y',
