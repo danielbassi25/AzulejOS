@@ -1,8 +1,8 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
-import { ArrowLeft, Save } from "lucide-react";
+import { ArrowLeft, Save, Camera, X } from "lucide-react";
 
 const TAG_OPTIONS = ["trip", "milestone", "tender", "funny", "routine"];
 const MOOD_OPTIONS = ["magical", "nostalgic", "adventurous", "euphoric", "peaceful", "grateful", "bittersweet"];
@@ -17,9 +17,27 @@ export default function CreateMemoryPage() {
   const [selectedTags, setSelectedTags] = useState<string[]>([]);
   const [mood, setMood] = useState("");
   const [saved, setSaved] = useState(false);
+  const [coverImage, setCoverImage] = useState("");
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const toggleTag = (tag: string) => {
     setSelectedTags(prev => prev.includes(tag) ? prev.filter(t => t !== tag) : [...prev, tag]);
+  };
+
+  const handleImageUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Image too large. Please choose an image under 5MB.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      if (typeof reader.result === 'string') {
+        setCoverImage(reader.result);
+      }
+    };
+    reader.readAsDataURL(file);
   };
 
   const handleSave = () => {
@@ -32,7 +50,7 @@ export default function CreateMemoryPage() {
       preview: content.slice(0, 60) + '...',
       content: content.trim(),
       insideJokes: insideJokes.split('\n').filter(j => j.trim()),
-      imageUrl: '',
+      imageUrl: coverImage || '',
       tags: selectedTags,
       mood: mood || undefined,
     };
@@ -78,6 +96,55 @@ export default function CreateMemoryPage() {
       </div>
 
       <div className="px-4 pt-5 pb-20" style={{ display: 'flex', flexDirection: 'column', gap: '18px' }}>
+        <div>
+          <label style={labelStyle}>Cover Photo</label>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleImageUpload}
+            style={{ display: 'none' }}
+          />
+          {coverImage ? (
+            <div className="relative overflow-hidden" style={{ borderRadius: '4px', border: '1px solid rgba(30,60,130,0.10)' }}>
+              <img src={coverImage} alt="Cover preview" style={{ width: '100%', height: 160, objectFit: 'cover' }} />
+              <div className="absolute inset-0" style={{ background: 'linear-gradient(to top, rgba(12,25,72,0.50) 0%, transparent 60%)' }} />
+              <motion.button
+                onClick={() => setCoverImage('')}
+                whileTap={{ scale: 0.88 }}
+                className="absolute flex items-center justify-center"
+                style={{ top: 8, right: 8, width: 28, height: 28, borderRadius: '4px', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.18)' }}>
+                <X className="w-3.5 h-3.5" style={{ color: 'rgba(255,255,255,0.85)' }} />
+              </motion.button>
+              <motion.button
+                onClick={() => fileInputRef.current?.click()}
+                whileTap={{ scale: 0.92 }}
+                className="absolute flex items-center gap-1.5"
+                style={{ bottom: 8, right: 8, fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(4px)', border: '1px solid rgba(255,255,255,0.18)', borderRadius: '3px', color: 'rgba(255,255,255,0.85)', padding: '6px 10px' }}>
+                <Camera className="w-3 h-3" /> Change
+              </motion.button>
+            </div>
+          ) : (
+            <motion.button
+              onClick={() => fileInputRef.current?.click()}
+              whileTap={{ scale: 0.98 }}
+              className="w-full flex flex-col items-center justify-center gap-3"
+              style={{ height: 120, background: 'hsl(40,26%,95%)', border: '2px dashed rgba(30,60,130,0.15)', borderRadius: '4px' }}>
+              <div className="w-10 h-10 flex items-center justify-center" style={{ background: 'rgba(30,60,130,0.08)', borderRadius: '50%' }}>
+                <Camera className="w-5 h-5" style={{ color: 'hsl(218,50%,42%)' }} />
+              </div>
+              <div className="text-center">
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: '0.95rem', color: 'hsl(222,30%,35%)' }}>
+                  Add a cover photo
+                </p>
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,62%)', marginTop: '2px' }}>
+                  Tap to upload (max 5MB)
+                </p>
+              </div>
+            </motion.button>
+          )}
+        </div>
+
         <div>
           <label style={labelStyle}>Title</label>
           <input value={title} onChange={e => setTitle(e.target.value)} placeholder="What do you call this moment?"
@@ -166,7 +233,7 @@ export default function CreateMemoryPage() {
           }}
         >
           <Save className="w-4 h-4" />
-          {saved ? 'Saved ✦' : 'Save Memory'}
+          {saved ? 'Saved' : 'Save Memory'}
         </motion.button>
       </div>
     </AppShell>

@@ -174,6 +174,8 @@ export default function ScorePage() {
   const [showSeasonHistory, setShowSeasonHistory] = useState(false);
   const [showNewSeason, setShowNewSeason] = useState(false);
   const [seasonForm, setSeasonForm] = useState({ name: '', trophyName: '', description: '' });
+  const [showEditCurrentSeason, setShowEditCurrentSeason] = useState(false);
+  const [currentSeasonEditForm, setCurrentSeasonEditForm] = useState({ name: '', trophyName: '', description: '' });
 
   const [showEndSeason, setShowEndSeason] = useState(false);
   const [showRolloverPrompt, setShowRolloverPrompt] = useState(false);
@@ -319,6 +321,24 @@ export default function ScorePage() {
     setSeasons(updated); saveSeasonsLS(updated); setEditingSeason(null); setSeasonDeleteConfirm(false);
   };
 
+  const openEditCurrentSeason = () => {
+    setCurrentSeasonEditForm({
+      name: scores.currentSeason,
+      trophyName: localStorage.getItem("oikos-score-season-trophy") || '',
+      description: localStorage.getItem("oikos-score-season-desc") || '',
+    });
+    setShowEditCurrentSeason(true);
+  };
+
+  const saveCurrentSeasonEdit = () => {
+    const newName = currentSeasonEditForm.name.trim() || scores.currentSeason;
+    localStorage.setItem("oikos-score-season", newName);
+    localStorage.setItem("oikos-score-season-trophy", currentSeasonEditForm.trophyName.trim());
+    localStorage.setItem("oikos-score-season-desc", currentSeasonEditForm.description.trim());
+    setScores(prev => ({ ...prev, currentSeason: newName }));
+    setShowEditCurrentSeason(false);
+  };
+
   const maxSnap = useMemo(() => Math.max(1, ...snapshots.flatMap(s => [s.daniel, s.sofia])), [snapshots]);
 
   return (
@@ -344,6 +364,10 @@ export default function ScorePage() {
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.35rem', color: 'hsl(42,32%,94%)', marginTop: '4px' }}>{scores.currentSeason}</p>
             </div>
             <div className="flex items-center gap-1.5">
+              <motion.button onClick={openEditCurrentSeason} whileTap={{ scale: 0.92 }} className="flex items-center justify-center"
+                style={{ width: 28, height: 28, borderRadius: '3px', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(255,252,245,0.16)' }}>
+                <Pencil className="w-3 h-3" style={{ color: 'rgba(215,205,185,0.55)' }} />
+              </motion.button>
               <motion.button onClick={() => setShowNewSeason(true)} whileTap={{ scale: 0.92 }} className="flex items-center gap-1"
                 style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(255,252,245,0.16)', borderRadius: '3px', color: 'rgba(215,205,185,0.55)', padding: '5px 8px' }}>
                 <Plus className="w-2.5 h-2.5" /> New
@@ -364,24 +388,24 @@ export default function ScorePage() {
         <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.55, delay: 0.04, ease: EASE }}
           className="grid grid-cols-2 gap-3">
           {[{ name: 'Daniel', wins: danielWins, avatar: 'avatar-daniel.png', light: true }, { name: 'Sofia', wins: sofiaWins, avatar: 'avatar-sofia.png', light: false }].map(p => (
-            <div key={p.name} className="relative overflow-hidden px-4 py-4 flex flex-col items-center"
+            <div key={p.name} className="relative overflow-hidden px-4 py-5 flex flex-col items-center"
               style={{
                 background: p.light ? 'hsl(38,30%,99%)' : 'linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)',
+                backgroundImage: p.light ? 'none' : azulejoPattern,
+                backgroundSize: p.light ? 'auto' : '60px 60px',
                 border: p.light ? '1px solid rgba(30,60,130,0.08)' : '1px solid rgba(15,45,115,0.50)',
                 borderRadius: '4px', boxShadow: p.light ? '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)' : '3px 5px 18px rgba(12,25,72,0.26)',
               }}>
               {!p.light && <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: 50, background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)' }} />}
-              <div className="flex items-center gap-2 mb-2">
-                <div className="w-8 h-8 rounded-full overflow-hidden" style={{ border: p.light ? '1.5px solid hsl(218,68%,30%)' : '1.5px solid rgba(220,210,192,0.42)' }}>
-                  <img src={`${import.meta.env.BASE_URL}images/${p.avatar}`} alt={p.name} className="w-full h-full object-cover" />
-                </div>
-                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: p.light ? 'hsl(220,20%,54%)' : 'rgba(195,182,160,0.55)' }}>{p.name}</p>
+              <div className="w-14 h-14 rounded-full overflow-hidden mb-3" style={{ border: p.light ? '2.5px solid hsl(218,68%,30%)' : '2.5px solid rgba(220,210,192,0.50)', boxShadow: p.light ? '0 3px 12px rgba(15,30,80,0.12)' : '0 3px 12px rgba(0,0,0,0.25)' }}>
+                <img src={`${import.meta.env.BASE_URL}images/${p.avatar}`} alt={p.name} className="w-full h-full object-cover" />
               </div>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', color: p.light ? 'hsl(220,20%,54%)' : 'rgba(195,182,160,0.60)', marginBottom: '4px' }}>{p.name}</p>
               <div className="flex items-center gap-1.5">
-                <Trophy className="w-4 h-4" style={{ color: '#FFD700' }} />
-                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '1.8rem', letterSpacing: '-0.03em', color: p.light ? 'hsl(218,70%,28%)' : 'hsl(42,32%,96%)' }}>{p.wins}</span>
+                <Trophy className="w-4.5 h-4.5" style={{ color: '#FFD700' }} />
+                <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2rem', letterSpacing: '-0.03em', color: p.light ? 'hsl(218,70%,28%)' : 'hsl(42,32%,96%)' }}>{p.wins}</span>
               </div>
-              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', letterSpacing: '0.12em', textTransform: 'uppercase', color: p.light ? 'hsl(220,16%,64%)' : 'rgba(175,162,142,0.38)', marginTop: '2px' }}>
+              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', letterSpacing: '0.12em', textTransform: 'uppercase', color: p.light ? 'hsl(220,16%,64%)' : 'rgba(175,162,142,0.42)', marginTop: '3px' }}>
                 {p.wins === 1 ? 'trophy' : 'trophies'} won
               </p>
             </div>
@@ -393,7 +417,7 @@ export default function ScorePage() {
           className="grid grid-cols-2 gap-3">
           {/* Daniel */}
           <div className="p-5 flex flex-col items-center text-center"
-            style={{ background: 'hsl(38,26%,97%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)' }}>
+            style={{ backgroundColor: 'hsl(38,26%,97%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)', backgroundImage: `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' opacity='0.04'%3E%3Ccircle cx='30' cy='30' r='12' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='6' stroke-width='0.4'/%3E%3Cpath d='M30 18l-12 12 12 12 12-12z' stroke-width='0.5'/%3E%3C/g%3E%3C/svg%3E")`, backgroundSize: '60px 60px' }}>
             <div className="relative" style={{ marginBottom: '8px' }}>
               {leader === 'Daniel' && (
                 <motion.div className="absolute -top-1 -right-1 w-5 h-5 flex items-center justify-center" style={{ background: '#FFD700', borderRadius: '2px', boxShadow: '0 2px 6px rgba(180,130,0,0.35)', zIndex: 1 }}
@@ -423,7 +447,7 @@ export default function ScorePage() {
           </div>
           {/* Sofia */}
           <div className="relative overflow-hidden p-5 flex flex-col items-center text-center"
-            style={{ background: 'linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)', border: '1px solid rgba(15,45,115,0.50)', borderRadius: '4px', boxShadow: '3px 5px 18px rgba(12,25,72,0.26)' }}>
+            style={{ backgroundColor: 'hsl(220,70%,26%)', backgroundImage: `${azulejoPattern}, linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)`, backgroundSize: '60px 60px, 100% 100%', border: '1px solid rgba(15,45,115,0.50)', borderRadius: '4px', boxShadow: '3px 5px 18px rgba(12,25,72,0.26)' }}>
             <div className="absolute top-0 left-0 right-0 pointer-events-none" style={{ height: 50, background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)' }} />
             <div className="relative" style={{ marginBottom: '8px' }}>
               {leader === 'Sofia' && (
@@ -470,7 +494,7 @@ export default function ScorePage() {
         )}
 
         {/* Score History Chart */}
-        {snapshots.length >= 2 && (
+        {snapshots.length >= 1 && (
           <div>
             <SectionDivider label="Score Evolution" />
             <div className="px-5 py-5" style={{ background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 3px 10px rgba(20,40,100,0.05)' }}>
@@ -485,23 +509,27 @@ export default function ScorePage() {
                 </div>
               </div>
               <div style={{ position: 'relative', width: '100%', height: 120 }}>
-                <svg viewBox={`0 0 ${Math.max(1, (snapshots.length - 1)) * 36} 110`} className="w-full h-full" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
+                <svg viewBox={`0 0 ${Math.max(36, (snapshots.length - 1) * 36)} 110`} className="w-full h-full" preserveAspectRatio="none" style={{ overflow: 'visible' }}>
                   {[0, 27.5, 55, 82.5, 110].map(y => (
-                    <line key={y} x1="0" y1={y} x2={(snapshots.length - 1) * 36} y2={y} stroke="rgba(30,60,130,0.06)" strokeWidth="0.5" />
+                    <line key={y} x1="0" y1={y} x2={Math.max(36, (snapshots.length - 1) * 36)} y2={y} stroke="rgba(30,60,130,0.06)" strokeWidth="0.5" />
                   ))}
-                  <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                    points={snapshots.map((s, i) => `${i * 36},${110 - (s.daniel / maxSnap) * 100}`).join(' ')}
-                    fill="none" stroke="hsl(218,65%,38%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                  <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
-                    points={snapshots.map((s, i) => `${i * 36},${110 - (s.sofia / maxSnap) * 100}`).join(' ')}
-                    fill="none" stroke="hsl(38,48%,58%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                  {snapshots.length > 1 && (
+                    <>
+                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
+                        points={snapshots.map((s, i) => `${i * 36},${110 - (s.daniel / maxSnap) * 100}`).join(' ')}
+                        fill="none" stroke="hsl(218,65%,38%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5, delay: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                        points={snapshots.map((s, i) => `${i * 36},${110 - (s.sofia / maxSnap) * 100}`).join(' ')}
+                        fill="none" stroke="hsl(38,48%,58%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                    </>
+                  )}
                   {snapshots.map((s, i) => (
                     <motion.circle key={`d-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 + i * 0.05 }}
-                      cx={i * 36} cy={110 - (s.daniel / maxSnap) * 100} r="3" fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                      cx={snapshots.length === 1 ? 18 : i * 36} cy={110 - (s.daniel / maxSnap) * 100} r="4" fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                   {snapshots.map((s, i) => (
                     <motion.circle key={`s-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.5 + i * 0.05 }}
-                      cx={i * 36} cy={110 - (s.sofia / maxSnap) * 100} r="3" fill="hsl(38,48%,58%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                      cx={snapshots.length === 1 ? 18 : i * 36} cy={110 - (s.sofia / maxSnap) * 100} r="4" fill="hsl(38,48%,58%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                 </svg>
                 <div className="flex justify-between" style={{ marginTop: '6px' }}>
@@ -829,6 +857,28 @@ export default function ScorePage() {
           </div>
         </div>
       </CenterModal>
+
+      {/* Edit Current Season Modal */}
+      <BottomSheet isOpen={showEditCurrentSeason} onClose={() => setShowEditCurrentSeason(false)} title="Edit Current Season">
+        <div className="p-5 flex flex-col gap-4">
+          <div>
+            <label style={labelStyle}>Season Name</label>
+            <input value={currentSeasonEditForm.name} onChange={e => setCurrentSeasonEditForm(p => ({ ...p, name: e.target.value }))} style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Trophy Name</label>
+            <input value={currentSeasonEditForm.trophyName} onChange={e => setCurrentSeasonEditForm(p => ({ ...p, trophyName: e.target.value }))} placeholder="e.g. The Golden Spatula" style={inputStyle} />
+          </div>
+          <div>
+            <label style={labelStyle}>Description</label>
+            <textarea value={currentSeasonEditForm.description} onChange={e => setCurrentSeasonEditForm(p => ({ ...p, description: e.target.value }))} placeholder="What's this season about?" rows={3} style={{ ...inputStyle, resize: 'none' as const }} />
+          </div>
+          <motion.button onClick={saveCurrentSeasonEdit} whileTap={{ scale: 0.97 }} className="flex items-center justify-center gap-2 py-3 mt-2"
+            style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(218,70%,28%)', color: 'hsl(42,30%,96%)', border: 'none', borderRadius: '4px', boxShadow: '2px 4px 12px rgba(12,25,72,0.20)' }}>
+            <Save className="w-3.5 h-3.5" /> Save Changes
+          </motion.button>
+        </div>
+      </BottomSheet>
 
       {/* Month Rollover Prompt */}
       <CenterModal isOpen={showRolloverPrompt} onClose={() => setShowRolloverPrompt(false)}>

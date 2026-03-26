@@ -65,12 +65,14 @@ OikOS is a private relationship operating system for Daniel and Sofia. It is a f
 - `/letters/:id` — Letter detail page (full content for open letters, sealed state for locked)
 - `/build` — Shared goals with category filters (Travel, Home, Growth, Ritual), progress percentage
 - `/play` — 200-question game across 8 categories (Deep, Spicy, Playful, Memories, Future, Everyday, Would You Rather, This or That) with favorites, answered tracking, shuffle mode
-- `/score` — Daniel vs Sofia scoreboard with milestones and recent activity
+- `/saudade/new` — Create new memory with cover photo upload
+- `/letters/new` — Write new letter with optional time seal (lock until date)
+- `/score` — Daniel vs Sofia scoreboard with milestones, palmares, score evolution graph, editable seasons
 
 ### Data model
 
 - **Question**: id, category (8 categories), text — 200 questions total (25 per category)
-- **Letter**: id, title, unlockDate, isLocked, author, category (anniversary/reassurance/hard day/future), content, mood
+- **Letter**: id, title, unlockDate, isLocked, lockedUntil (ISO date for time-locked letters), author, category (anniversary/reassurance/hard day/future), content, mood
 - **Goal**: id, text, completed, category (Travel/Home/Growth/Ritual)
 - **Memory**: id, title, date, location, preview, content, insideJokes, imageUrl, tags (trip/milestone/tender/funny/routine)
 - **DashboardData**: daysTogether, nextEvent, randomPhrase, nextLetterUnlock, activeGoals, suggestions, memoryOfTheDay

@@ -17,6 +17,7 @@ export interface Letter {
   title: string;
   unlockDate: string;
   isLocked: boolean;
+  lockedUntil?: string;
   author?: string;
   category?: string;
   content?: string;

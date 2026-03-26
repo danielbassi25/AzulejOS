@@ -35,10 +35,22 @@ export function updateCustomMemory(id: string, updates: Partial<Memory>): void {
   } catch {}
 }
 
+function computeLetterLockState(letter: Letter): Letter {
+  if (letter.lockedUntil) {
+    const unlockTime = new Date(letter.lockedUntil).getTime();
+    const now = Date.now();
+    if (now >= unlockTime) {
+      return { ...letter, isLocked: false };
+    }
+    return { ...letter, isLocked: true };
+  }
+  return letter;
+}
+
 export function getAllLetters(): Letter[] {
   try {
     const custom: Letter[] = JSON.parse(localStorage.getItem("oikos-custom-letters") || "[]");
-    return [...mockLetters, ...custom];
+    return [...mockLetters, ...custom].map(computeLetterLockState);
   } catch {
     return mockLetters;
   }

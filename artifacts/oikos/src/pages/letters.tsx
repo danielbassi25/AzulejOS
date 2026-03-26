@@ -1,9 +1,9 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { getAllLetters, isCustomItem, deleteCustomLetter, updateCustomLetter } from "@/data/store";
 import { motion } from "framer-motion";
-import { LockKeyhole, MailOpen, PenLine, Pencil } from "lucide-react";
+import { LockKeyhole, MailOpen, PenLine, Pencil, Clock } from "lucide-react";
 import { Link } from "wouter";
 import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Letter } from "@/types";
@@ -20,6 +20,13 @@ export default function LettersPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const reload = useCallback(() => setLetters(getAllLetters()), []);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setLetters(getAllLetters());
+    }, 60000);
+    return () => clearInterval(interval);
+  }, []);
 
   const openEdit = (letter: Letter) => {
     setEditingLetter(letter);
@@ -116,7 +123,8 @@ export default function LettersPage() {
                               {letter.title}
                             </h3>
                             <div className="flex items-center gap-2" style={{ marginTop: '5px' }}>
-                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(175,190,240,0.38)' }}>
+                              <p className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(175,190,240,0.38)' }}>
+                                {letter.lockedUntil && <Clock className="w-2.5 h-2.5" />}
                                 Unlocks {letter.unlockDate}
                               </p>
                               {letter.category && (

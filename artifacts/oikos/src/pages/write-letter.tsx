@@ -1,11 +1,23 @@
 import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
-import { motion } from "framer-motion";
-import { ArrowLeft, Send } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { ArrowLeft, Send, LockKeyhole, LockKeyholeOpen, Calendar } from "lucide-react";
 
 const CATEGORY_OPTIONS = ["anniversary", "reassurance", "hard day", "future", "just because", "gratitude"];
 const MOOD_OPTIONS = ["hopeful", "grateful", "tender", "comforting", "celebratory", "playful"];
+
+function formatDateForDisplay(isoDate: string): string {
+  if (!isoDate) return '';
+  const d = new Date(isoDate + 'T00:00:00');
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
+}
+
+function getMinDate(): string {
+  const d = new Date();
+  d.setDate(d.getDate() + 1);
+  return d.toISOString().split('T')[0];
+}
 
 export default function WriteLetterPage() {
   const [, setLocation] = useLocation();
@@ -15,14 +27,20 @@ export default function WriteLetterPage() {
   const [category, setCategory] = useState("");
   const [mood, setMood] = useState("");
   const [sent, setSent] = useState(false);
+  const [isSealed, setIsSealed] = useState(false);
+  const [unlockDateInput, setUnlockDateInput] = useState("");
 
   const handleSend = () => {
     if (!title.trim() || !content.trim()) return;
+    const now = new Date();
     const letter = {
       id: `let-custom-${Date.now()}`,
       title: title.trim(),
-      unlockDate: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      isLocked: false,
+      unlockDate: isSealed && unlockDateInput
+        ? formatDateForDisplay(unlockDateInput)
+        : now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      isLocked: isSealed && !!unlockDateInput,
+      lockedUntil: isSealed && unlockDateInput ? unlockDateInput + 'T00:00:00' : undefined,
       author,
       category: category || undefined,
       content: content.trim(),
@@ -104,6 +122,99 @@ export default function WriteLetterPage() {
         </div>
 
         <div>
+          <label style={labelStyle}>Time Seal</label>
+          <motion.button
+            onClick={() => { setIsSealed(!isSealed); if (isSealed) setUnlockDateInput(''); }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full flex items-center gap-3 px-4 py-3.5"
+            style={{
+              background: isSealed ? 'hsl(218,70%,28%)' : 'hsl(40,26%,95%)',
+              border: isSealed ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.10)',
+              borderRadius: '4px',
+              transition: 'all 0.3s ease',
+            }}>
+            <div className="w-9 h-9 flex items-center justify-center shrink-0"
+              style={{
+                background: isSealed ? 'rgba(255,215,0,0.15)' : 'rgba(30,60,130,0.08)',
+                borderRadius: '4px',
+                border: isSealed ? '1px solid rgba(255,215,0,0.30)' : '1px solid rgba(30,60,130,0.06)',
+              }}>
+              {isSealed ?
+                <LockKeyhole className="w-4 h-4" style={{ color: '#FFD700' }} /> :
+                <LockKeyholeOpen className="w-4 h-4" style={{ color: 'hsl(220,18%,50%)' }} />
+              }
+            </div>
+            <div className="flex-1 text-left">
+              <p style={{
+                fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1rem',
+                color: isSealed ? 'hsl(42,30%,96%)' : 'hsl(222,38%,22%)',
+              }}>
+                {isSealed ? 'Sealed until a special date' : 'Seal this letter'}
+              </p>
+              <p style={{
+                fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500,
+                color: isSealed ? 'rgba(195,185,165,0.50)' : 'hsl(220,16%,62%)',
+                marginTop: '2px',
+              }}>
+                {isSealed ? 'Tap to unseal' : 'Lock it until a chosen date'}
+              </p>
+            </div>
+            <div style={{
+              fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700,
+              letterSpacing: '0.12em', textTransform: 'uppercase',
+              background: isSealed ? 'rgba(255,215,0,0.15)' : 'rgba(30,60,130,0.06)',
+              color: isSealed ? '#FFD700' : 'hsl(220,18%,50%)',
+              borderRadius: '3px', padding: '5px 10px',
+              border: isSealed ? '1px solid rgba(255,215,0,0.25)' : '1px solid rgba(30,60,130,0.08)',
+            }}>
+              {isSealed ? 'ON' : 'OFF'}
+            </div>
+          </motion.button>
+
+          <AnimatePresence>
+            {isSealed && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: 'auto' }}
+                exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden"
+              >
+                <div className="mt-3">
+                  <label style={labelStyle}>
+                    <Calendar className="w-3 h-3 inline-block mr-1" style={{ verticalAlign: 'middle' }} />
+                    Unlock Date
+                  </label>
+                  <input
+                    type="date"
+                    value={unlockDateInput}
+                    onChange={e => setUnlockDateInput(e.target.value)}
+                    min={getMinDate()}
+                    style={{
+                      ...inputStyle,
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '0.95rem',
+                      background: 'hsl(40,26%,95%)',
+                    }}
+                  />
+                  {unlockDateInput && (
+                    <motion.p
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic',
+                        fontSize: '0.88rem', color: 'hsl(218,50%,42%)',
+                        marginTop: '8px', textAlign: 'center',
+                      }}>
+                      This letter will be sealed until {formatDateForDisplay(unlockDateInput)}
+                    </motion.p>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+
+        <div>
           <label style={labelStyle}>Category</label>
           <div className="flex flex-wrap gap-2">
             {CATEGORY_OPTIONS.map(c => (
@@ -144,19 +255,19 @@ export default function WriteLetterPage() {
         <motion.button
           onClick={handleSend}
           whileTap={{ scale: 0.97 }}
-          disabled={!title.trim() || !content.trim() || sent}
+          disabled={!title.trim() || !content.trim() || sent || (isSealed && !unlockDateInput)}
           className="flex items-center justify-center gap-2.5 w-full"
           style={{
             fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-            background: sent ? 'hsl(160,40%,42%)' : 'hsl(218,70%,28%)',
+            background: sent ? 'hsl(160,40%,42%)' : isSealed ? 'hsl(222,42%,18%)' : 'hsl(218,70%,28%)',
             color: 'hsl(42,30%,96%)', borderRadius: '4px', padding: '16px 20px',
             border: 'none', marginTop: '8px',
-            opacity: (!title.trim() || !content.trim()) ? 0.5 : 1,
+            opacity: (!title.trim() || !content.trim() || (isSealed && !unlockDateInput)) ? 0.5 : 1,
             boxShadow: '2px 4px 14px rgba(12,25,72,0.22)',
           }}
         >
-          <Send className="w-4 h-4" />
-          {sent ? 'Sent ✦' : 'Send Letter'}
+          {isSealed ? <LockKeyhole className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+          {sent ? 'Sealed' : isSealed ? 'Seal Letter' : 'Send Letter'}
         </motion.button>
       </div>
     </AppShell>
