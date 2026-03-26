@@ -521,14 +521,24 @@ export default function ScorePage() {
             <div>
               <SectionDivider label="Score Evolution" />
               <div className="px-4 py-5" style={{ background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 3px 10px rgba(20,40,100,0.05)' }}>
-                <div className="flex items-center justify-end gap-4 mb-2">
-                  <div className="flex items-center gap-1.5">
-                    <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(218,65%,38%)' }} />
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Daniel</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(28,60%,55%)' }} />
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Sofia</span>
+                <div className="flex items-center justify-between mb-2">
+                  <motion.button
+                    whileTap={{ scale: 0.92 }}
+                    onClick={() => { saveSnapshotsLS([]); setSnapshots([]); }}
+                    className="flex items-center gap-1"
+                    style={{ padding: '3px 8px', borderRadius: '3px', background: 'hsl(40,20%,93%)', border: '1px solid rgba(30,60,130,0.08)', cursor: 'pointer' }}>
+                    <RotateCcw className="w-3 h-3" style={{ color: 'hsl(220,16%,56%)' }} />
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, color: 'hsl(220,16%,56%)', letterSpacing: '0.04em', textTransform: 'uppercase' }}>Reset</span>
+                  </motion.button>
+                  <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-1.5">
+                      <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(218,65%,38%)' }} />
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Daniel</span>
+                    </div>
+                    <div className="flex items-center gap-1.5">
+                      <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(28,60%,55%)' }} />
+                      <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Sofia</span>
+                    </div>
                   </div>
                 </div>
                 <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full" style={{ overflow: 'visible' }}>
