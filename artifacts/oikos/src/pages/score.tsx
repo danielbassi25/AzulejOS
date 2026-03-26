@@ -395,8 +395,8 @@ export default function ScorePage() {
                 boxShadow: p.dark ? '0 6px 20px rgba(10,18,50,0.30)' : '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.06)',
               }}>
               <div className="w-16 h-16 rounded-full overflow-hidden mb-3" style={{
-                border: p.dark ? '3px solid rgba(255,215,0,0.30)' : '3px solid hsl(218,60%,32%)',
-                boxShadow: p.dark ? '0 4px 16px rgba(0,0,0,0.30), 0 0 0 1px rgba(255,215,0,0.10)' : '0 4px 16px rgba(15,30,80,0.14)',
+                border: p.dark ? '3px solid hsl(338,45%,42%)' : '3px solid hsl(218,60%,32%)',
+                boxShadow: p.dark ? '0 4px 16px rgba(120,25,50,0.25), 0 0 0 1px rgba(160,50,70,0.12)' : '0 4px 16px rgba(15,30,80,0.14)',
               }}>
                 <img src={`${import.meta.env.BASE_URL}images/${p.avatar}`} alt={p.name} className="w-full h-full object-cover" />
               </div>
@@ -486,9 +486,9 @@ export default function ScorePage() {
               <motion.div initial={{ width: 0 }} animate={{ width: `${danielPercent}%` }} transition={{ duration: 0.8, ease: [0.34, 1.1, 0.64, 1] }}
                 style={{ height: '100%', background: 'hsl(218,65%,38%)', borderRadius: '2px 0 0 2px' }} />
               <motion.div initial={{ width: 0 }} animate={{ width: `${sofiaPercent}%` }} transition={{ duration: 0.8, ease: [0.34, 1.1, 0.64, 1] }}
-                style={{ height: '100%', background: 'hsl(28,60%,55%)', borderRadius: '0 2px 2px 0' }} />
+                style={{ height: '100%', background: 'hsl(338,45%,42%)', borderRadius: '0 2px 2px 0' }} />
             </div>
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(28,50%,45%)', minWidth: 30, textAlign: 'right' }}>{sofiaPercent.toFixed(0)}%</span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(338,40%,40%)', minWidth: 30, textAlign: 'right' }}>{sofiaPercent.toFixed(0)}%</span>
           </div>
         )}
 
@@ -536,7 +536,7 @@ export default function ScorePage() {
                       <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Daniel</span>
                     </div>
                     <div className="flex items-center gap-1.5">
-                      <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(28,60%,55%)' }} />
+                      <div style={{ width: 12, height: 3, borderRadius: '2px', background: 'hsl(338,45%,42%)' }} />
                       <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(220,18%,50%)' }}>Sofia</span>
                     </div>
                   </div>
@@ -548,8 +548,8 @@ export default function ScorePage() {
                       <stop offset="100%" stopColor="hsl(218,65%,38%)" stopOpacity="0.01" />
                     </linearGradient>
                     <linearGradient id="sofiaFill" x1="0" y1="0" x2="0" y2="1">
-                      <stop offset="0%" stopColor="hsl(28,60%,55%)" stopOpacity="0.10" />
-                      <stop offset="100%" stopColor="hsl(28,60%,55%)" stopOpacity="0.01" />
+                      <stop offset="0%" stopColor="hsl(338,45%,42%)" stopOpacity="0.10" />
+                      <stop offset="100%" stopColor="hsl(338,45%,42%)" stopOpacity="0.01" />
                     </linearGradient>
                   </defs>
                   {yTicks.map(v => (
@@ -573,14 +573,14 @@ export default function ScorePage() {
                         fill="none" stroke="hsl(218,65%,38%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                       <polyline
                         points={pts.map((s, i) => `${toX(i)},${toY(s.sofia)}`).join(' ')}
-                        fill="none" stroke="hsl(28,60%,55%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+                        fill="none" stroke="hsl(338,45%,42%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </>
                   )}
                   {showDots && pts.map((s, i) => (
                     <circle key={`d-${i}`} cx={toX(i)} cy={toY(s.daniel)} r={dotR} fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                   {showDots && pts.map((s, i) => (
-                    <circle key={`s-${i}`} cx={toX(i)} cy={toY(s.sofia)} r={dotR} fill="hsl(28,60%,55%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                    <circle key={`s-${i}`} cx={toX(i)} cy={toY(s.sofia)} r={dotR} fill="hsl(338,45%,42%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                 </svg>
               </div>

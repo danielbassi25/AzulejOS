@@ -185,7 +185,7 @@ export default function LettersPage() {
                         WebkitBackdropFilter: 'blur(10px)',
                         padding: '8px 14px 10px',
                         borderTop: '1px solid rgba(255,252,245,0.30)',
-                        minHeight: '52px',
+                        height: '54px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',

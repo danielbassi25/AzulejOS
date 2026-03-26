@@ -196,7 +196,7 @@ export default function DashboardPage() {
                   {greeting.text}
                 </p>
               </div>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.6rem', letterSpacing: '0.02em', lineHeight: 1.15, color: 'hsl(222,45%,16%)', marginTop: '2px' }}>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.6rem', letterSpacing: '0.03em', lineHeight: 1.15, color: 'hsl(222,45%,16%)', marginTop: '2px' }}>
                 Sofia
               </p>
             </div>
@@ -222,7 +222,7 @@ export default function DashboardPage() {
             <div className="absolute bottom-0 left-0 w-8 h-8 border-t border-r" style={{ borderColor: 'rgba(180,200,255,0.08)' }} />
             <div className="absolute bottom-0 right-0 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.08)' }} />
 
-            <p className="relative z-10 text-center" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(200,185,160,0.35)', marginBottom: '14px' }}>
+            <p className="relative z-10 text-center" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.22em', textTransform: 'uppercase', color: 'rgba(200,185,200,200)', marginBottom: '14px' }}>
               ✦ &nbsp;Time Together&nbsp; ✦
             </p>
 
@@ -235,7 +235,7 @@ export default function DashboardPage() {
             </div>
 
             <div className="relative z-10 mx-auto" style={{ width: 36, height: 1, background: 'rgba(200,185,160,0.15)', marginTop: '16px', marginBottom: '10px' }} />
-            <p className="relative z-10 text-center" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.72rem', letterSpacing: '0.03em', color: 'rgba(195,182,160,0.30)' }}>
+            <p className="relative z-10 text-center" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.72rem', letterSpacing: '0.03em', color: 'rgba(200,185,200,200)' }}>
               {data.daysTogether} days — Daniel & Sofia
             </p>
           </motion.div>
@@ -262,7 +262,7 @@ export default function DashboardPage() {
                 <p className="text-center relative z-10" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.0rem', letterSpacing: '0.015em', lineHeight: 1.7, color: 'rgba(222,212,194,0.82)', padding: '4px 4px 0' }}>
                   {quote.text}
                 </p>
-                <p className="text-right relative z-10" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: '0.7rem', letterSpacing: '0.04em', color: 'rgba(195,182,160,0.35)', marginTop: '12px' }}>
+                <p className="text-right relative z-10" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: '0.7rem', letterSpacing: '0.04em', color: 'rgba(200,185,200,200)', marginTop: '12px' }}>
                   — {quote.author}
                 </p>
               </motion.div>
