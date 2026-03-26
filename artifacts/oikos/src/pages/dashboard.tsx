@@ -8,6 +8,46 @@ import { differenceInDays, differenceInHours, differenceInMinutes, format } from
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
+const DAILY_QUOTES = [
+  { text: "Love is not love which alters when it alteration finds.", author: "William Shakespeare" },
+  { text: "My bounty is as boundless as the sea.", author: "William Shakespeare" },
+  { text: "Thy sweet love remembered such wealth brings.", author: "William Shakespeare" },
+  { text: "And yet, by heaven, I think my love as rare.", author: "William Shakespeare" },
+  { text: "How do I love thee? Let me count the ways.", author: "Elizabeth Barrett Browning" },
+  { text: "I love thee to the depth and breadth and height.", author: "Elizabeth Barrett Browning" },
+  { text: "If thou must love me, let it be for nought except for love's sake only.", author: "Elizabeth Barrett Browning" },
+  { text: "That Love is all there is, is all we know of Love.", author: "Emily Dickinson" },
+  { text: "Grow old along with me. The best is yet to be.", author: "Robert Browning" },
+  { text: "We were together. I forget the rest.", author: "Walt Whitman" },
+  { text: "Soul meets soul on lovers' lips.", author: "Percy Bysshe Shelley" },
+  { text: "Love seeketh not itself to please.", author: "William Blake" },
+  { text: "O my Luve's like a red, red rose.", author: "Robert Burns" },
+  { text: "Come live with me and be my love.", author: "Christopher Marlowe" },
+  { text: "One day I wrote her name upon the strand.", author: "Edmund Spenser" },
+  { text: "My true-love hath my heart, and I have his.", author: "Sir Philip Sidney" },
+  { text: "If ever two were one, then surely we.", author: "Anne Bradstreet" },
+  { text: "There is a garden in her face.", author: "Thomas Campion" },
+  { text: "I have spread my dreams under your feet.", author: "W. B. Yeats" },
+  { text: "Tread softly because you tread on my dreams.", author: "W. B. Yeats" },
+  { text: "Come to the window, sweet is the night-air.", author: "Matthew Arnold" },
+  { text: "Love, that can quickly seize the gentle heart.", author: "Dante Alighieri" },
+  { text: "All thoughts, all passions, all delights are ministers of Love.", author: "Samuel Taylor Coleridge" },
+  { text: "My heart is like a singing bird.", author: "Christina Rossetti" },
+  { text: "Love is enough.", author: "William Morris" },
+  { text: "She walks in beauty, like the night.", author: "Lord Byron" },
+  { text: "A thing of beauty is a joy for ever.", author: "John Keats" },
+  { text: "Believe me, if all those endearing young charms.", author: "Thomas Moore" },
+  { text: "My heart, the bird of the wilderness, has found its sky in your eyes.", author: "Rabindranath Tagore" },
+  { text: "Someone, I tell you, will remember us.", author: "Sappho" },
+];
+
+function getDailyQuote() {
+  const now = new Date();
+  const ref = new Date(2026, 0, 1);
+  const daysSinceRef = Math.floor((now.getTime() - ref.getTime()) / (1000 * 60 * 60 * 24));
+  return DAILY_QUOTES[((daysSinceRef % 30) + 30) % 30];
+}
+
 const tile = (i: number) => ({
   initial: { opacity: 0, y: 14 },
   animate: { opacity: 1, y: 0 },
@@ -201,27 +241,33 @@ export default function DashboardPage() {
           </motion.div>
 
           {/* ═══ QUOTE ═══ */}
-          <motion.div
-            {...tile(2)}
-            className="relative overflow-hidden"
-            style={{
-              backgroundColor: 'hsl(222,42%,13%)',
-              backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(222,42%,13%) 0%, hsl(220,40%,17%) 100%)`,
-              backgroundSize: '32px 32px, 100% 100%',
-              border: '1px solid rgba(15,40,110,0.55)', borderRadius: '4px',
-              boxShadow: '0 10px 30px rgba(10,20,60,0.30)', padding: '18px 20px 16px',
-            }}
-          >
-            <div className="absolute top-4 right-5 opacity-[0.06] pointer-events-none">
-              <Sparkles className="w-6 h-6" style={{ color: 'hsl(42,50%,80%)' }} />
-            </div>
-            <div className="flex gap-2">
-              <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '1.8rem', color: 'rgba(200,185,160,0.10)', lineHeight: 1 }}>"</div>
-              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.95rem', letterSpacing: '0.01em', lineHeight: 1.65, color: 'rgba(222,212,194,0.82)', position: 'relative', zIndex: 1, paddingTop: '4px' }}>
-                {data.randomPhrase}
-              </p>
-            </div>
-          </motion.div>
+          {(() => {
+            const quote = getDailyQuote();
+            return (
+              <motion.div
+                {...tile(2)}
+                className="relative overflow-hidden"
+                style={{
+                  backgroundColor: 'hsl(222,42%,13%)',
+                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(222,42%,13%) 0%, hsl(220,40%,17%) 100%)`,
+                  backgroundSize: '32px 32px, 100% 100%',
+                  border: '1px solid rgba(15,40,110,0.55)', borderRadius: '4px',
+                  boxShadow: '0 10px 30px rgba(10,20,60,0.30)', padding: '22px 24px 18px',
+                }}
+              >
+                <div className="absolute top-4 right-5 opacity-[0.06] pointer-events-none">
+                  <Sparkles className="w-6 h-6" style={{ color: 'hsl(42,50%,80%)' }} />
+                </div>
+                <div className="absolute top-3.5 left-5" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.4rem', color: 'rgba(200,185,160,0.08)', lineHeight: 1 }}>"</div>
+                <p className="text-center relative z-10" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.0rem', letterSpacing: '0.015em', lineHeight: 1.7, color: 'rgba(222,212,194,0.82)', padding: '4px 4px 0' }}>
+                  {quote.text}
+                </p>
+                <p className="text-right relative z-10" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: '0.7rem', letterSpacing: '0.04em', color: 'rgba(195,182,160,0.35)', marginTop: '12px' }}>
+                  — {quote.author}
+                </p>
+              </motion.div>
+            );
+          })()}
 
           {/* ═══ NEXT MEETING ═══ */}
           <div className="flex items-center gap-3 mt-2 mb-1">

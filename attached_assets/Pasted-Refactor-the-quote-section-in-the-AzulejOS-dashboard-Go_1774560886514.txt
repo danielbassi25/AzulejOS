@@ -1,0 +1,65 @@
+Refactor the quote section in the AzulejOS dashboard.
+
+Goal:
+Show one poetic love quote per day, rotating through a fixed set of 30 quotes.
+After 30 days, restart the cycle from the beginning.
+
+Implementation requirements:
+
+1. Create a constant array called DAILY_QUOTES with exactly these 30 entries:
+
+const DAILY_QUOTES = [
+  { text: "Love is not love which alters when it alteration finds.", author: "William Shakespeare" },
+  { text: "My bounty is as boundless as the sea.", author: "William Shakespeare" },
+  { text: "Thy sweet love remembered such wealth brings.", author: "William Shakespeare" },
+  { text: "And yet, by heaven, I think my love as rare.", author: "William Shakespeare" },
+  { text: "How do I love thee? Let me count the ways.", author: "Elizabeth Barrett Browning" },
+  { text: "I love thee to the depth and breadth and height.", author: "Elizabeth Barrett Browning" },
+  { text: "If thou must love me, let it be for nought except for love’s sake only.", author: "Elizabeth Barrett Browning" },
+  { text: "That Love is all there is, is all we know of Love.", author: "Emily Dickinson" },
+  { text: "Grow old along with me. The best is yet to be.", author: "Robert Browning" },
+  { text: "We were together. I forget the rest.", author: "Walt Whitman" },
+  { text: "Soul meets soul on lovers’ lips.", author: "Percy Bysshe Shelley" },
+  { text: "Love seeketh not itself to please.", author: "William Blake" },
+  { text: "O my Luve’s like a red, red rose.", author: "Robert Burns" },
+  { text: "Come live with me and be my love.", author: "Christopher Marlowe" },
+  { text: "One day I wrote her name upon the strand.", author: "Edmund Spenser" },
+  { text: "My true-love hath my heart, and I have his.", author: "Sir Philip Sidney" },
+  { text: "If ever two were one, then surely we.", author: "Anne Bradstreet" },
+  { text: "There is a garden in her face.", author: "Thomas Campion" },
+  { text: "I have spread my dreams under your feet.", author: "W. B. Yeats" },
+  { text: "Tread softly because you tread on my dreams.", author: "W. B. Yeats" },
+  { text: "Come to the window, sweet is the night-air.", author: "Matthew Arnold" },
+  { text: "Love, that can quickly seize the gentle heart.", author: "Dante Alighieri" },
+  { text: "All thoughts, all passions, all delights are ministers of Love.", author: "Samuel Taylor Coleridge" },
+  { text: "My heart is like a singing bird.", author: "Christina Rossetti" },
+  { text: "Love is enough.", author: "William Morris" },
+  { text: "She walks in beauty, like the night.", author: "Lord Byron" },
+  { text: "A thing of beauty is a joy for ever.", author: "John Keats" },
+  { text: "Believe me, if all those endearing young charms.", author: "Thomas Moore" },
+  { text: "My heart, the bird of the wilderness, has found its sky in your eyes.", author: "Rabindranath Tagore" },
+  { text: "Someone, I tell you, will remember us.", author: "Sappho" },
+];
+
+2. Compute the daily quote by using the current date and selecting:
+- one quote per day
+- cycle repeats every 30 days
+- deterministic rotation, not random
+
+Use a simple modulo strategy based on the number of days since a fixed reference date.
+
+3. Replace the current static quote in the dashboard with the daily quote.
+
+4. Styling requirements:
+- the quote text must be center aligned
+- the quote block should remain elegant and poetic
+- the author name must appear in the lower right corner of the quote card
+- the author should be smaller, refined, slightly muted, and feel editorial
+- keep the AzulejOS Portuguese tile style and current visual identity
+- preserve the premium serif typography for the quote
+- keep the section harmonious and uncluttered
+
+5. Do not change the overall dashboard layout.
+Only upgrade the quote logic and quote card content styling.
+
+6. Keep code clean and readable.
