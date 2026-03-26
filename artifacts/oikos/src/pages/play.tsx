@@ -1,28 +1,49 @@
-import { useState, useMemo, useCallback, useRef } from "react";
+import { useState, useMemo, useCallback, useRef, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockQuestions } from "@/data/mock";
-import { motion, AnimatePresence } from "framer-motion";
-import { RefreshCw, Heart, Shuffle, Check, ChevronDown } from "lucide-react";
+import type { Question } from "@/types";
+import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { RefreshCw, Heart, Shuffle, Check, ChevronDown, Plus, X } from "lucide-react";
 
 const CATEGORIES = ["All", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That"];
 
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.45' opacity='0.11'%3E%3Ccircle cx='18' cy='18' r='6'/%3E%3Cline x1='18' y1='0' x2='18' y2='12'/%3E%3Cline x1='18' y1='24' x2='18' y2='36'/%3E%3Cline x1='0' y1='18' x2='12' y2='18'/%3E%3Cline x1='24' y1='18' x2='36' y2='18'/%3E%3Cline x1='3.5' y1='3.5' x2='11' y2='11'/%3E%3Cline x1='25' y1='25' x2='32.5' y2='32.5'/%3E%3Cline x1='32.5' y1='3.5' x2='25' y2='11'/%3E%3Cline x1='11' y1='25' x2='3.5' y2='32.5'/%3E%3C/g%3E%3C/svg%3E")`;
 
+function useLocalStorageSet(key: string): [Set<string>, (fn: (prev: Set<string>) => Set<string>) => void] {
+  const [set, setSet] = useState<Set<string>>(() => {
+    try { const stored = localStorage.getItem(key); return stored ? new Set(JSON.parse(stored)) : new Set(); }
+    catch { return new Set(); }
+  });
+  const update = useCallback((fn: (prev: Set<string>) => Set<string>) => {
+    setSet(prev => { const next = fn(prev); localStorage.setItem(key, JSON.stringify([...next])); return next; });
+  }, [key]);
+  return [set, update];
+}
+
 export default function PlayPage() {
   const [activeCategory, setActiveCategory] = useState("All");
   const [currentIndex, setCurrentIndex] = useState(0);
   const [direction, setDirection] = useState(1);
-  const [favorites, setFavorites] = useState<Set<string>>(new Set());
-  const [answered, setAnswered] = useState<Set<string>>(new Set());
+  const [favorites, setFavorites] = useLocalStorageSet("oikos-play-favorites");
+  const [answered, setAnswered] = useLocalStorageSet("oikos-play-answered");
   const [shuffleMode, setShuffleMode] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [customQuestions, setCustomQuestions] = useState<Question[]>(() => {
+    try { const stored = localStorage.getItem("oikos-custom-questions"); return stored ? JSON.parse(stored) : []; }
+    catch { return []; }
+  });
+  const [newQuestionText, setNewQuestionText] = useState("");
+  const [newQuestionCategory, setNewQuestionCategory] = useState("Deep");
   const shuffleSeedRef = useRef(0);
+
+  const allQuestions = useMemo(() => [...mockQuestions, ...customQuestions], [customQuestions]);
 
   const filteredQuestions = useMemo(() => {
     const qs = activeCategory === "All"
-      ? mockQuestions
-      : mockQuestions.filter((q) => q.category === activeCategory);
+      ? allQuestions
+      : allQuestions.filter((q) => q.category === activeCategory);
     if (shuffleMode) {
       const seed = shuffleSeedRef.current;
       return [...qs].sort((a, b) => {
@@ -33,7 +54,7 @@ export default function PlayPage() {
     }
     return qs;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, shuffleMode, shuffleSeedRef.current]);
+  }, [activeCategory, shuffleMode, shuffleSeedRef.current, allQuestions]);
 
   const currentQuestion = filteredQuestions[currentIndex % filteredQuestions.length] || filteredQuestions[0];
 
@@ -42,30 +63,48 @@ export default function PlayPage() {
     setCurrentIndex((prev) => (prev + 1) % filteredQuestions.length);
   }, [filteredQuestions.length]);
 
+  const handlePrev = useCallback(() => {
+    setDirection(-1);
+    setCurrentIndex((prev) => (prev - 1 + filteredQuestions.length) % filteredQuestions.length);
+  }, [filteredQuestions.length]);
+
   const toggleFavorite = useCallback((id: string) => {
-    setFavorites(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  }, []);
+    setFavorites(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+  }, [setFavorites]);
 
   const toggleAnswered = useCallback((id: string) => {
-    setAnswered(prev => {
-      const next = new Set(prev);
-      if (next.has(id)) next.delete(id); else next.add(id);
-      return next;
-    });
-  }, []);
+    setAnswered(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
+  }, [setAnswered]);
+
+  const addCustomQuestion = useCallback(() => {
+    if (!newQuestionText.trim()) return;
+    const q: Question = { id: `custom-${Date.now()}`, category: newQuestionCategory, text: newQuestionText.trim() };
+    setCustomQuestions(prev => { const next = [...prev, q]; localStorage.setItem("oikos-custom-questions", JSON.stringify(next)); return next; });
+    setNewQuestionText("");
+    setShowAddForm(false);
+  }, [newQuestionText, newQuestionCategory]);
 
   const categoryCount = useMemo(() => {
-    const map: Record<string, number> = { All: mockQuestions.length };
-    mockQuestions.forEach(q => { map[q.category] = (map[q.category] || 0) + 1; });
+    const map: Record<string, number> = { All: allQuestions.length };
+    allQuestions.forEach(q => { map[q.category] = (map[q.category] || 0) + 1; });
     return map;
-  }, []);
+  }, [allQuestions]);
 
   const isFav = currentQuestion ? favorites.has(currentQuestion.id) : false;
   const isAns = currentQuestion ? answered.has(currentQuestion.id) : false;
+
+  const dragX = useMotionValue(0);
+  const cardRotate = useTransform(dragX, [-200, 0, 200], [-8, 0, 8]);
+  const cardOpacity = useTransform(dragX, [-200, -80, 0, 80, 200], [0.4, 1, 1, 1, 0.4]);
+
+  const handleDragEnd = useCallback((_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
+    const threshold = 60;
+    if (info.offset.x < -threshold || info.velocity.x < -300) {
+      handleNext();
+    } else if (info.offset.x > threshold || info.velocity.x > 300) {
+      handlePrev();
+    }
+  }, [handleNext, handlePrev]);
 
   return (
     <AppShell>
@@ -74,6 +113,19 @@ export default function PlayPage() {
         subtitle="Discover each other, again"
         action={
           <div className="flex items-center gap-2">
+            <motion.button
+              onClick={() => setShowAddForm(!showAddForm)}
+              whileTap={{ scale: 0.92 }}
+              className="flex items-center justify-center"
+              style={{
+                width: 28, height: 28, borderRadius: '3px',
+                background: showAddForm ? 'rgba(255,252,245,0.20)' : 'rgba(255,252,245,0.08)',
+                border: '1px solid rgba(255,252,245,0.18)',
+                color: showAddForm ? 'hsl(42,30%,94%)' : 'rgba(215,205,185,0.60)',
+              }}
+            >
+              {showAddForm ? <X className="w-3 h-3" /> : <Plus className="w-3 h-3" />}
+            </motion.button>
             <motion.button
               onClick={() => { if (!shuffleMode) shuffleSeedRef.current = Date.now(); setShuffleMode(!shuffleMode); }}
               whileTap={{ scale: 0.92 }}
@@ -93,7 +145,61 @@ export default function PlayPage() {
       />
 
       <div className="flex flex-col">
-        {/* Category selector — compact pill or dropdown */}
+        {/* Add custom question form */}
+        <AnimatePresence>
+          {showAddForm && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden"
+              style={{ borderBottom: '1px solid rgba(30,60,130,0.09)' }}
+            >
+              <div className="p-4 flex flex-col gap-3">
+                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(218,68%,28%)' }}>
+                  Write your own question
+                </p>
+                <textarea
+                  value={newQuestionText}
+                  onChange={(e) => setNewQuestionText(e.target.value)}
+                  placeholder="Your question for each other..."
+                  rows={2}
+                  style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.05rem', fontStyle: 'italic',
+                    color: 'hsl(222,38%,22%)', background: 'hsl(40,26%,95%)',
+                    border: '1px solid rgba(30,60,130,0.10)', borderRadius: '4px',
+                    padding: '12px 16px', resize: 'none', outline: 'none', width: '100%',
+                  }}
+                />
+                <div className="flex items-center gap-2">
+                  <select
+                    value={newQuestionCategory}
+                    onChange={(e) => setNewQuestionCategory(e.target.value)}
+                    style={{
+                      fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase',
+                      color: 'hsl(222,30%,30%)', background: 'hsl(40,22%,95%)',
+                      border: '1px solid rgba(30,60,130,0.08)', borderRadius: '3px', padding: '8px 12px', flex: 1,
+                    }}
+                  >
+                    {CATEGORIES.filter(c => c !== 'All').map(c => <option key={c} value={c}>{c}</option>)}
+                  </select>
+                  <motion.button
+                    onClick={addCustomQuestion}
+                    whileTap={{ scale: 0.95 }}
+                    style={{
+                      fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                      background: 'hsl(218,70%,28%)', color: 'hsl(42,30%,96%)', borderRadius: '3px', padding: '8px 16px', border: 'none',
+                    }}
+                  >
+                    Add
+                  </motion.button>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+
+        {/* Category selector */}
         <div className="relative" style={{ borderBottom: '1px solid rgba(30,60,130,0.09)' }}>
           <button
             onClick={() => setShowCategoryPicker(!showCategoryPicker)}
@@ -111,20 +217,13 @@ export default function PlayPage() {
               <ChevronDown className="w-3.5 h-3.5" style={{ color: 'hsl(220,16%,56%)' }} />
             </motion.div>
           </button>
-
           <AnimatePresence>
             {showCategoryPicker && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                exit={{ opacity: 0, height: 0 }}
-                className="overflow-hidden"
-                style={{ borderTop: '1px solid rgba(30,60,130,0.06)' }}
-              >
+              <motion.div initial={{ opacity: 0, height: 0 }} animate={{ opacity: 1, height: 'auto' }} exit={{ opacity: 0, height: 0 }}
+                className="overflow-hidden" style={{ borderTop: '1px solid rgba(30,60,130,0.06)' }}>
                 <div className="grid grid-cols-2 gap-1.5 p-3">
                   {CATEGORIES.map((cat) => (
-                    <button
-                      key={cat}
+                    <button key={cat}
                       onClick={() => { setActiveCategory(cat); setCurrentIndex(0); setShowCategoryPicker(false); }}
                       className="py-2.5 px-3 text-left transition-all duration-200"
                       style={{
@@ -133,8 +232,7 @@ export default function PlayPage() {
                         color: activeCategory === cat ? 'hsl(42,30%,94%)' : 'hsl(222,30%,30%)',
                         borderRadius: '3px',
                         border: activeCategory === cat ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.06)',
-                      }}
-                    >
+                      }}>
                       <span>{cat}</span>
                       <span className="ml-1" style={{ opacity: 0.5 }}>({categoryCount[cat] || 0})</span>
                     </button>
@@ -145,7 +243,7 @@ export default function PlayPage() {
           </AnimatePresence>
         </div>
 
-        {/* Question card */}
+        {/* Question card with swipe */}
         <div className="flex flex-col items-center px-4 pt-6 pb-4">
           <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '3/4' }}>
             <AnimatePresence mode="wait" custom={direction}>
@@ -156,15 +254,23 @@ export default function PlayPage() {
                 animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                 exit={{ opacity: 0, x: -90 * direction, scale: 0.94, rotate: -2.5 * direction }}
                 transition={{ type: "spring", stiffness: 250, damping: 28 }}
-                className="absolute inset-0 overflow-hidden"
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.8}
+                onDragEnd={handleDragEnd}
                 style={{
+                  x: dragX,
+                  rotate: cardRotate,
+                  opacity: cardOpacity,
                   backgroundColor: 'hsl(220,70%,26%)',
                   backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)`,
                   backgroundSize: '36px 36px, 100% 100%',
                   border: '1px solid rgba(15,45,115,0.50)',
                   borderRadius: '4px',
                   boxShadow: '4px 8px 30px rgba(12,25,72,0.28), -1px -1px 0 rgba(255,255,255,0.06) inset',
+                  cursor: 'grab', touchAction: 'pan-y',
                 }}
+                className="absolute inset-0 overflow-hidden"
               >
                 <div className="absolute top-0 left-0 right-0 pointer-events-none"
                   style={{ height: 80, background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)' }} />
@@ -174,7 +280,6 @@ export default function PlayPage() {
                 <div className="absolute bottom-0 right-0 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.11)' }} />
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-9">
-                  {/* Category badge */}
                   <div className="absolute top-6 left-0 right-0 flex justify-center">
                     <span style={{
                       fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
@@ -185,24 +290,24 @@ export default function PlayPage() {
                     </span>
                   </div>
 
-                  {/* Status indicators */}
                   <div className="absolute top-6 right-5 flex flex-col gap-2">
                     {isFav && <Heart className="w-3 h-3 fill-current" style={{ color: 'rgba(220,180,140,0.55)' }} />}
                     {isAns && <Check className="w-3 h-3" style={{ color: 'rgba(140,220,180,0.50)' }} />}
                   </div>
 
-                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem', color: 'rgba(200,185,160,0.16)', lineHeight: 1, marginBottom: '20px' }}>
-                    ✦
-                  </div>
+                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem', color: 'rgba(200,185,160,0.16)', lineHeight: 1, marginBottom: '20px' }}>✦</div>
 
                   <h2 style={{
-                    fontFamily: "'Cormorant Garamond', Georgia, serif",
-                    fontStyle: 'italic', fontWeight: 500,
-                    fontSize: '1.48rem', letterSpacing: '0.01em', lineHeight: 1.42,
-                    color: 'hsl(42,30%,96%)',
+                    fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 500,
+                    fontSize: '1.48rem', letterSpacing: '0.01em', lineHeight: 1.42, color: 'hsl(42,30%,96%)',
                   }}>
                     "{currentQuestion?.text}"
                   </h2>
+
+                  {/* Swipe hint */}
+                  <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-6">
+                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(175,162,140,0.20)' }}>← swipe →</span>
+                  </div>
 
                   <p className="absolute bottom-6" style={{
                     fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
@@ -217,90 +322,41 @@ export default function PlayPage() {
 
           {/* Action row */}
           <div className="flex items-center gap-2.5 w-full justify-center" style={{ marginTop: '24px', maxWidth: 340 }}>
-            {/* Favorite */}
-            <motion.button
-              onClick={() => currentQuestion && toggleFavorite(currentQuestion.id)}
-              whileTap={{ scale: 0.92 }}
+            <motion.button onClick={() => currentQuestion && toggleFavorite(currentQuestion.id)} whileTap={{ scale: 0.92 }}
               className="flex items-center justify-center"
-              style={{
-                width: 44, height: 44, borderRadius: '4px',
-                background: isFav ? 'hsl(218,70%,28%)' : 'hsl(38,30%,99%)',
-                border: isFav ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.10)',
-                boxShadow: '0 1px 0 rgba(255,255,255,0.85) inset, 2px 3px 8px rgba(20,40,100,0.06)',
-              }}
-            >
-              <Heart
-                className="w-4 h-4"
-                style={{
-                  color: isFav ? 'hsl(42,48%,78%)' : 'hsl(220,18%,54%)',
-                  fill: isFav ? 'hsl(42,48%,78%)' : 'none',
-                }}
-              />
+              style={{ width: 44, height: 44, borderRadius: '4px', background: isFav ? 'hsl(218,70%,28%)' : 'hsl(38,30%,99%)', border: isFav ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.10)', boxShadow: '0 1px 0 rgba(255,255,255,0.85) inset, 2px 3px 8px rgba(20,40,100,0.06)' }}>
+              <Heart className="w-4 h-4" style={{ color: isFav ? 'hsl(42,48%,78%)' : 'hsl(220,18%,54%)', fill: isFav ? 'hsl(42,48%,78%)' : 'none' }} />
             </motion.button>
 
-            {/* Next */}
-            <motion.button
-              onClick={handleNext}
-              whileTap={{ scale: 0.97 }}
-              whileHover={{ y: -1.5 }}
+            <motion.button onClick={handleNext} whileTap={{ scale: 0.97 }} whileHover={{ y: -1.5 }}
               transition={{ type: "spring", stiffness: 400, damping: 28 }}
               className="flex-1 flex items-center justify-center gap-2.5"
-              style={{
-                fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-                background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.10)',
-                borderRadius: '4px', color: 'hsl(218,68%,30%)',
-                boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 4px 12px rgba(20,40,100,0.07)',
-                padding: '13px 20px',
-              }}
-            >
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.10)', borderRadius: '4px', color: 'hsl(218,68%,30%)', boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 4px 12px rgba(20,40,100,0.07)', padding: '13px 20px' }}>
               <RefreshCw className="w-3.5 h-3.5" />
               Next Question
             </motion.button>
 
-            {/* Answered */}
-            <motion.button
-              onClick={() => currentQuestion && toggleAnswered(currentQuestion.id)}
-              whileTap={{ scale: 0.92 }}
+            <motion.button onClick={() => currentQuestion && toggleAnswered(currentQuestion.id)} whileTap={{ scale: 0.92 }}
               className="flex items-center justify-center"
-              style={{
-                width: 44, height: 44, borderRadius: '4px',
-                background: isAns ? 'hsl(218,70%,28%)' : 'hsl(38,30%,99%)',
-                border: isAns ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.10)',
-                boxShadow: '0 1px 0 rgba(255,255,255,0.85) inset, 2px 3px 8px rgba(20,40,100,0.06)',
-              }}
-            >
-              <Check
-                className="w-4 h-4"
-                style={{ color: isAns ? 'hsl(140,50%,70%)' : 'hsl(220,18%,54%)' }}
-              />
+              style={{ width: 44, height: 44, borderRadius: '4px', background: isAns ? 'hsl(218,70%,28%)' : 'hsl(38,30%,99%)', border: isAns ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.10)', boxShadow: '0 1px 0 rgba(255,255,255,0.85) inset, 2px 3px 8px rgba(20,40,100,0.06)' }}>
+              <Check className="w-4 h-4" style={{ color: isAns ? 'hsl(140,50%,70%)' : 'hsl(220,18%,54%)' }} />
             </motion.button>
           </div>
 
           {/* Stats bar */}
-          <div
-            className="flex items-center justify-between w-full px-4 py-3"
-            style={{
-              maxWidth: 340, marginTop: '16px', borderRadius: '4px',
-              background: 'hsl(40,22%,95%)', border: '1px solid rgba(30,60,130,0.06)',
-            }}
-          >
+          <div className="flex items-center justify-between w-full px-4 py-3"
+            style={{ maxWidth: 340, marginTop: '16px', borderRadius: '4px', background: 'hsl(40,22%,95%)', border: '1px solid rgba(30,60,130,0.06)' }}>
             <div className="flex items-center gap-1.5">
               <Heart className="w-3 h-3" style={{ color: 'hsl(218,60%,42%)', fill: 'hsl(218,60%,42%)' }} />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(222,30%,32%)' }}>
-                {favorites.size} saved
-              </span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(222,30%,32%)' }}>{favorites.size} saved</span>
             </div>
             <div style={{ width: 1, height: 12, background: 'rgba(30,60,130,0.12)' }} />
             <div className="flex items-center gap-1.5">
               <Check className="w-3 h-3" style={{ color: 'hsl(160,40%,42%)' }} />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(222,30%,32%)' }}>
-                {answered.size} answered
-              </span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(222,30%,32%)' }}>{answered.size} answered</span>
             </div>
             <div style={{ width: 1, height: 12, background: 'rgba(30,60,130,0.12)' }} />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(222,30%,32%)' }}>
-              {mockQuestions.length} total
-            </span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, color: 'hsl(222,30%,32%)' }}>{allQuestions.length} total</span>
           </div>
         </div>
       </div>

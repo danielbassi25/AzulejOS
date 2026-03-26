@@ -1,5 +1,5 @@
 import AppShell from "@/components/AppShell";
-import { mockLetters } from "@/data/mock";
+import { getAllLetters } from "@/data/store";
 import { Link, useRoute, Redirect } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, LockKeyhole, User, Calendar, Heart } from "lucide-react";
@@ -8,9 +8,10 @@ const sealPattern = `url("data:image/svg+xml,%3Csvg width='20' height='20' viewB
 
 export default function LetterDetailPage() {
   const [, params] = useRoute("/letters/:id");
-  const letter = mockLetters.find((l) => l.id === params?.id);
+  const allLetters = getAllLetters();
+  const letter = allLetters.find((l) => l.id === params?.id);
   if (!letter) return <Redirect to="/letters" />;
-  const idx = mockLetters.findIndex((l) => l.id === letter.id);
+  const idx = allLetters.findIndex((l) => l.id === letter.id);
 
   if (letter.isLocked) {
     return (

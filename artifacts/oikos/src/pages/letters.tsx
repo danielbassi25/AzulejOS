@@ -1,19 +1,30 @@
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
-import { mockLetters } from "@/data/mock";
+import { getAllLetters } from "@/data/store";
 import { motion } from "framer-motion";
-import { LockKeyhole, MailOpen } from "lucide-react";
+import { LockKeyhole, MailOpen, PenLine } from "lucide-react";
 import { Link } from "wouter";
+import { useMemo } from "react";
 
 const sealPattern = `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.4' opacity='0.14'%3E%3Ccircle cx='10' cy='10' r='3.5'/%3E%3Cline x1='10' y1='0' x2='10' y2='6.5'/%3E%3Cline x1='10' y1='13.5' x2='10' y2='20'/%3E%3Cline x1='0' y1='10' x2='6.5' y2='10'/%3E%3Cline x1='13.5' y1='10' x2='20' y2='10'/%3E%3C/g%3E%3C/svg%3E")`;
 
 export default function LettersPage() {
+  const mockLetters = useMemo(() => getAllLetters(), []);
   const openLetters = mockLetters.filter(l => !l.isLocked);
   const sealedLetters = mockLetters.filter(l => l.isLocked);
 
   return (
     <AppShell>
-      <SectionHeader title="Letters" subtitle="Words preserved in time" />
+      <SectionHeader title="Letters" subtitle="Words preserved in time"
+        action={
+          <Link href="/letters/new">
+            <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '3px', color: 'rgba(215,205,185,0.70)', padding: '6px 12px' }}>
+              <PenLine className="w-3 h-3" /> Write
+            </motion.div>
+          </Link>
+        }
+      />
 
       <div className="px-4 pt-5 pb-14">
         {/* Kicker */}

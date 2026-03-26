@@ -32,6 +32,12 @@ export const mockMemories: Memory[] = [
     insideJokes: ["The aggressive pigeon", "Unintentional matching coats"],
     imageUrl: "https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=800&auto=format&fit=crop",
     tags: ["trip", "milestone", "tender"],
+    mood: "magical",
+    gallery: [
+      "https://images.unsplash.com/photo-1498804103079-a6351b050096?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1515542622106-78bda8ba0e5b?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1529260830199-42c24126f198?q=80&w=800&auto=format&fit=crop",
+    ],
   },
   {
     id: "mem-2",
@@ -43,6 +49,13 @@ export const mockMemories: Memory[] = [
     insideJokes: ["Pastel de nata count: 14", "The endless stairs"],
     imageUrl: "https://images.unsplash.com/photo-1558348259-21665a3c2005?q=80&w=800&auto=format&fit=crop",
     tags: ["trip", "tender", "routine"],
+    mood: "nostalgic",
+    gallery: [
+      "https://images.unsplash.com/photo-1558348259-21665a3c2005?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1555881400-74d7acaacd8b?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1513735492284-ecf18d81de76?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1548707309-dcebeab426c8?q=80&w=800&auto=format&fit=crop",
+    ],
   },
   {
     id: "mem-3",
@@ -54,6 +67,11 @@ export const mockMemories: Memory[] = [
     insideJokes: ["The 'shortcut'", "Pre-coffee personalities"],
     imageUrl: "https://images.unsplash.com/photo-1620802051771-33bc03c800b7?q=80&w=800&auto=format&fit=crop",
     tags: ["trip", "milestone", "funny"],
+    mood: "adventurous",
+    gallery: [
+      "https://images.unsplash.com/photo-1620802051771-33bc03c800b7?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=800&auto=format&fit=crop",
+    ],
   },
   {
     id: "mem-4",
@@ -65,6 +83,12 @@ export const mockMemories: Memory[] = [
     insideJokes: ["The missing corkscrew", "Midnight francesinha"],
     imageUrl: "https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=800&auto=format&fit=crop",
     tags: ["milestone", "tender"],
+    mood: "euphoric",
+    gallery: [
+      "https://images.unsplash.com/photo-1512100356356-de1b84283e18?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1467810563316-b5476525c0f9?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1514543250559-83867827ecce?q=80&w=800&auto=format&fit=crop",
+    ],
   },
   {
     id: "mem-5",
@@ -76,6 +100,11 @@ export const mockMemories: Memory[] = [
     insideJokes: ["The overly friendly dog", "That one weird painting"],
     imageUrl: "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=800&auto=format&fit=crop",
     tags: ["routine", "funny", "tender"],
+    mood: "peaceful",
+    gallery: [
+      "https://images.unsplash.com/photo-1533900298318-6b8da08a523e?q=80&w=800&auto=format&fit=crop",
+      "https://images.unsplash.com/photo-1488459716781-31db52582fe9?q=80&w=800&auto=format&fit=crop",
+    ],
   },
 ];
 
@@ -392,5 +421,17 @@ export const mockScore: ScoreData = {
     { id: "act-6", user: "Daniel", action: "Cooked a surprise dinner", points: 5, date: "2 weeks ago" },
     { id: "act-7", user: "Sofia", action: "Left a love note", points: 3, date: "2 weeks ago" },
     { id: "act-8", user: "Daniel", action: "Remembered the anniversary date", points: 5, date: "3 weeks ago" },
+  ],
+  history: [
+    { week: "W1", daniel: 3, sofia: 5 },
+    { week: "W2", daniel: 8, sofia: 7 },
+    { week: "W3", daniel: 12, sofia: 15 },
+    { week: "W4", daniel: 18, sofia: 22 },
+    { week: "W5", daniel: 22, sofia: 28 },
+    { week: "W6", daniel: 28, sofia: 32 },
+    { week: "W7", daniel: 35, sofia: 38 },
+    { week: "W8", daniel: 38, sofia: 42 },
+    { week: "W9", daniel: 42, sofia: 46 },
+    { week: "W10", daniel: 47, sofia: 52 },
   ],
 };

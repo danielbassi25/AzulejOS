@@ -12,6 +12,8 @@ import LetterDetailPage from "@/pages/letter-detail";
 import BuildPage from "@/pages/build";
 import PlayPage from "@/pages/play";
 import ScorePage from "@/pages/score";
+import CreateMemoryPage from "@/pages/create-memory";
+import WriteLetterPage from "@/pages/write-letter";
 
 const queryClient = new QueryClient();
 
@@ -28,8 +30,10 @@ function Router() {
     <Switch>
       <Route path="/" component={HomeRedirect} />
       <Route path="/system" component={SystemPage} />
+      <Route path="/saudade/new" component={CreateMemoryPage} />
       <Route path="/saudade/:id" component={SaudadeDetailPage} />
       <Route path="/saudade" component={SaudadePage} />
+      <Route path="/letters/new" component={WriteLetterPage} />
       <Route path="/letters/:id" component={LetterDetailPage} />
       <Route path="/letters" component={LettersPage} />
       <Route path="/build" component={BuildPage} />

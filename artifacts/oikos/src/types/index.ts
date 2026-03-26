@@ -8,6 +8,8 @@ export interface Memory {
   insideJokes: string[];
   imageUrl: string;
   tags?: string[];
+  mood?: string;
+  gallery?: string[];
 }
 
 export interface Letter {
@@ -39,6 +41,7 @@ export interface ScoreData {
   sofia: number;
   milestones: { title: string; winner: string | null; target: number }[];
   recentActivities: { id: string; user: string; action: string; points: number; date: string }[];
+  history: { week: string; daniel: number; sofia: number }[];
 }
 
 export interface DashboardData {

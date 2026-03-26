@@ -1,9 +1,10 @@
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
-import { mockMemories } from "@/data/mock";
+import { getAllMemories } from "@/data/store";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
-import { MapPin } from "lucide-react";
+import { useMemo } from "react";
+import { MapPin, Plus } from "lucide-react";
 
 const TAG_COLORS: Record<string, { bg: string; color: string }> = {
   trip: { bg: 'rgba(30,80,180,0.60)', color: 'rgba(200,215,255,0.92)' },
@@ -14,9 +15,19 @@ const TAG_COLORS: Record<string, { bg: string; color: string }> = {
 };
 
 export default function SaudadePage() {
+  const mockMemories = useMemo(() => getAllMemories(), []);
   return (
     <AppShell>
-      <SectionHeader title="Saudade" subtitle="The presence of absence" />
+      <SectionHeader title="Saudade" subtitle="The presence of absence"
+        action={
+          <Link href="/saudade/new">
+            <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '3px', color: 'rgba(215,205,185,0.70)', padding: '6px 12px' }}>
+              <Plus className="w-3 h-3" /> New
+            </motion.div>
+          </Link>
+        }
+      />
 
       <div className="px-4 pt-5 pb-12">
         <div className="flex items-center gap-3 mb-5">
