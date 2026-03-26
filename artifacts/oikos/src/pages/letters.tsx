@@ -12,7 +12,7 @@ const noteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' v
 
 const openWhenTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.16'%3E%3Cpath d='M30 6l8.5 8.5L30 23l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M30 37l8.5 8.5L30 54l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M6 30l8.5-8.5L23 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Cpath d='M37 30l8.5-8.5L54 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='4' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='1.5' stroke-width='0.4'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke-width='0.3'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
-const inviteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Cpath d='M30 0Q60 30 30 60Q0 30 30 0z' stroke-width='0.7'/%3E%3Cpath d='M0 0Q30 30 0 60' stroke-width='0.5'/%3E%3Cpath d='M60 0Q30 30 60 60' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='5' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='2' stroke-width='0.4'/%3E%3Cpath d='M15 0Q30 15 15 30Q0 15 15 0z' stroke-width='0.4' transform='translate(15,15)'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
+const inviteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.20'%3E%3Ccircle cx='30' cy='30' r='14' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='8' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='2.5' stroke-width='0.5'/%3E%3Cpath d='M30 16v-16M30 44v16M16 30H0M44 30h16' stroke-width='0.4'/%3E%3Cpath d='M20.1 20.1L6 6M39.9 20.1L54 6M20.1 39.9L6 54M39.9 39.9L54 54' stroke-width='0.35'/%3E%3Ccircle cx='30' cy='16' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='30' cy='44' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='16' cy='30' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='44' cy='30' r='1.8' stroke-width='0.45'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const TILE_STYLES: Record<string, { bg: string; grad: string; pattern: string; border: string; shadow: string }> = {
   note: {
@@ -30,19 +30,13 @@ const TILE_STYLES: Record<string, { bg: string; grad: string; pattern: string; b
     shadow: '2px 4px 14px rgba(8,18,55,0.35)',
   },
   invite: {
-    bg: 'hsl(205,50%,30%)',
-    grad: 'linear-gradient(155deg, hsl(205,48%,28%) 0%, hsl(208,54%,34%) 100%)',
+    bg: 'hsl(338,45%,38%)',
+    grad: 'linear-gradient(155deg, hsl(338,42%,34%) 0%, hsl(340,48%,42%) 100%)',
     pattern: inviteTilePattern,
-    border: '1px solid rgba(15,55,110,0.50)',
-    shadow: '2px 4px 14px rgba(12,35,70,0.28)',
+    border: '1px solid rgba(120,20,50,0.50)',
+    shadow: '2px 4px 14px rgba(80,15,35,0.30)',
   },
 };
-
-function noteTypeIcon(t?: NoteType) {
-  if (t === "open-when") return Sparkles;
-  if (t === "invite") return CalendarHeart;
-  return MessageSquare;
-}
 
 function noteTypeLabel(t?: NoteType): string {
   if (t === "open-when") return "Open When";
@@ -100,7 +94,7 @@ export default function LettersPage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Azulejos" subtitle="Each tile holds a piece of us"
+      <SectionHeader title="Parede" subtitle="Words laid tile by tile"
         action={
           <Link href="/letters/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
@@ -112,8 +106,8 @@ export default function LettersPage() {
       />
 
       <div className="px-4 pt-5 pb-14">
-        <div className="flex items-center gap-3 mb-5">
-          <div style={{ width: 20, height: 1, background: 'rgba(30,60,130,0.16)' }} />
+        <div className="flex items-center justify-center gap-3 mb-5">
+          <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'hsl(220,18%,60%)' }}>
             {letters.length} {letters.length === 1 ? 'tile' : 'tiles'}
           </p>
@@ -132,14 +126,13 @@ export default function LettersPage() {
               <MessageSquare className="w-5 h-5" style={{ color: 'rgba(255,252,245,0.50)' }} />
             </div>
             <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '1.05rem', color: 'hsl(220,18%,58%)', lineHeight: 1.6 }}>
-              Your mosaic is empty.<br />Lay the first tile.
+              Your wall is empty.<br />Lay the first tile.
             </p>
           </div>
         )}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           {letters.map((letter, idx) => {
-            const TypeIcon = noteTypeIcon(letter.noteType);
             const typeLabel = noteTypeLabel(letter.noteType);
             const style = TILE_STYLES[letter.noteType || 'note'] || TILE_STYLES.note;
             const isEditable = isCustomItem(letter.id);
@@ -155,7 +148,7 @@ export default function LettersPage() {
               >
                 <Link href={`/letters/${letter.id}`} className="block w-full h-full">
                   <div
-                    className="relative overflow-hidden w-full h-full flex flex-col justify-between"
+                    className="relative overflow-hidden w-full h-full flex flex-col"
                     style={{
                       backgroundColor: style.bg,
                       backgroundImage: `${style.pattern}, ${style.grad}`,
@@ -163,7 +156,6 @@ export default function LettersPage() {
                       border: style.border,
                       borderRadius: '4px',
                       boxShadow: style.shadow,
-                      padding: '14px 14px 12px',
                     }}
                   >
                     <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t border-l" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
@@ -171,7 +163,7 @@ export default function LettersPage() {
                     <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b border-l" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
                     <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b border-r" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
 
-                    <div className="relative z-10">
+                    <div className="relative z-10 flex items-start justify-between px-3.5 pt-3">
                       <span style={{
                         fontFamily: 'Inter, sans-serif', fontSize: '6.5px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
                         background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.16)',
@@ -179,32 +171,37 @@ export default function LettersPage() {
                       }}>
                         {typeLabel}
                       </span>
-                    </div>
-
-                    <div className="relative z-10 flex-1 flex items-center justify-center px-1">
-                      {letter.isLocked ? (
-                        <LockKeyhole className="w-6 h-6" style={{ color: 'rgba(200,215,255,0.30)' }} />
-                      ) : (
-                        <TypeIcon className="w-6 h-6" style={{ color: 'rgba(255,252,245,0.14)' }} />
+                      {letter.isLocked && (
+                        <LockKeyhole className="w-3 h-3" style={{ color: 'rgba(200,215,255,0.35)' }} />
                       )}
                     </div>
 
+                    <div className="flex-1" />
+
                     <div className="relative z-10">
-                      <h3 style={{
-                        fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600,
-                        fontSize: '0.82rem', letterSpacing: '0.01em', lineHeight: 1.25,
-                        color: 'rgba(222,212,194,0.85)',
-                        overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+                      <div style={{
+                        background: 'rgba(255,252,245,0.82)',
+                        backdropFilter: 'blur(8px)',
+                        WebkitBackdropFilter: 'blur(8px)',
+                        padding: '10px 14px 12px',
+                        borderTop: '1px solid rgba(255,252,245,0.25)',
                       }}>
-                        {letter.title}
-                      </h3>
-                      <p style={{
-                        fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500,
-                        color: 'rgba(195,185,165,0.38)', marginTop: '3px',
-                        letterSpacing: '0.06em',
-                      }}>
-                        {letter.author || ''}
-                      </p>
+                        <h3 style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700,
+                          fontSize: '0.82rem', letterSpacing: '0.01em', lineHeight: 1.25,
+                          color: 'hsl(222,45%,16%)',
+                          overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+                        }}>
+                          {letter.title}
+                        </h3>
+                        <p style={{
+                          fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500,
+                          color: 'hsl(220,16%,48%)', marginTop: '2px',
+                          letterSpacing: '0.06em',
+                        }}>
+                          {letter.author || ''}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 </Link>
@@ -258,7 +255,7 @@ export default function LettersPage() {
                 <Trash2 className="w-5 h-5" style={{ color: 'hsl(0,50%,42%)' }} />
               </div>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '1.1rem', color: 'hsl(222,38%,22%)', textAlign: 'center' }}>
-                Remove this tile from the mosaic?
+                Remove this tile from the wall?
               </p>
               <div className="flex gap-3 w-full mt-1">
                 <motion.button onClick={() => setQuickDeleteId(null)} whileTap={{ scale: 0.97 }} className="flex-1 py-3"

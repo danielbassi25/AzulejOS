@@ -93,7 +93,7 @@ export default function LetterDetailPage() {
                 style={{ color: 'rgba(200,215,255,0.78)' }}>
                 <ArrowLeft className="w-4 h-4" />
                 <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                  Back to Azulejos
+                  Back to Parede
                 </span>
               </Link>
               {isEditable && (
@@ -225,7 +225,7 @@ export default function LetterDetailPage() {
               style={{ color: 'rgba(200,215,255,0.78)' }}>
               <ArrowLeft className="w-4 h-4" />
               <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                Back to Azulejos
+                Back to Parede
               </span>
             </Link>
             {isEditable && (
