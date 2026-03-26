@@ -3,12 +3,12 @@ import { Home, Heart, Mail, Target, Dices, Trophy } from "lucide-react";
 import { motion } from "framer-motion";
 
 const navItems = [
-  { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/saudade", icon: Heart, label: "Saudade" },
-  { path: "/letters", icon: Mail, label: "Tiles" },
-  { path: "/build", icon: Target, label: "Build" },
-  { path: "/play", icon: Dices, label: "Play" },
-  { path: "/score", icon: Trophy, label: "Score" },
+  { path: "/dashboard", icon: Home, label: "Home", activeBg: 'hsl(218, 70%, 28%)' },
+  { path: "/saudade", icon: Heart, label: "Saudade", activeBg: 'hsl(338, 45%, 38%)' },
+  { path: "/letters", icon: Mail, label: "Tiles", activeBg: 'hsl(218, 70%, 28%)' },
+  { path: "/build", icon: Target, label: "Build", activeBg: 'hsl(218, 70%, 28%)' },
+  { path: "/play", icon: Dices, label: "Play", activeBg: 'hsl(218, 70%, 28%)' },
+  { path: "/score", icon: Trophy, label: "Score", activeBg: 'hsl(218, 70%, 28%)' },
 ];
 
 export default function BottomNav() {
@@ -43,7 +43,7 @@ export default function BottomNav() {
                 <motion.div
                   layoutId="nav-active"
                   className="absolute inset-0"
-                  style={{ background: 'hsl(218, 70%, 28%)' }}
+                  style={{ background: item.activeBg }}
                   transition={{ type: "spring", bounce: 0.12, duration: 0.38 }}
                 />
               )}

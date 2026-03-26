@@ -7,6 +7,12 @@ import type { NoteType } from "@/types";
 
 const MAX_CHARS = 200;
 
+const TYPE_COLORS: Record<NoteType, string> = {
+  note: 'hsl(218,70%,28%)',
+  "open-when": 'hsl(222,52%,18%)',
+  invite: 'hsl(338,45%,38%)',
+};
+
 const typeOptions: { type: NoteType; icon: typeof MessageSquare; label: string; desc: string }[] = [
   { type: "note", icon: MessageSquare, label: "Note", desc: "A short, sweet message" },
   { type: "open-when", icon: Sparkles, label: "Open When", desc: "Sealed until the right moment" },
@@ -93,7 +99,7 @@ export default function WriteLetterPage() {
                   }}
                 >
                   <div className="w-10 h-10 flex items-center justify-center shrink-0"
-                    style={{ background: 'hsl(218,70%,28%)', borderRadius: '4px' }}>
+                    style={{ background: TYPE_COLORS[opt.type], borderRadius: '4px' }}>
                     <Icon className="w-4.5 h-4.5" style={{ color: 'hsl(42,30%,96%)' }} />
                   </div>
                   <div>

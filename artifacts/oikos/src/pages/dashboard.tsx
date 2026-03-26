@@ -186,7 +186,7 @@ export default function DashboardPage() {
             }}
           >
             <div className="w-11 h-11 rounded-full overflow-hidden shrink-0"
-              style={{ border: '2px solid hsl(218,68%,30%)', boxShadow: '0 2px 10px rgba(20,40,100,0.18)' }}>
+              style={{ border: '2px solid hsl(338,45%,38%)', boxShadow: '0 2px 10px rgba(120,25,50,0.22)' }}>
               <img src={`${import.meta.env.BASE_URL}images/avatar-sofia.png`} alt="Sofia" className="w-full h-full object-cover" />
             </div>
             <div className="flex-1 min-w-0">
@@ -197,7 +197,7 @@ export default function DashboardPage() {
                 </p>
               </div>
               <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.6rem', letterSpacing: '0.02em', lineHeight: 1.15, color: 'hsl(222,45%,16%)', marginTop: '2px' }}>
-                Sofia.
+                Sofia
               </p>
             </div>
           </motion.div>
@@ -258,7 +258,7 @@ export default function DashboardPage() {
                 <div className="absolute top-4 right-5 opacity-[0.06] pointer-events-none">
                   <Sparkles className="w-6 h-6" style={{ color: 'hsl(42,50%,80%)' }} />
                 </div>
-                <div className="absolute top-3.5 left-5" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.4rem', color: 'rgba(200,185,160,0.08)', lineHeight: 1 }}>"</div>
+                <div className="absolute top-3.5 left-5" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700, fontSize: '2.4rem', color: 'rgba(160,50,70,0.12)', lineHeight: 1 }}>"</div>
                 <p className="text-center relative z-10" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.0rem', letterSpacing: '0.015em', lineHeight: 1.7, color: 'rgba(222,212,194,0.82)', padding: '4px 4px 0' }}>
                   {quote.text}
                 </p>

@@ -8,7 +8,7 @@ import { Link } from "wouter";
 import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Letter, NoteType } from "@/types";
 
-const noteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Ccircle cx='30' cy='30' r='12' stroke-width='0.7'/%3E%3Ccircle cx='30' cy='30' r='6' stroke-width='0.5'/%3E%3Cpath d='M30 0v60M0 30h60' stroke-width='0.4'/%3E%3Cpath d='M30 18a12 12 0 010 24M18 30a12 12 0 0124 0' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='18' r='2' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='42' r='2' stroke-width='0.5'/%3E%3Ccircle cx='18' cy='30' r='2' stroke-width='0.5'/%3E%3Ccircle cx='42' cy='30' r='2' stroke-width='0.5'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
+const noteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Ccircle cx='30' cy='30' r='16' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='9' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='3' stroke-width='0.5'/%3E%3Cpath d='M30 14c4.5 4 4.5 12 0 16c-4.5-4-4.5-12 0-16z' stroke-width='0.55'/%3E%3Cpath d='M14 30c4-4.5 12-4.5 16 0c-4 4.5-12 4.5-16 0z' stroke-width='0.55'/%3E%3Cpath d='M30 14c-4.5 4-4.5 12 0 16' stroke-width='0.55'/%3E%3Cpath d='M46 30c-4 4.5-12 4.5-16 0' stroke-width='0.55'/%3E%3Cpath d='M18.7 18.7c3.2 1.5 6.8 1.5 10 0' stroke-width='0.4'/%3E%3Cpath d='M41.3 18.7c-3.2 1.5-6.8 1.5-10 0' stroke-width='0.4'/%3E%3Cpath d='M18.7 41.3c3.2-1.5 6.8-1.5 10 0' stroke-width='0.4'/%3E%3Cpath d='M41.3 41.3c-3.2-1.5-6.8-1.5-10 0' stroke-width='0.4'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const openWhenTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.16'%3E%3Cpath d='M30 6l8.5 8.5L30 23l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M30 37l8.5 8.5L30 54l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M6 30l8.5-8.5L23 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Cpath d='M37 30l8.5-8.5L54 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='4' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='1.5' stroke-width='0.4'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke-width='0.3'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
@@ -180,15 +180,19 @@ export default function LettersPage() {
 
                     <div className="relative z-10">
                       <div style={{
-                        background: 'rgba(255,252,245,0.82)',
-                        backdropFilter: 'blur(8px)',
-                        WebkitBackdropFilter: 'blur(8px)',
-                        padding: '10px 14px 12px',
-                        borderTop: '1px solid rgba(255,252,245,0.25)',
+                        background: 'rgba(255,252,248,0.88)',
+                        backdropFilter: 'blur(10px)',
+                        WebkitBackdropFilter: 'blur(10px)',
+                        padding: '8px 14px 10px',
+                        borderTop: '1px solid rgba(255,252,245,0.30)',
+                        minHeight: '52px',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        justifyContent: 'center',
                       }}>
                         <h3 style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 700,
-                          fontSize: '0.82rem', letterSpacing: '0.01em', lineHeight: 1.25,
+                          fontFamily: "Inter, sans-serif", fontWeight: 600,
+                          fontSize: '0.72rem', letterSpacing: '0.01em', lineHeight: 1.35,
                           color: 'hsl(222,45%,16%)',
                           overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
                         }}>
@@ -196,8 +200,8 @@ export default function LettersPage() {
                         </h3>
                         <p style={{
                           fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500,
-                          color: 'hsl(220,16%,48%)', marginTop: '2px',
-                          letterSpacing: '0.06em',
+                          color: 'hsl(220,16%,52%)', marginTop: '2px',
+                          letterSpacing: '0.04em',
                         }}>
                           {letter.author || ''}
                         </p>
@@ -263,7 +267,7 @@ export default function LettersPage() {
                   Keep
                 </motion.button>
                 <motion.button onClick={() => handleQuickDelete(quickDeleteId)} whileTap={{ scale: 0.97 }} className="flex-1 py-3"
-                  style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(0,50%,42%)', color: 'hsl(42,30%,96%)', border: 'none', borderRadius: '4px' }}>
+                  style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(338,45%,38%)', color: 'hsl(42,30%,96%)', border: 'none', borderRadius: '4px' }}>
                   Remove
                 </motion.button>
               </div>
