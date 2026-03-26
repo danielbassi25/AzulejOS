@@ -1,6 +1,6 @@
 kind = "web"
 previewPath = "/"
-title = "OikOS"
+title = "AzulejOS"
 version = "1.0.0"
 id = "artifacts/oikos"
 router = "path"
