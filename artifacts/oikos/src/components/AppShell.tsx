@@ -18,14 +18,14 @@ export default function AppShell({ children }: { children: ReactNode }) {
       />
 
       <div
-        className="max-w-lg mx-auto min-h-screen flex flex-col relative md:my-8 md:min-h-[calc(100vh-4rem)] md:rounded-lg overflow-hidden"
+        className="max-w-lg mx-auto h-screen flex flex-col relative md:my-8 md:h-[calc(100vh-4rem)] md:rounded-lg overflow-hidden"
         style={{
           background: 'hsl(42, 28%, 97%)',
           border: '1px solid rgba(30,60,130,0.08)',
           boxShadow: '0 32px 80px rgba(15,30,80,0.16), 0 0 0 1px rgba(255,252,248,0.95) inset',
         }}
       >
-        <main className="flex-1 overflow-y-auto w-full relative z-10 scroll-smooth pb-28">
+        <main className="flex-1 overflow-y-auto w-full relative z-10 scroll-smooth">
           {children}
         </main>
         <BottomNav />

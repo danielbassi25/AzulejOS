@@ -15,7 +15,7 @@ export default function BottomNav() {
   const [location] = useLocation();
 
   return (
-    <div className="absolute bottom-0 left-0 right-0 z-50">
+    <div className="shrink-0 z-50">
       {/* Thin grout line */}
       <div style={{ height: '1px', background: 'rgba(30,60,130,0.10)' }} />
       <nav
