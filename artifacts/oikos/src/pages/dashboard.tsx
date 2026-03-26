@@ -248,11 +248,11 @@ export default function DashboardPage() {
                 {...tile(2)}
                 className="relative overflow-hidden"
                 style={{
-                  backgroundColor: 'hsl(222,42%,13%)',
-                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(222,42%,13%) 0%, hsl(220,40%,17%) 100%)`,
+                  backgroundColor: 'hsl(168,45%,28%)',
+                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(168,45%,28%) 0%, hsl(168,48%,33%) 100%)`,
                   backgroundSize: '32px 32px, 100% 100%',
-                  border: '1px solid rgba(15,40,110,0.55)', borderRadius: '4px',
-                  boxShadow: '0 10px 30px rgba(10,20,60,0.30)', padding: '22px 24px 18px',
+                  border: '1px solid rgba(10,80,65,0.50)', borderRadius: '4px',
+                  boxShadow: '0 10px 30px rgba(10,55,45,0.28)', padding: '22px 24px 18px',
                 }}
               >
                 <div className="absolute top-4 right-5 opacity-[0.06] pointer-events-none">
@@ -388,11 +388,11 @@ export default function DashboardPage() {
                 className="relative overflow-hidden cursor-pointer"
                 onClick={startEdit}
                 style={{
-                  backgroundColor: 'hsl(218,68%,26%)',
-                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(218,68%,26%) 0%, hsl(220,65%,32%) 100%)`,
+                  backgroundColor: 'hsl(338,45%,38%)',
+                  backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(338,45%,38%) 0%, hsl(338,48%,44%) 100%)`,
                   backgroundSize: '32px 32px, 100% 100%',
-                  border: '1px solid rgba(15,45,115,0.50)', borderRadius: '4px',
-                  boxShadow: '0 8px 28px rgba(15,30,80,0.25), 0 1px 0 rgba(255,255,255,0.06) inset',
+                  border: '1px solid rgba(120,20,50,0.45)', borderRadius: '4px',
+                  boxShadow: '0 8px 28px rgba(80,15,35,0.25), 0 1px 0 rgba(255,255,255,0.06) inset',
                   padding: '20px 22px 18px',
                 }}
               >
