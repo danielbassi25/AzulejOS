@@ -8,6 +8,7 @@ import SystemPage from "@/pages/system";
 import SaudadePage from "@/pages/saudade";
 import SaudadeDetailPage from "@/pages/saudade-detail";
 import LettersPage from "@/pages/letters";
+import LetterDetailPage from "@/pages/letter-detail";
 import BuildPage from "@/pages/build";
 import PlayPage from "@/pages/play";
 import ScorePage from "@/pages/score";
@@ -29,6 +30,7 @@ function Router() {
       <Route path="/system" component={SystemPage} />
       <Route path="/saudade/:id" component={SaudadeDetailPage} />
       <Route path="/saudade" component={SaudadePage} />
+      <Route path="/letters/:id" component={LetterDetailPage} />
       <Route path="/letters" component={LettersPage} />
       <Route path="/build" component={BuildPage} />
       <Route path="/play" component={PlayPage} />

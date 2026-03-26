@@ -1,0 +1,177 @@
+Continue developing AzulejOS as a premium couple web app with a strong, cohesive identity.
+
+IMPORTANT:
+This is not a generic productivity app.
+AzulejOS is a private couple operating system for two people.
+Its purpose is to preserve memories, deepen emotional connection, create playful rituals, and support shared growth.
+
+VISUAL IDENTITY — NON-NEGOTIABLE
+Keep and strengthen the current AzulejOS visual language:
+- Portuguese azulejo / tile inspired design
+- Mediterranean elegance
+- editorial Italian / Portuguese aesthetic
+- deep blue as primary color
+- ceramic white / ivory backgrounds
+- subtle warm accents only when elegant
+- refined serif titles
+- clean sans-serif body text
+- handcrafted / tiled / architectural feeling
+- premium, emotional, timeless
+- NOT generic SaaS
+- NOT childish
+- NOT neon
+- NOT modern startup style
+
+You must preserve this identity consistently across all new features and pages.
+
+GENERAL PRODUCT DIRECTION
+Continue product development intelligently.
+You are allowed to improve existing pages and introduce useful features only if they align with the app’s purpose:
+- emotional connection
+- private shared archive
+- love letters
+- future building
+- playful rituals
+- couple games
+- gentle competition
+- meaningful shared experiences
+
+Do not add random features.
+Every addition must feel intentional and on-brand.
+
+PRIORITIES
+
+1. GAMES / PLAY PAGE — EXPAND HEAVILY
+This page needs to become a strong feature.
+
+Create a structured question system with around 200 couple questions divided into sections such as:
+- Emotional
+- Deep
+- Spicy
+- Playful
+- Memories
+- Future
+- Relationship
+- Everyday intimacy
+- Would You Rather
+- This or That
+
+Requirements:
+- generate realistic, high-quality question sets
+- tone should feel intimate, engaging, and mature
+- spicy questions should be tasteful, playful, and not vulgar
+- allow filtering by category
+- allow random question mode
+- allow “next question”
+- show question count / progress
+- allow favorite / save question feature using mock/local state for now
+- optionally allow “mark as answered”
+- improve page UI so it feels like a beautiful interactive deck of cards, still in AzulejOS style
+
+2. DASHBOARD / SYSTEM PAGE — MAKE IT SMARTER
+Improve the dashboard by adding useful and beautiful elements that support the app’s purpose.
+
+Possible additions:
+- next letter to unlock
+- recent memory added
+- countdown to next date/event
+- quick access to saved/favorite questions
+- active goals summary
+- score summary
+- “memory of the day”
+- rotating quote / inside phrase
+- gentle suggestion card like:
+  - “write a new letter”
+  - “save a memory”
+  - “ask a deep question tonight”
+- relationship stats section, but elegant and not tacky
+
+You should decide what makes sense and implement the best options.
+
+3. SAUDADE PAGE
+Continue improving Saudade if useful, while preserving the current strong direction.
+Possible enhancements:
+- better storytelling rhythm
+- richer metadata
+- cleaner transitions
+- stronger click behavior into detail page
+- badges/tags such as trip, routine, milestone, funny, tender
+
+4. MEMORY DETAIL PAGE
+If not already fully developed, create or improve the memory detail page.
+It should feel like an intimate journal entry:
+- hero image
+- title
+- date
+- place
+- long description
+- inside joke
+- optional related memories
+- optional small gallery
+- possible “mood” tag
+Maintain AzulejOS style.
+
+5. LETTERS PAGE
+Improve letters functionality in a meaningful way:
+- open / sealed states
+- dedicated letter detail page if missing
+- richer letter cards
+- optional categories such as anniversary, reassurance, future, hard day
+- preview / metadata
+- maintain precious, intimate, preserved feeling
+
+6. BUILD PAGE
+Improve shared goals:
+- categories
+- better completion states
+- more meaningful progress summaries
+- richer visual feedback
+- optional milestone rewards tied to goals
+Still elegant and clean.
+
+7. SCORE PAGE
+Improve score system in a tasteful way:
+- better recent activity
+- nicer milestone logic
+- clearer reward structure
+- optional history
+Do not make it childish.
+
+TECHNICAL RULES
+- keep the existing architecture clean
+- do not break routing
+- do not introduce unnecessary dependencies
+- do not rewrite the whole app
+- do not change the overall visual identity away from AzulejOS
+- do not replace the current design with generic UI
+- do not implement backend-heavy logic unless clearly scaffolded with mock data first
+- use local/mock data where needed if backend is not yet wired
+- build features in a modular, production-ready way
+
+DESIGN RULES
+- every page must feel harmonious
+- preserve visual breathing room
+- use tile patterns as accents and structural identity, not visual spam
+- improve hierarchy and balance
+- every new component must feel designed, not default
+- use refined iconography
+- maintain premium typography
+
+PRODUCT THINKING
+Before implementing, think like a product designer and builder.
+For each feature ask:
+- does this increase emotional value?
+- does this fit the purpose of a couple app?
+- does this feel intimate and premium?
+- does this feel coherent with AzulejOS?
+
+If the answer is no, do not add it.
+
+DELIVERABLES
+Please continue development and implement the highest-value improvements across pages, especially Play and System.
+
+At the end, provide:
+1. a summary of what you added
+2. which files you changed
+3. any ideas you considered but did not implement
+4. recommended next steps for future development

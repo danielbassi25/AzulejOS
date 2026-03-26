@@ -58,13 +58,22 @@ OikOS is a private relationship operating system for Daniel and Sofia. It is a f
 ### Routes
 
 - `/` → redirects to `/system`
-- `/system` — Dashboard with days counter, events, phrase
-- `/saudade` — Memory timeline
+- `/system` — Dashboard with days counter, events, memory of the day, score summary, suggestions
+- `/saudade` — Memory timeline with color-coded tag badges
 - `/saudade/:id` — Memory detail
-- `/letters` — Letters list (locked/unlocked)
-- `/build` — Shared goals checklist
-- `/play` — Conversation starters / questions
-- `/score` — Daniel vs Sofia scoreboard
+- `/letters` — Letters list (locked/unlocked) with author & category info
+- `/letters/:id` — Letter detail page (full content for open letters, sealed state for locked)
+- `/build` — Shared goals with category filters (Travel, Home, Growth, Ritual), progress percentage
+- `/play` — 200-question game across 8 categories (Deep, Spicy, Playful, Memories, Future, Everyday, Would You Rather, This or That) with favorites, answered tracking, shuffle mode
+- `/score` — Daniel vs Sofia scoreboard with milestones and recent activity
+
+### Data model
+
+- **Question**: id, category (8 categories), text — 200 questions total (25 per category)
+- **Letter**: id, title, unlockDate, isLocked, author, category (anniversary/reassurance/hard day/future), content, mood
+- **Goal**: id, text, completed, category (Travel/Home/Growth/Ritual)
+- **Memory**: id, title, date, location, preview, content, insideJokes, imageUrl, tags (trip/milestone/tender/funny/routine)
+- **DashboardData**: daysTogether, nextEvent, randomPhrase, nextLetterUnlock, activeGoals, suggestions, memoryOfTheDay
 
 ### Where to edit content
 
@@ -81,11 +90,14 @@ When ready to connect Supabase:
 2. Add `VITE_SUPABASE_URL` and `VITE_SUPABASE_ANON_KEY` environment variables
 3. Replace mock data imports in each page with Supabase queries
 
-### Design
+### Design — AzulejOS Visual Identity
 
-- Color palette: soft blue (#AFCBFF), pastel pink (#F7C8E0), warm white (#FAFAFA), accent blue (#6B8CFF)
-- Typography: Inter (sans-serif)
-- Layout: max-w-lg centered, mobile-first
+- Color palette: deep cobalt `hsl(218,70%,28%)`, warm beige bg `hsl(42,28%,97%)`, card white `hsl(38,30%,99%)`, dark `hsl(222,45%,16%)`, borders `rgba(30,60,130,0.08–0.12)`
+- Typography: `Cormorant Garamond` (display/serif — headers, numbers, quotes, card titles), `Inter` (sans/UI — labels, metadata, buttons)
+- Layout: mobile-first (390px target), tile-based ceramic aesthetic
+- Tile style: `borderRadius: 4px`, directional shadows, inset ceramic glow
+- Azulejo pattern: SVG motif overlay ONLY on hero tiles (System days, quote, Build progress, Play question card, sealed Letters)
+- Standard cards: clean ceramic, no pattern
 - Animations: Framer Motion
 
 ## TypeScript & Composite Projects

@@ -7,6 +7,7 @@ export interface Memory {
   content: string;
   insideJokes: string[];
   imageUrl: string;
+  tags?: string[];
 }
 
 export interface Letter {
@@ -14,12 +15,17 @@ export interface Letter {
   title: string;
   unlockDate: string;
   isLocked: boolean;
+  author?: string;
+  category?: string;
+  content?: string;
+  mood?: string;
 }
 
 export interface Goal {
   id: string;
   text: string;
   completed: boolean;
+  category?: string;
 }
 
 export interface Question {
@@ -41,4 +47,6 @@ export interface DashboardData {
   randomPhrase: string;
   nextLetterUnlock: { name: string; daysAway: number };
   activeGoals: number;
+  suggestions: string[];
+  memoryOfTheDay: { id: string; title: string; preview: string };
 }
