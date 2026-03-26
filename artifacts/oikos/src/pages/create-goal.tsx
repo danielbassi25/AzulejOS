@@ -6,8 +6,6 @@ import { ArrowLeft, Save } from "lucide-react";
 
 const CATEGORIES = ["Activities", "Travel", "Movies", "Food"];
 
-const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.10'%3E%3Ccircle cx='30' cy='30' r='12' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='6' stroke-width='0.4'/%3E%3Cpath d='M30 0v18M30 42v18M0 30h18M42 30h60' stroke-width='0.4'/%3E%3Cpath d='M30 18l-12 12 12 12 12-12z' stroke-width='0.5'/%3E%3Ccircle cx='0' cy='0' r='8' stroke-width='0.4'/%3E%3Ccircle cx='60' cy='0' r='8' stroke-width='0.4'/%3E%3Ccircle cx='0' cy='60' r='8' stroke-width='0.4'/%3E%3Ccircle cx='60' cy='60' r='8' stroke-width='0.4'/%3E%3Cpath d='M0 0l18 18M42 42l18 18M60 0l-18 18M18 42l-18 18' stroke-width='0.3'/%3E%3C/g%3E%3C/svg%3E")`;
-
 export default function CreateGoalPage() {
   const [, setLocation] = useLocation();
   const [text, setText] = useState("");
@@ -51,21 +49,11 @@ export default function CreateGoalPage() {
 
   return (
     <AppShell>
-      <div
-        className="relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)',
-          padding: '36px 28px 32px',
-        }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: azulejoPattern,
-            backgroundSize: '60px 60px',
-          }}
-        />
-        <div className="relative z-10">
+      <div style={{
+        background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)',
+        padding: '36px 28px 32px',
+      }}>
+        <div>
           <Link href="/build" className="flex items-center gap-2 mb-6"
             style={{ color: 'rgba(200,215,255,0.78)' }}>
             <ArrowLeft className="w-4 h-4" />

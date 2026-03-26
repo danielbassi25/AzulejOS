@@ -1,5 +1,6 @@
 import { useState, useMemo } from "react";
 import AppShell from "@/components/AppShell";
+import SectionHeader from "@/components/SectionHeader";
 import { getAllGoals } from "@/data/store";
 import { motion, AnimatePresence } from "framer-motion";
 import { Check, Plus, Plane, Film, UtensilsCrossed, Sparkles } from "lucide-react";
@@ -67,80 +68,16 @@ export default function BuildPage() {
 
   return (
     <AppShell>
-      <motion.div
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: 0.4 }}
-        className="relative overflow-hidden"
-        style={{
-          background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)',
-          borderBottom: '1px solid rgba(15,40,110,0.35)',
-          padding: '36px 28px 30px',
-        }}
-      >
-        <div
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            backgroundImage: azulejoPattern,
-            backgroundSize: '60px 60px',
-          }}
-        />
-        <div
-          className="absolute top-0 right-0 w-56 h-56 pointer-events-none"
-          style={{
-            background: 'radial-gradient(ellipse at top right, rgba(255,252,245,0.07) 0%, transparent 60%)',
-          }}
-        />
-        <div className="flex items-end justify-between relative z-10">
-          <div>
-            <h1
-              style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontWeight: 600,
-                fontSize: '2.2rem',
-                letterSpacing: '0.01em',
-                lineHeight: 1.1,
-                color: 'hsl(42, 30%, 96%)',
-              }}
-            >
-              Eventually<br />We Will
-            </h1>
-            <p
-              style={{
-                fontFamily: "'Cormorant Garamond', Georgia, serif",
-                fontStyle: 'italic',
-                fontWeight: 400,
-                fontSize: '0.92rem',
-                letterSpacing: '0.03em',
-                color: 'rgba(215, 205, 185, 0.55)',
-                marginTop: '8px',
-              }}
-            >
-              Shared horizons
-            </p>
-          </div>
+      <SectionHeader title="Build" subtitle="Shared horizons"
+        action={
           <Link href="/build/new">
-            <motion.div
-              whileTap={{ scale: 0.95 }}
-              className="flex items-center gap-2 px-4 py-2.5 mb-1"
-              style={{
-                background: 'rgba(255,252,245,0.10)',
-                border: '1px solid rgba(255,252,245,0.18)',
-                borderRadius: '4px',
-                cursor: 'pointer',
-              }}
-            >
-              <Plus className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,90%)' }} />
-              <span style={{
-                fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700,
-                letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(42,30%,90%)',
-              }}>
-                New
-              </span>
+            <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
+              style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '3px', color: 'rgba(215,205,185,0.70)', padding: '6px 12px' }}>
+              <Plus className="w-3 h-3" /> New
             </motion.div>
           </Link>
-        </div>
-      </motion.div>
+        }
+      />
 
       <div
         className="px-4 pt-4 pb-6"
