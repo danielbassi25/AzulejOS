@@ -22,7 +22,7 @@ export default function BottomNav() {
         className="flex items-stretch"
         style={{
           background: 'hsl(38, 28%, 99%)',
-          paddingBottom: 'env(safe-area-inset-bottom, 0px)',
+          paddingBottom: 'max(env(safe-area-inset-bottom, 0px), 16px)',
         }}
       >
         {navItems.map((item, i) => {
