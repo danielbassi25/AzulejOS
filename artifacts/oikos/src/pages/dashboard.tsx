@@ -127,7 +127,7 @@ export default function DashboardPage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Dashboard" />
+      <SectionHeader title="AzulejOS" subtitle="Our love painted one tile at a time"/>
 
       <div style={{ backgroundImage: bgPattern, backgroundSize: '40px 40px', minHeight: '100%' }}>
         <div className="px-4 pt-4 pb-10" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>

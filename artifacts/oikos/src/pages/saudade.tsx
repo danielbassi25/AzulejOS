@@ -16,6 +16,7 @@ const TAG_COLORS: Record<string, { bg: string; color: string; lightBg: string; l
   routine: { bg: 'rgba(100,80,160,0.50)', color: 'rgba(230,220,255,0.92)', lightBg: 'rgba(100,80,160,0.10)', lightColor: 'rgb(100,80,160)' },
 };
 
+
 const MOOD_EMOJI: Record<string, string> = {
   magical: '\u2728', nostalgic: '\uD83C\uDF19', adventurous: '\u26F0\uFE0F', euphoric: '\uD83C\uDF86', peaceful: '\uD83D\uDD4A\uFE0F',
   joyful: '\u2600\uFE0F', tender: '\uD83D\uDC9B', grateful: '\uD83D\uDE4F', playful: '\uD83C\uDFAD', hopeful: '\uD83C\uDF31',
@@ -106,7 +107,7 @@ export default function SaudadePage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Saudade" subtitle="The presence of absence"
+      <SectionHeader title="Saudade" subtitle="What never really leaves you"
         action={
           <Link href="/saudade/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
@@ -136,7 +137,10 @@ export default function SaudadePage() {
                 whileHover={{ y: -1 }} whileTap={{ scale: 0.98 }}
                 className="flex items-center gap-3 px-4 py-3.5"
                 style={{
-                  background: 'hsl(218,70%,28%)', borderRadius: '4px',
+                  backgroundColor: 'hsl(218,70%,28%)',
+                  backgroundImage: `url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.13'%3E%3Ccircle cx='16' cy='16' r='5'/%3E%3Cline x1='16' y1='0' x2='16' y2='11'/%3E%3Cline x1='16' y1='21' x2='16' y2='32'/%3E%3Cline x1='0' y1='16' x2='11' y2='16'/%3E%3Cline x1='21' y1='16' x2='32' y2='16'/%3E%3Cline x1='3' y1='3' x2='10' y2='10'/%3E%3Cline x1='22' y1='22' x2='29' y2='29'/%3E%3Cline x1='29' y1='3' x2='22' y2='10'/%3E%3Cline x1='10' y1='22' x2='3' y2='29'/%3E%3C/g%3E%3C/svg%3E")`,
+                  backgroundSize: '32px 32px',
+                  borderRadius: '4px',
                   border: '1px solid rgba(15,45,115,0.50)',
                   boxShadow: '0 3px 12px rgba(15,30,80,0.20)',
                 }}>
