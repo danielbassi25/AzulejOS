@@ -34,7 +34,7 @@ export default function BottomNav() {
             <Link
               key={item.path}
               href={item.path}
-              className="relative flex-1 flex flex-col items-center justify-center py-3 select-none"
+              className="relative flex-1 flex flex-col items-center justify-center py-2 select-none"
               style={{
                 borderRight: i < navItems.length - 1 ? '1px solid rgba(30,60,130,0.07)' : 'none',
               }}
