@@ -1,9 +1,9 @@
-import { useState, useMemo, useCallback, useRef, useEffect } from "react";
+import { useState, useMemo, useCallback, useRef } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockQuestions } from "@/data/mock";
 import type { Question } from "@/types";
-import { motion, AnimatePresence, useMotionValue, useTransform } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, Heart, Shuffle, Check, ChevronDown, Plus, X } from "lucide-react";
 
 const CATEGORIES = ["All", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That"];
@@ -63,11 +63,6 @@ export default function PlayPage() {
     setCurrentIndex((prev) => (prev + 1) % filteredQuestions.length);
   }, [filteredQuestions.length]);
 
-  const handlePrev = useCallback(() => {
-    setDirection(-1);
-    setCurrentIndex((prev) => (prev - 1 + filteredQuestions.length) % filteredQuestions.length);
-  }, [filteredQuestions.length]);
-
   const toggleFavorite = useCallback((id: string) => {
     setFavorites(prev => { const next = new Set(prev); if (next.has(id)) next.delete(id); else next.add(id); return next; });
   }, [setFavorites]);
@@ -92,19 +87,6 @@ export default function PlayPage() {
 
   const isFav = currentQuestion ? favorites.has(currentQuestion.id) : false;
   const isAns = currentQuestion ? answered.has(currentQuestion.id) : false;
-
-  const dragX = useMotionValue(0);
-  const cardRotate = useTransform(dragX, [-200, 0, 200], [-8, 0, 8]);
-  const cardOpacity = useTransform(dragX, [-200, -80, 0, 80, 200], [0.4, 1, 1, 1, 0.4]);
-
-  const handleDragEnd = useCallback((_: unknown, info: { offset: { x: number }; velocity: { x: number } }) => {
-    const threshold = 60;
-    if (info.offset.x < -threshold || info.velocity.x < -300) {
-      handleNext();
-    } else if (info.offset.x > threshold || info.velocity.x > 300) {
-      handlePrev();
-    }
-  }, [handleNext, handlePrev]);
 
   return (
     <AppShell>
@@ -254,21 +236,14 @@ export default function PlayPage() {
                 animate={{ opacity: 1, y: 0, scale: 1, rotate: 0 }}
                 exit={{ opacity: 0, x: -90 * direction, scale: 0.94, rotate: -2.5 * direction }}
                 transition={{ type: "spring", stiffness: 250, damping: 28 }}
-                drag="x"
-                dragConstraints={{ left: 0, right: 0 }}
-                dragElastic={0.8}
-                onDragEnd={handleDragEnd}
                 style={{
-                  x: dragX,
-                  rotate: cardRotate,
-                  opacity: cardOpacity,
                   backgroundColor: 'hsl(220,70%,26%)',
                   backgroundImage: `${azulejoMotif}, linear-gradient(155deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)`,
                   backgroundSize: '36px 36px, 100% 100%',
                   border: '1px solid rgba(15,45,115,0.50)',
                   borderRadius: '4px',
                   boxShadow: '4px 8px 30px rgba(12,25,72,0.28), -1px -1px 0 rgba(255,255,255,0.06) inset',
-                  cursor: 'grab', touchAction: 'pan-y',
+                  touchAction: 'pan-y',
                 }}
                 className="absolute inset-0 overflow-hidden"
               >
@@ -303,11 +278,6 @@ export default function PlayPage() {
                   }}>
                     "{currentQuestion?.text}"
                   </h2>
-
-                  {/* Swipe hint */}
-                  <div className="absolute bottom-12 left-0 right-0 flex justify-center gap-6">
-                    <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(175,162,140,0.20)' }}>← swipe →</span>
-                  </div>
 
                   <p className="absolute bottom-6" style={{
                     fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.16em', textTransform: 'uppercase',
