@@ -59,10 +59,11 @@ const TYPE_ORDER: Record<string, number> = { pillar: 0, note: 1, "open-when": 2,
 type SortMode = "date" | "type" | "shuffle";
 
 function sortLetters(letters: Letter[], mode: SortMode, shuffleSeed: number): Letter[] {
+  void shuffleSeed;
   const arr = [...letters];
   if (mode === "shuffle") {
     for (let i = arr.length - 1; i > 0; i--) {
-      const j = Math.abs(((shuffleSeed * (i + 1) * 9301 + 49297) % 233280)) % (i + 1);
+      const j = Math.floor(Math.random() * (i + 1));
       [arr[i], arr[j]] = [arr[j], arr[i]];
     }
     return arr;

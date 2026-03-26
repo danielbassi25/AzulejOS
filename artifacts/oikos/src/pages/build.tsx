@@ -40,6 +40,8 @@ export default function BuildPage() {
   const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [sortMode, setSortMode] = useState<'date' | 'type' | 'shuffle'>('date');
+  const [shuffleKey, setShuffleKey] = useState(0);
 
   const reload = useCallback(() => {
     const allGoals = getAllGoals();
@@ -90,10 +92,29 @@ export default function BuildPage() {
     reload();
   };
 
-  const filteredGoals = useMemo(() =>
-    activeCategory === "All" ? goals : goals.filter(g => g.category === activeCategory),
-    [goals, activeCategory]
-  );
+  const CATEGORY_ORDER: Record<string, number> = { Activities: 0, Travel: 1, Movies: 2, Food: 3 };
+
+  const filteredGoals = useMemo(() => {
+    let arr = activeCategory === "All" ? [...goals] : goals.filter(g => g.category === activeCategory);
+    if (sortMode === 'shuffle') {
+      void shuffleKey;
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+    } else if (sortMode === 'type') {
+      arr.sort((a, b) => {
+        const ca = CATEGORY_ORDER[a.category || ''] ?? 99;
+        const cb = CATEGORY_ORDER[b.category || ''] ?? 99;
+        if (ca !== cb) return ca - cb;
+        return (b.id || '').localeCompare(a.id || '');
+      });
+    } else {
+      arr.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
+    }
+    return arr;
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [goals, activeCategory, sortMode, shuffleKey]);
 
   const completedCount = goals.filter(g => g.completed).length;
   const progressPercent = goals.length > 0 ? Math.round((completedCount / goals.length) * 100) : 0;
@@ -229,6 +250,37 @@ export default function BuildPage() {
               done={categoryCounts[activeCategory]?.done || 0}
             />
           </motion.div>
+        )}
+
+        {goals.length > 1 && (
+          <div className="flex items-center gap-1.5 mb-3">
+            {([
+              { mode: 'shuffle' as const, label: 'Shuffle' },
+              { mode: 'date' as const, label: 'Date' },
+              { mode: 'type' as const, label: 'Type' },
+            ]).map(btn => (
+              <motion.button key={btn.mode} whileTap={{ scale: 0.93 }}
+                onClick={() => {
+                  if (btn.mode === 'shuffle') {
+                    setShuffleKey(k => k + 1);
+                    setSortMode('shuffle');
+                  } else {
+                    setSortMode(btn.mode);
+                  }
+                }}
+                style={{
+                  fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700,
+                  letterSpacing: '0.12em', textTransform: 'uppercase',
+                  background: sortMode === btn.mode ? 'hsl(218,70%,28%)' : 'hsl(40,22%,95%)',
+                  color: sortMode === btn.mode ? 'hsl(42,30%,94%)' : 'hsl(222,30%,40%)',
+                  border: sortMode === btn.mode ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.08)',
+                  borderRadius: '3px', padding: '6px 12px',
+                }}
+              >
+                {btn.label}
+              </motion.button>
+            ))}
+          </div>
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
