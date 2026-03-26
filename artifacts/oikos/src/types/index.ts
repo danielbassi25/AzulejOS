@@ -78,6 +78,7 @@ export interface ScoreSnapshot {
   daniel: number;
   sofia: number;
   date: string;
+  ts?: number;
 }
 
 export interface DashboardData {

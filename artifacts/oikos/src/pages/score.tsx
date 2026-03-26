@@ -58,15 +58,10 @@ function getSnapshots(): ScoreSnapshot[] {
 function saveSnapshotsLS(s: ScoreSnapshot[]) { localStorage.setItem("oikos-score-snapshots", JSON.stringify(s)); }
 function pushSnapshot(d: number, s: number) {
   const list = getSnapshots();
-  const today = new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  const last = list[list.length - 1];
-  if (last && last.date === today) {
-    last.daniel = d;
-    last.sofia = s;
-  } else {
-    list.push({ daniel: d, sofia: s, date: today });
-    if (list.length > 30) list.shift();
-  }
+  const now = Date.now();
+  const label = new Date(now).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+  list.push({ daniel: d, sofia: s, date: label, ts: now });
+  if (list.length > 200) list.splice(0, list.length - 200);
   saveSnapshotsLS(list);
 }
 
@@ -499,22 +494,29 @@ export default function ScorePage() {
 
         {/* Score History Chart */}
         {snapshots.length >= 1 && (() => {
-          const chartMargin = { top: 16, right: 16, bottom: 32, left: 36 };
+          const origin: ScoreSnapshot = { daniel: 0, sofia: 0, date: 'Start', ts: 0 };
+          const pts = [origin, ...snapshots];
+          const chartMargin = { top: 16, right: 12, bottom: 32, left: 36 };
           const chartW = 320;
           const chartH = 180;
           const plotW = chartW - chartMargin.left - chartMargin.right;
           const plotH = chartH - chartMargin.top - chartMargin.bottom;
-          const yMax = Math.max(maxSnap, 1);
+          const yMax = Math.max(1, ...pts.flatMap(s => [s.daniel, s.sofia]));
           const yTicks = (() => {
             if (yMax <= 5) return Array.from({ length: yMax + 1 }, (_, i) => i);
             const step = Math.ceil(yMax / 4);
-            const ticks = [];
+            const ticks: number[] = [];
             for (let v = 0; v <= yMax; v += step) ticks.push(v);
             if (ticks[ticks.length - 1] < yMax) ticks.push(yMax);
             return ticks;
           })();
-          const toX = (i: number) => chartMargin.left + (snapshots.length === 1 ? plotW / 2 : (i / (snapshots.length - 1)) * plotW);
+          const n = pts.length;
+          const toX = (i: number) => chartMargin.left + (n === 1 ? plotW / 2 : (i / (n - 1)) * plotW);
           const toY = (v: number) => chartMargin.top + plotH - (v / yMax) * plotH;
+          const maxXLabels = 8;
+          const xStep = n <= maxXLabels ? 1 : Math.ceil(n / maxXLabels);
+          const showDots = n <= 40;
+          const dotR = n <= 15 ? 3.5 : 2.5;
           return (
             <div>
               <SectionDivider label="Score Evolution" />
@@ -530,6 +532,16 @@ export default function ScorePage() {
                   </div>
                 </div>
                 <svg viewBox={`0 0 ${chartW} ${chartH}`} className="w-full" style={{ overflow: 'visible' }}>
+                  <defs>
+                    <linearGradient id="danielFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(218,65%,38%)" stopOpacity="0.12" />
+                      <stop offset="100%" stopColor="hsl(218,65%,38%)" stopOpacity="0.01" />
+                    </linearGradient>
+                    <linearGradient id="sofiaFill" x1="0" y1="0" x2="0" y2="1">
+                      <stop offset="0%" stopColor="hsl(28,60%,55%)" stopOpacity="0.10" />
+                      <stop offset="100%" stopColor="hsl(28,60%,55%)" stopOpacity="0.01" />
+                    </linearGradient>
+                  </defs>
                   {yTicks.map(v => (
                     <g key={`yt-${v}`}>
                       <line x1={chartMargin.left} y1={toY(v)} x2={chartMargin.left + plotW} y2={toY(v)} stroke="rgba(30,60,130,0.07)" strokeWidth="0.5" strokeDasharray={v === 0 ? 'none' : '3,3'} />
@@ -538,39 +550,27 @@ export default function ScorePage() {
                   ))}
                   <line x1={chartMargin.left} y1={chartMargin.top} x2={chartMargin.left} y2={chartMargin.top + plotH} stroke="rgba(30,60,130,0.10)" strokeWidth="0.5" />
                   <line x1={chartMargin.left} y1={chartMargin.top + plotH} x2={chartMargin.left + plotW} y2={chartMargin.top + plotH} stroke="rgba(30,60,130,0.10)" strokeWidth="0.5" />
-                  {snapshots.map((s, i) => (
-                    <text key={`xl-${i}`} x={toX(i)} y={chartMargin.top + plotH + 16} textAnchor="middle" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 500, fill: 'hsl(220,14%,56%)' }}>{s.date}</text>
-                  ))}
+                  {pts.map((s, i) => (i === 0 || i === n - 1 || i % xStep === 0) ? (
+                    <text key={`xl-${i}`} x={toX(i)} y={chartMargin.top + plotH + 16} textAnchor="middle" style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500, fill: 'hsl(220,14%,56%)' }}>{i === 0 ? '0' : s.date}</text>
+                  ) : null)}
                   <text x={12} y={chartMargin.top + plotH / 2} textAnchor="middle" transform={`rotate(-90, 12, ${chartMargin.top + plotH / 2})`} style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, fill: 'hsl(220,14%,52%)', letterSpacing: '0.06em', textTransform: 'uppercase' } as React.CSSProperties}>points</text>
-                  {snapshots.length > 1 && (
+                  {n > 1 && (
                     <>
-                      <defs>
-                        <linearGradient id="danielFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="hsl(218,65%,38%)" stopOpacity="0.12" />
-                          <stop offset="100%" stopColor="hsl(218,65%,38%)" stopOpacity="0" />
-                        </linearGradient>
-                        <linearGradient id="sofiaFill" x1="0" y1="0" x2="0" y2="1">
-                          <stop offset="0%" stopColor="hsl(28,60%,55%)" stopOpacity="0.10" />
-                          <stop offset="100%" stopColor="hsl(28,60%,55%)" stopOpacity="0" />
-                        </linearGradient>
-                      </defs>
-                      <path d={`M${toX(0)},${toY(snapshots[0].daniel)} ${snapshots.map((s, i) => `L${toX(i)},${toY(s.daniel)}`).join(' ')} L${toX(snapshots.length - 1)},${toY(0)} L${toX(0)},${toY(0)} Z`} fill="url(#danielFill)" />
-                      <path d={`M${toX(0)},${toY(snapshots[0].sofia)} ${snapshots.map((s, i) => `L${toX(i)},${toY(s.sofia)}`).join(' ')} L${toX(snapshots.length - 1)},${toY(0)} L${toX(0)},${toY(0)} Z`} fill="url(#sofiaFill)" />
-                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.2, ease: [0.22, 1, 0.36, 1] }}
-                        points={snapshots.map((s, i) => `${toX(i)},${toY(s.daniel)}`).join(' ')}
+                      <path d={`M${toX(0)},${toY(0)} ${pts.map((s, i) => `L${toX(i)},${toY(s.daniel)}`).join(' ')} L${toX(n - 1)},${toY(0)} Z`} fill="url(#danielFill)" />
+                      <path d={`M${toX(0)},${toY(0)} ${pts.map((s, i) => `L${toX(i)},${toY(s.sofia)}`).join(' ')} L${toX(n - 1)},${toY(0)} Z`} fill="url(#sofiaFill)" />
+                      <polyline
+                        points={pts.map((s, i) => `${toX(i)},${toY(s.daniel)}`).join(' ')}
                         fill="none" stroke="hsl(218,65%,38%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-                      <motion.polyline initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.2, delay: 0.3, ease: [0.22, 1, 0.36, 1] }}
-                        points={snapshots.map((s, i) => `${toX(i)},${toY(s.sofia)}`).join(' ')}
+                      <polyline
+                        points={pts.map((s, i) => `${toX(i)},${toY(s.sofia)}`).join(' ')}
                         fill="none" stroke="hsl(28,60%,55%)" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                     </>
                   )}
-                  {snapshots.map((s, i) => (
-                    <motion.circle key={`d-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.3 + i * 0.04 }}
-                      cx={toX(i)} cy={toY(s.daniel)} r="4" fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                  {showDots && pts.map((s, i) => (
+                    <circle key={`d-${i}`} cx={toX(i)} cy={toY(s.daniel)} r={dotR} fill="hsl(218,65%,38%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
-                  {snapshots.map((s, i) => (
-                    <motion.circle key={`s-${i}`} initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.4 + i * 0.04 }}
-                      cx={toX(i)} cy={toY(s.sofia)} r="4" fill="hsl(28,60%,55%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
+                  {showDots && pts.map((s, i) => (
+                    <circle key={`s-${i}`} cx={toX(i)} cy={toY(s.sofia)} r={dotR} fill="hsl(28,60%,55%)" stroke="hsl(38,30%,99%)" strokeWidth="1.5" />
                   ))}
                 </svg>
               </div>
