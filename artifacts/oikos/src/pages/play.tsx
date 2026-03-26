@@ -256,7 +256,7 @@ export default function PlayPage() {
         </div>
 
         <div className="flex flex-col items-center px-4 pt-6 pb-4">
-          <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '3/4' }}>
+          <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '4/5' }}>
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
                 key={`${currentQuestion?.id}-${currentIndex}`}
