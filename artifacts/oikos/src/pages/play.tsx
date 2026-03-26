@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, Heart, Shuffle, Check, ChevronDown, Plus, X, Pencil } from "lucide-react";
 import EditDeleteModal from "@/components/EditDeleteModal";
 
-const CATEGORIES = ["All", "Favorites", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That"];
+const CATEGORIES = ["All", "Favorites", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That", "Emotional", "Opinions"];
 
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.45' opacity='0.11'%3E%3Ccircle cx='18' cy='18' r='6'/%3E%3Cline x1='18' y1='0' x2='18' y2='12'/%3E%3Cline x1='18' y1='24' x2='18' y2='36'/%3E%3Cline x1='0' y1='18' x2='12' y2='18'/%3E%3Cline x1='24' y1='18' x2='36' y2='18'/%3E%3Cline x1='3.5' y1='3.5' x2='11' y2='11'/%3E%3Cline x1='25' y1='25' x2='32.5' y2='32.5'/%3E%3Cline x1='32.5' y1='3.5' x2='25' y2='11'/%3E%3Cline x1='11' y1='25' x2='3.5' y2='32.5'/%3E%3C/g%3E%3C/svg%3E")`;
 
