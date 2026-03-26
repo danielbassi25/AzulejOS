@@ -1,5 +1,5 @@
-import { mockMemories, mockLetters } from "./mock";
-import type { Memory, Letter } from "@/types";
+import { mockMemories, mockLetters, mockGoals } from "./mock";
+import type { Memory, Letter, Goal } from "@/types";
 
 export function getAllMemories(): Memory[] {
   try {
@@ -21,5 +21,14 @@ export function getAllLetters(): Letter[] {
     return [...mockLetters, ...custom];
   } catch {
     return mockLetters;
+  }
+}
+
+export function getAllGoals(): Goal[] {
+  try {
+    const custom: Goal[] = JSON.parse(localStorage.getItem("oikos-custom-goals") || "[]");
+    return [...mockGoals, ...custom];
+  } catch {
+    return mockGoals;
   }
 }

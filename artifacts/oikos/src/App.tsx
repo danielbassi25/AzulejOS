@@ -14,6 +14,7 @@ import PlayPage from "@/pages/play";
 import ScorePage from "@/pages/score";
 import CreateMemoryPage from "@/pages/create-memory";
 import WriteLetterPage from "@/pages/write-letter";
+import CreateGoalPage from "@/pages/create-goal";
 
 const queryClient = new QueryClient();
 
@@ -36,6 +37,7 @@ function Router() {
       <Route path="/letters/new" component={WriteLetterPage} />
       <Route path="/letters/:id" component={LetterDetailPage} />
       <Route path="/letters" component={LettersPage} />
+      <Route path="/build/new" component={CreateGoalPage} />
       <Route path="/build" component={BuildPage} />
       <Route path="/play" component={PlayPage} />
       <Route path="/score" component={ScorePage} />
