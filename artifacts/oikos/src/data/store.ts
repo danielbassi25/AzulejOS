@@ -2,7 +2,7 @@ import { mockMemories, mockLetters, mockGoals } from "./mock";
 import type { Memory, Letter, Goal, Question } from "@/types";
 
 export function isCustomItem(id: string): boolean {
-  return id.includes("custom");
+  return id.includes("custom") || id.startsWith("note-");
 }
 
 export function getAllMemories(): Memory[] {

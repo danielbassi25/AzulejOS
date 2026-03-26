@@ -2,35 +2,14 @@ import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Send, LockKeyhole, MessageSquare, Sparkles, CalendarHeart, Calendar } from "lucide-react";
+import { ArrowLeft, Send, LockKeyhole, MessageSquare, Sparkles, CalendarHeart } from "lucide-react";
 import type { NoteType } from "@/types";
 
 const MAX_CHARS = 200;
 
-const OPEN_WHEN_PRESETS = [
-  "Open when you are sad",
-  "Open when you can't sleep",
-  "Open when you need motivation",
-  "Open when you miss me",
-  "Open when you need to smile",
-  "Open when you feel alone",
-];
-
-function formatDateForDisplay(isoDate: string): string {
-  if (!isoDate) return '';
-  const d = new Date(isoDate + 'T00:00:00');
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' });
-}
-
-function getMinDate(): string {
-  const d = new Date();
-  d.setDate(d.getDate() + 1);
-  return d.toISOString().split('T')[0];
-}
-
 const typeOptions: { type: NoteType; icon: typeof MessageSquare; label: string; desc: string }[] = [
   { type: "note", icon: MessageSquare, label: "Note", desc: "A short, sweet message" },
-  { type: "open-when", icon: Sparkles, label: "Open When", desc: "Unlock at the right moment" },
+  { type: "open-when", icon: Sparkles, label: "Open When", desc: "Sealed until the right moment" },
   { type: "invite", icon: CalendarHeart, label: "Invite", desc: "A tiny plan or invitation" },
 ];
 
@@ -41,21 +20,15 @@ export default function WriteLetterPage() {
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("Daniel");
   const [sent, setSent] = useState(false);
-  const [unlockDateInput, setUnlockDateInput] = useState("");
-  const [customTitle, setCustomTitle] = useState(false);
 
   const handleSend = () => {
     if (!title.trim() || !content.trim() || !noteType) return;
     const now = new Date();
-    const isSealed = noteType === "open-when";
     const letter = {
       id: `note-${Date.now()}`,
-      title: title.trim(),
-      unlockDate: isSealed && unlockDateInput
-        ? formatDateForDisplay(unlockDateInput)
-        : now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
-      isLocked: isSealed && !!unlockDateInput,
-      lockedUntil: isSealed && unlockDateInput ? unlockDateInput + 'T00:00:00' : undefined,
+      title: noteType === "open-when" ? `Open when ${title.trim().toLowerCase()}` : title.trim(),
+      unlockDate: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
+      isLocked: noteType === "open-when",
       author,
       content: content.trim(),
       noteType,
@@ -82,11 +55,6 @@ export default function WriteLetterPage() {
     color: 'hsl(218,68%,28%)', marginBottom: '8px', display: 'block',
   };
 
-  const selectPreset = (preset: string) => {
-    setTitle(preset);
-    setCustomTitle(false);
-  };
-
   return (
     <AppShell>
       <div style={{
@@ -99,10 +67,10 @@ export default function WriteLetterPage() {
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Back</span>
         </Link>
         <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '2.0rem', letterSpacing: '0.01em', color: 'hsl(42,30%,96%)', lineHeight: 1.15 }}>
-          {noteType ? typeOptions.find(t => t.type === noteType)?.label : 'New Note'}
+          {noteType ? typeOptions.find(t => t.type === noteType)?.label : 'New Tile'}
         </h1>
         <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.88rem', color: 'rgba(200,188,165,0.50)', marginTop: '6px' }}>
-          Words, waiting for their moment
+          Add a piece to the mosaic
         </p>
       </div>
 
@@ -110,7 +78,7 @@ export default function WriteLetterPage() {
 
         {!noteType ? (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <p style={{ ...labelStyle, marginBottom: '4px' }}>What kind of note?</p>
+            <p style={{ ...labelStyle, marginBottom: '4px' }}>What kind of tile?</p>
             {typeOptions.map(opt => {
               const Icon = opt.icon;
               return (
@@ -147,53 +115,36 @@ export default function WriteLetterPage() {
               animate={{ opacity: 1, y: 0 }}
               style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
             >
-              <button onClick={() => { setNoteType(null); setTitle(''); setContent(''); setCustomTitle(false); }}
+              <button onClick={() => { setNoteType(null); setTitle(''); setContent(''); }}
                 style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'hsl(218,55%,40%)', background: 'none', border: 'none', textAlign: 'left', padding: 0, cursor: 'pointer' }}>
                 ← Change type
               </button>
 
-              {noteType === "open-when" && !customTitle && (
-                <div>
-                  <label style={labelStyle}>Choose a moment</label>
-                  <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
-                    {OPEN_WHEN_PRESETS.map(preset => (
-                      <motion.button
-                        key={preset}
-                        whileTap={{ scale: 0.98 }}
-                        onClick={() => selectPreset(preset)}
-                        className="text-left px-4 py-3"
-                        style={{
-                          fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 500, fontSize: '0.95rem',
-                          color: title === preset ? 'hsl(42,30%,96%)' : 'hsl(222,38%,22%)',
-                          background: title === preset ? 'hsl(218,70%,28%)' : 'hsl(40,26%,95%)',
-                          border: title === preset ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.08)',
-                          borderRadius: '4px', transition: 'all 0.2s',
-                        }}>
-                        {preset}
-                      </motion.button>
-                    ))}
-                    <button
-                      onClick={() => { setCustomTitle(true); setTitle(''); }}
-                      style={{
-                        fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase',
-                        color: 'hsl(218,55%,40%)', background: 'none', border: 'none', padding: '8px 0', cursor: 'pointer', textAlign: 'left',
-                      }}>
-                      + Write your own
-                    </button>
+              <div>
+                <label style={labelStyle}>
+                  {noteType === "open-when" ? "Open when..." : noteType === "invite" ? "Invitation" : "Title"}
+                </label>
+                {noteType === "open-when" && (
+                  <div className="flex items-center gap-0 mb-0">
+                    <div style={{
+                      fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.05rem', fontWeight: 500,
+                      color: 'hsl(218,60%,32%)', background: 'hsl(218,70%,28%)', borderRadius: '4px 0 0 4px',
+                      padding: '12px 12px 12px 16px', border: '1px solid rgba(15,45,115,0.40)', borderRight: 'none',
+                      whiteSpace: 'nowrap',
+                    }}>
+                      <span style={{ color: 'hsl(42,30%,90%)', fontSize: '0.95rem' }}>Open when</span>
+                    </div>
+                    <input value={title} onChange={e => setTitle(e.target.value)}
+                      placeholder="you eat pizza"
+                      style={{ ...inputStyle, borderRadius: '0 4px 4px 0', flex: 1 }} />
                   </div>
-                </div>
-              )}
-
-              {(noteType !== "open-when" || customTitle) && (
-                <div>
-                  <label style={labelStyle}>
-                    {noteType === "invite" ? "Invitation" : noteType === "open-when" ? "Open when..." : "Title"}
-                  </label>
+                )}
+                {noteType !== "open-when" && (
                   <input value={title} onChange={e => setTitle(e.target.value)}
-                    placeholder={noteType === "invite" ? "Movie night?" : noteType === "open-when" ? "Open when you..." : "Thinking of you"}
+                    placeholder={noteType === "invite" ? "Movie night?" : "Thinking of you"}
                     style={inputStyle} />
-                </div>
-              )}
+                )}
+              </div>
 
               <div>
                 <label style={labelStyle}>From</label>
@@ -236,30 +187,12 @@ export default function WriteLetterPage() {
               </div>
 
               {noteType === "open-when" && (
-                <div>
-                  <label style={labelStyle}>
-                    <Calendar className="w-3 h-3 inline-block mr-1" style={{ verticalAlign: 'middle' }} />
-                    Seal until (optional)
-                  </label>
-                  <input
-                    type="date"
-                    value={unlockDateInput}
-                    onChange={e => setUnlockDateInput(e.target.value)}
-                    min={getMinDate()}
-                    style={{ ...inputStyle, fontFamily: 'Inter, sans-serif', fontSize: '0.92rem' }}
-                  />
-                  {unlockDateInput && (
-                    <motion.p
-                      initial={{ opacity: 0 }}
-                      animate={{ opacity: 1 }}
-                      style={{
-                        fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic',
-                        fontSize: '0.85rem', color: 'hsl(218,50%,42%)',
-                        marginTop: '8px', textAlign: 'center',
-                      }}>
-                      Sealed until {formatDateForDisplay(unlockDateInput)}
-                    </motion.p>
-                  )}
+                <div className="flex items-center gap-3 px-4 py-3"
+                  style={{ background: 'rgba(30,50,100,0.05)', borderRadius: '4px', border: '1px solid rgba(30,60,130,0.08)' }}>
+                  <LockKeyhole className="w-4 h-4 shrink-0" style={{ color: 'hsl(218,60%,38%)' }} />
+                  <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.85rem', color: 'hsl(218,40%,42%)', lineHeight: 1.5 }}>
+                    This tile will be sealed. The reader must confirm before opening.
+                  </p>
                 </div>
               )}
 
@@ -270,15 +203,15 @@ export default function WriteLetterPage() {
                 className="flex items-center justify-center gap-2.5 w-full"
                 style={{
                   fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-                  background: sent ? 'hsl(160,40%,42%)' : noteType === 'open-when' ? 'hsl(222,42%,18%)' : 'hsl(218,70%,28%)',
+                  background: sent ? 'hsl(160,40%,42%)' : noteType === 'open-when' ? 'hsl(222,48%,18%)' : 'hsl(218,70%,28%)',
                   color: 'hsl(42,30%,96%)', borderRadius: '4px', padding: '15px 20px',
                   border: 'none', marginTop: '4px',
                   opacity: (!title.trim() || !content.trim()) ? 0.5 : 1,
                   boxShadow: '2px 4px 14px rgba(12,25,72,0.22)',
                 }}
               >
-                {noteType === 'open-when' && unlockDateInput ? <LockKeyhole className="w-4 h-4" /> : <Send className="w-4 h-4" />}
-                {sent ? 'Sent ✦' : noteType === 'open-when' && unlockDateInput ? 'Seal Note' : 'Send'}
+                {noteType === 'open-when' ? <LockKeyhole className="w-4 h-4" /> : <Send className="w-4 h-4" />}
+                {sent ? 'Placed ✦' : noteType === 'open-when' ? 'Seal Tile' : 'Place Tile'}
               </motion.button>
             </motion.div>
           </AnimatePresence>

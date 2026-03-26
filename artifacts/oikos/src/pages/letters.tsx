@@ -2,21 +2,41 @@ import { useState, useCallback, useEffect } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { getAllLetters, isCustomItem, deleteCustomLetter, updateCustomLetter } from "@/data/store";
-import { motion } from "framer-motion";
-import { LockKeyhole, MessageSquare, Sparkles, CalendarHeart, PenLine, Pencil, Clock } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { LockKeyhole, MessageSquare, Sparkles, CalendarHeart, PenLine, Pencil, Trash2 } from "lucide-react";
 import { Link } from "wouter";
 import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Letter, NoteType } from "@/types";
 
-const sealPattern = `url("data:image/svg+xml,%3Csvg width='20' height='20' viewBox='0 0 20 20' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.4' opacity='0.14'%3E%3Ccircle cx='10' cy='10' r='3.5'/%3E%3Cline x1='10' y1='0' x2='10' y2='6.5'/%3E%3Cline x1='10' y1='13.5' x2='10' y2='20'/%3E%3Cline x1='0' y1='10' x2='6.5' y2='10'/%3E%3Cline x1='13.5' y1='10' x2='20' y2='10'/%3E%3C/g%3E%3C/svg%3E")`;
+const noteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Ccircle cx='30' cy='30' r='12' stroke-width='0.7'/%3E%3Ccircle cx='30' cy='30' r='6' stroke-width='0.5'/%3E%3Cpath d='M30 0v60M0 30h60' stroke-width='0.4'/%3E%3Cpath d='M30 18a12 12 0 010 24M18 30a12 12 0 0124 0' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='18' r='2' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='42' r='2' stroke-width='0.5'/%3E%3Ccircle cx='18' cy='30' r='2' stroke-width='0.5'/%3E%3Ccircle cx='42' cy='30' r='2' stroke-width='0.5'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
-const CATEGORY_OPTIONS = ["anniversary", "reassurance", "hard day", "future", "just because", "gratitude"];
+const openWhenTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.16'%3E%3Cpath d='M30 6l8.5 8.5L30 23l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M30 37l8.5 8.5L30 54l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M6 30l8.5-8.5L23 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Cpath d='M37 30l8.5-8.5L54 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='4' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='1.5' stroke-width='0.4'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke-width='0.3'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
-function noteTypeLabel(t?: NoteType): string {
-  if (t === "open-when") return "Open When";
-  if (t === "invite") return "Invite";
-  return "Note";
-}
+const inviteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Cpath d='M30 0Q60 30 30 60Q0 30 30 0z' stroke-width='0.7'/%3E%3Cpath d='M0 0Q30 30 0 60' stroke-width='0.5'/%3E%3Cpath d='M60 0Q30 30 60 60' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='5' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='2' stroke-width='0.4'/%3E%3Cpath d='M15 0Q30 15 15 30Q0 15 15 0z' stroke-width='0.4' transform='translate(15,15)'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
+
+const TILE_STYLES: Record<string, { bg: string; grad: string; pattern: string; border: string; shadow: string }> = {
+  note: {
+    bg: 'hsl(218,70%,28%)',
+    grad: 'linear-gradient(155deg, hsl(218,68%,26%) 0%, hsl(218,72%,32%) 100%)',
+    pattern: noteTilePattern,
+    border: '1px solid rgba(15,45,130,0.55)',
+    shadow: '2px 4px 14px rgba(12,25,80,0.28)',
+  },
+  "open-when": {
+    bg: 'hsl(222,52%,18%)',
+    grad: 'linear-gradient(155deg, hsl(222,50%,16%) 0%, hsl(222,55%,22%) 100%)',
+    pattern: openWhenTilePattern,
+    border: '1px solid rgba(10,30,80,0.60)',
+    shadow: '2px 4px 14px rgba(8,18,55,0.35)',
+  },
+  invite: {
+    bg: 'hsl(205,50%,30%)',
+    grad: 'linear-gradient(155deg, hsl(205,48%,28%) 0%, hsl(208,54%,34%) 100%)',
+    pattern: inviteTilePattern,
+    border: '1px solid rgba(15,55,110,0.50)',
+    shadow: '2px 4px 14px rgba(12,35,70,0.28)',
+  },
+};
 
 function noteTypeIcon(t?: NoteType) {
   if (t === "open-when") return Sparkles;
@@ -24,11 +44,18 @@ function noteTypeIcon(t?: NoteType) {
   return MessageSquare;
 }
 
+function noteTypeLabel(t?: NoteType): string {
+  if (t === "open-when") return "Open When";
+  if (t === "invite") return "Invite";
+  return "Note";
+}
+
 export default function LettersPage() {
   const [letters, setLetters] = useState(() => getAllLetters());
   const [editingLetter, setEditingLetter] = useState<Letter | null>(null);
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [quickDeleteId, setQuickDeleteId] = useState<string | null>(null);
 
   const reload = useCallback(() => setLetters(getAllLetters()), []);
 
@@ -43,7 +70,6 @@ export default function LettersPage() {
       title: letter.title,
       content: letter.content || '',
       author: letter.author || 'Daniel',
-      category: letter.category || '',
     });
     setShowDeleteConfirm(false);
   };
@@ -54,7 +80,6 @@ export default function LettersPage() {
       title: editValues.title,
       content: editValues.content,
       author: editValues.author,
-      category: editValues.category || undefined,
     });
     setEditingLetter(null);
     reload();
@@ -67,17 +92,20 @@ export default function LettersPage() {
     reload();
   };
 
-  const openNotes = letters.filter(l => !l.isLocked);
-  const sealedNotes = letters.filter(l => l.isLocked);
+  const handleQuickDelete = (id: string) => {
+    deleteCustomLetter(id);
+    setQuickDeleteId(null);
+    reload();
+  };
 
   return (
     <AppShell>
-      <SectionHeader title="Notes" subtitle="Small things, kept for the right time"
+      <SectionHeader title="Azulejos" subtitle="Each tile holds a piece of us"
         action={
           <Link href="/letters/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
               style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '3px', color: 'rgba(215,205,185,0.70)', padding: '6px 12px' }}>
-              <PenLine className="w-3 h-3" /> New
+              <PenLine className="w-3 h-3" /> New Tile
             </motion.div>
           </Link>
         }
@@ -87,162 +115,118 @@ export default function LettersPage() {
         <div className="flex items-center gap-3 mb-5">
           <div style={{ width: 20, height: 1, background: 'rgba(30,60,130,0.16)' }} />
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'hsl(220,18%,60%)' }}>
-            {openNotes.length} open · {sealedNotes.length} sealed
+            {letters.length} {letters.length === 1 ? 'tile' : 'tiles'}
           </p>
           <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
         </div>
 
         {letters.length === 0 && (
           <div className="text-center py-16">
-            <MessageSquare className="w-8 h-8 mx-auto mb-4" style={{ color: 'rgba(30,60,130,0.15)' }} />
+            <div className="w-16 h-16 mx-auto mb-5 flex items-center justify-center"
+              style={{
+                backgroundColor: 'hsl(218,70%,28%)',
+                backgroundImage: `${noteTilePattern}`,
+                backgroundSize: '60px 60px',
+                borderRadius: '4px', border: '1px solid rgba(15,45,130,0.40)',
+              }}>
+              <MessageSquare className="w-5 h-5" style={{ color: 'rgba(255,252,245,0.50)' }} />
+            </div>
             <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '1.05rem', color: 'hsl(220,18%,58%)', lineHeight: 1.6 }}>
-              No notes yet.<br />Write something small that matters.
+              Your mosaic is empty.<br />Lay the first tile.
             </p>
           </div>
         )}
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
           {letters.map((letter, idx) => {
-            const isCustom = isCustomItem(letter.id);
             const TypeIcon = noteTypeIcon(letter.noteType);
             const typeLabel = noteTypeLabel(letter.noteType);
+            const style = TILE_STYLES[letter.noteType || 'note'] || TILE_STYLES.note;
+            const isEditable = isCustomItem(letter.id);
 
             return (
               <motion.div
                 key={letter.id}
-                initial={{ opacity: 0, y: 12 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.08, duration: 0.48, ease: [0.22, 1, 0.36, 1] }}
+                initial={{ opacity: 0, scale: 0.92 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: idx * 0.06, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                className="relative"
+                style={{ aspectRatio: '1' }}
               >
-                {letter.isLocked ? (
-                  <div className="relative">
-                    <Link href={`/letters/${letter.id}`} className="block">
-                      <div
-                        className="relative overflow-hidden"
-                        style={{
-                          backgroundColor: 'hsl(220,68%,24%)',
-                          backgroundImage: `${sealPattern}, linear-gradient(140deg, hsl(220,68%,24%) 0%, hsl(218,70%,28%) 100%)`,
-                          backgroundSize: '20px 20px, 100% 100%',
-                          border: '1px solid rgba(15,45,115,0.52)', borderRadius: '4px',
-                          boxShadow: '2px 4px 14px rgba(12,25,72,0.24)', padding: '18px 20px',
-                        }}
-                      >
-                        <div className="absolute top-2.5 left-2.5 w-3 h-3 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
-                        <div className="absolute top-2.5 right-2.5 w-3 h-3 border-t border-r" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
-                        <div className="absolute bottom-2.5 left-2.5 w-3 h-3 border-b border-l" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
-                        <div className="absolute bottom-2.5 right-2.5 w-3 h-3 border-b border-r" style={{ borderColor: 'rgba(180,200,255,0.16)' }} />
+                <Link href={`/letters/${letter.id}`} className="block w-full h-full">
+                  <div
+                    className="relative overflow-hidden w-full h-full flex flex-col justify-between"
+                    style={{
+                      backgroundColor: style.bg,
+                      backgroundImage: `${style.pattern}, ${style.grad}`,
+                      backgroundSize: '60px 60px, 100% 100%',
+                      border: style.border,
+                      borderRadius: '4px',
+                      boxShadow: style.shadow,
+                      padding: '14px 14px 12px',
+                    }}
+                  >
+                    <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t border-l" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
+                    <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t border-r" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
+                    <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b border-l" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
+                    <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b border-r" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
 
-                        <div className="flex items-start gap-2 mb-2 relative z-10">
-                          <span style={{
-                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-                            background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(180,200,255,0.16)',
-                            borderRadius: '2px', padding: '3px 8px', color: 'rgba(195,210,255,0.50)',
-                          }}>
-                            {typeLabel}
-                          </span>
-                          <span style={{
-                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-                            border: '1px solid rgba(180,200,255,0.12)',
-                            borderRadius: '2px', padding: '3px 8px', color: 'rgba(195,210,255,0.35)',
-                          }}>
-                            Sealed
-                          </span>
-                        </div>
+                    <div className="relative z-10">
+                      <span style={{
+                        fontFamily: 'Inter, sans-serif', fontSize: '6.5px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
+                        background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.16)',
+                        borderRadius: '2px', padding: '2px 6px', color: 'rgba(215,205,185,0.55)',
+                      }}>
+                        {typeLabel}
+                      </span>
+                    </div>
 
-                        <div className="flex items-center gap-3 relative z-10">
-                          <div className="w-9 h-9 flex items-center justify-center shrink-0"
-                            style={{ background: 'rgba(255,252,245,0.09)', border: '1px solid rgba(180,200,255,0.16)', borderRadius: '3px' }}>
-                            <LockKeyhole className="w-4 h-4" style={{ color: 'rgba(200,215,255,0.55)' }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.05rem', letterSpacing: '0.015em', color: 'rgba(222,210,192,0.80)' }}>
-                              {letter.title}
-                            </h3>
-                            <p className="flex items-center gap-1" style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, letterSpacing: '0.10em', textTransform: 'uppercase', color: 'rgba(175,190,240,0.35)', marginTop: '4px' }}>
-                              {letter.lockedUntil && <Clock className="w-2.5 h-2.5" />}
-                              Unlocks {letter.unlockDate}
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-                    </Link>
-                    {isCustom && (
-                      <motion.button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(letter); }}
-                        whileTap={{ scale: 0.90 }}
-                        className="absolute flex items-center justify-center z-10"
-                        style={{ bottom: 8, right: 8, width: 28, height: 28, borderRadius: '4px', background: 'rgba(255,252,245,0.12)', border: '1px solid rgba(180,200,255,0.18)' }}
-                      >
-                        <Pencil className="w-3 h-3" style={{ color: 'rgba(200,215,255,0.65)' }} />
-                      </motion.button>
-                    )}
+                    <div className="relative z-10 flex-1 flex items-center justify-center px-1">
+                      {letter.isLocked ? (
+                        <LockKeyhole className="w-6 h-6" style={{ color: 'rgba(200,215,255,0.30)' }} />
+                      ) : (
+                        <TypeIcon className="w-6 h-6" style={{ color: 'rgba(255,252,245,0.14)' }} />
+                      )}
+                    </div>
+
+                    <div className="relative z-10">
+                      <h3 style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600,
+                        fontSize: '0.82rem', letterSpacing: '0.01em', lineHeight: 1.25,
+                        color: 'rgba(222,212,194,0.85)',
+                        overflow: 'hidden', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' as const,
+                      }}>
+                        {letter.title}
+                      </h3>
+                      <p style={{
+                        fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500,
+                        color: 'rgba(195,185,165,0.38)', marginTop: '3px',
+                        letterSpacing: '0.06em',
+                      }}>
+                        {letter.author || ''}
+                      </p>
+                    </div>
                   </div>
-                ) : (
-                  <div className="relative">
-                    <Link href={`/letters/${letter.id}`} className="block">
-                      <motion.div
-                        whileHover={{ y: -1.5 }}
-                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
-                        style={{
-                          background: 'hsl(38, 30%, 99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px',
-                          boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 12px rgba(20,40,100,0.06)', padding: '18px 20px',
-                        }}
-                      >
-                        <div className="flex items-start gap-2 mb-2">
-                          <span style={{
-                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-                            background: 'hsl(218,70%,28%)', borderRadius: '2px', padding: '3px 8px', color: 'hsl(42,30%,94%)',
-                          }}>
-                            {typeLabel}
-                          </span>
-                          {letter.category && (
-                            <span style={{
-                              fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 600, letterSpacing: '0.10em', textTransform: 'uppercase',
-                              border: '1px solid rgba(30,60,130,0.10)', borderRadius: '2px', padding: '3px 8px', color: 'hsl(220,18%,55%)',
-                            }}>
-                              {letter.category}
-                            </span>
-                          )}
-                        </div>
+                </Link>
 
-                        <div className="flex items-center gap-3">
-                          <div className="w-9 h-9 flex items-center justify-center shrink-0"
-                            style={{ background: 'hsl(218,70%,28%)', borderRadius: '3px' }}>
-                            <TypeIcon className="w-4 h-4" style={{ color: 'hsl(42,30%,96%)' }} />
-                          </div>
-                          <div className="flex-1 min-w-0">
-                            <h3 className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.05rem', letterSpacing: '0.015em', color: 'hsl(222,45%,16%)' }}>
-                              {letter.title}
-                            </h3>
-                            {letter.content && (
-                              <p className="truncate" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.82rem', color: 'hsl(220,16%,52%)', marginTop: '3px' }}>
-                                {letter.content}
-                              </p>
-                            )}
-                          </div>
-                        </div>
-
-                        <div className="flex items-center gap-2 mt-3 pt-3" style={{ borderTop: '1px solid rgba(30,60,130,0.06)' }}>
-                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,62%)' }}>
-                            {letter.author}
-                          </span>
-                          <div style={{ width: 1, height: 8, background: 'rgba(30,60,130,0.10)' }} />
-                          <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,62%)' }}>
-                            {letter.unlockDate}
-                          </span>
-                        </div>
-                      </motion.div>
-                    </Link>
-                    {isCustom && (
-                      <motion.button
-                        onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(letter); }}
-                        whileTap={{ scale: 0.90 }}
-                        className="absolute flex items-center justify-center z-10"
-                        style={{ bottom: 8, right: 8, width: 28, height: 28, borderRadius: '4px', background: 'hsl(218,70%,28%)', border: '1px solid rgba(15,45,115,0.42)', boxShadow: '0 2px 6px rgba(12,25,72,0.18)' }}
-                      >
-                        <Pencil className="w-3 h-3" style={{ color: 'hsl(42,30%,94%)' }} />
-                      </motion.button>
-                    )}
+                {isEditable && (
+                  <div className="absolute top-1.5 right-1.5 z-20 flex gap-1">
+                    <motion.button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(letter); }}
+                      whileTap={{ scale: 0.85 }}
+                      className="flex items-center justify-center"
+                      style={{ width: 24, height: 24, borderRadius: '3px', background: 'rgba(255,252,245,0.15)', border: '1px solid rgba(255,252,245,0.20)', backdropFilter: 'blur(4px)' }}
+                    >
+                      <Pencil className="w-2.5 h-2.5" style={{ color: 'rgba(222,212,194,0.75)' }} />
+                    </motion.button>
+                    <motion.button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); setQuickDeleteId(letter.id); }}
+                      whileTap={{ scale: 0.85 }}
+                      className="flex items-center justify-center"
+                      style={{ width: 24, height: 24, borderRadius: '3px', background: 'rgba(180,40,40,0.20)', border: '1px solid rgba(180,40,40,0.30)', backdropFilter: 'blur(4px)' }}
+                    >
+                      <Trash2 className="w-2.5 h-2.5" style={{ color: 'rgba(255,180,180,0.75)' }} />
+                    </motion.button>
                   </div>
                 )}
               </motion.div>
@@ -251,17 +235,56 @@ export default function LettersPage() {
         </div>
       </div>
 
+      <AnimatePresence>
+        {quickDeleteId && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center px-8"
+            style={{ background: 'rgba(10,18,42,0.60)', backdropFilter: 'blur(4px)' }}
+            onClick={() => setQuickDeleteId(null)}
+          >
+            <motion.div
+              initial={{ scale: 0.92, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.92, opacity: 0 }}
+              className="w-full max-w-xs p-6 flex flex-col items-center gap-4"
+              style={{ background: 'hsl(42,28%,97%)', borderRadius: '6px', boxShadow: '0 16px 48px rgba(10,20,60,0.30)' }}
+              onClick={e => e.stopPropagation()}
+            >
+              <div className="w-12 h-12 flex items-center justify-center"
+                style={{ background: 'rgba(180,40,40,0.10)', borderRadius: '50%' }}>
+                <Trash2 className="w-5 h-5" style={{ color: 'hsl(0,50%,42%)' }} />
+              </div>
+              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '1.1rem', color: 'hsl(222,38%,22%)', textAlign: 'center' }}>
+                Remove this tile from the mosaic?
+              </p>
+              <div className="flex gap-3 w-full mt-1">
+                <motion.button onClick={() => setQuickDeleteId(null)} whileTap={{ scale: 0.97 }} className="flex-1 py-3"
+                  style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(40,22%,95%)', color: 'hsl(222,30%,30%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px' }}>
+                  Keep
+                </motion.button>
+                <motion.button onClick={() => handleQuickDelete(quickDeleteId)} whileTap={{ scale: 0.97 }} className="flex-1 py-3"
+                  style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(0,50%,42%)', color: 'hsl(42,30%,96%)', border: 'none', borderRadius: '4px' }}>
+                  Remove
+                </motion.button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <EditDeleteModal
         isOpen={!!editingLetter}
         onClose={() => setEditingLetter(null)}
         onSave={handleSave}
         onDelete={() => setShowDeleteConfirm(true)}
-        title="Edit Note"
+        title="Edit Tile"
         fields={[
           { key: 'title', label: 'Title', type: 'text', placeholder: 'Note title' },
           { key: 'author', label: 'From', type: 'select', options: ['Daniel', 'Sofia'] },
           { key: 'content', label: 'Message', type: 'textarea', placeholder: 'Your message...', rows: 4 },
-          { key: 'category', label: 'Category', type: 'select', options: CATEGORY_OPTIONS },
         ]}
         values={editValues}
         onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
