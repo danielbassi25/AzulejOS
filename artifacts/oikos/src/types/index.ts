@@ -63,11 +63,20 @@ export interface Activity {
 
 export interface SeasonResult {
   id: string;
+  name: string;
+  trophyName: string;
+  description: string;
   month: string;
   year: number;
   danielPoints: number;
   sofiaPoints: number;
   winner: string;
+}
+
+export interface ScoreSnapshot {
+  daniel: number;
+  sofia: number;
+  date: string;
 }
 
 export interface DashboardData {
