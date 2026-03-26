@@ -2,7 +2,7 @@ import { useState } from "react";
 import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, Send, LockKeyhole, MessageSquare, Sparkles, CalendarHeart } from "lucide-react";
+import { ArrowLeft, Send, LockKeyhole, MessageSquare, Sparkles, CalendarHeart, Shield } from "lucide-react";
 import type { NoteType } from "@/types";
 
 const MAX_CHARS = 200;
@@ -11,12 +11,14 @@ const TYPE_COLORS: Record<NoteType, string> = {
   note: 'hsl(218,70%,28%)',
   "open-when": 'hsl(222,52%,18%)',
   invite: 'hsl(338,45%,38%)',
+  pillar: 'hsl(168,45%,28%)',
 };
 
 const typeOptions: { type: NoteType; icon: typeof MessageSquare; label: string; desc: string }[] = [
   { type: "note", icon: MessageSquare, label: "Note", desc: "A short, sweet message" },
   { type: "open-when", icon: Sparkles, label: "Open When", desc: "Sealed until the right moment" },
   { type: "invite", icon: CalendarHeart, label: "Invite", desc: "A tiny plan or invitation" },
+  { type: "pillar", icon: Shield, label: "Pillar", desc: "A rule or practice we live by" },
 ];
 
 export default function WriteLetterPage() {
@@ -73,7 +75,7 @@ export default function WriteLetterPage() {
           <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Back</span>
         </Link>
         <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '2.0rem', letterSpacing: '0.01em', color: 'hsl(42,30%,96%)', lineHeight: 1.15 }}>
-          {noteType ? typeOptions.find(t => t.type === noteType)?.label : 'New Tile'}
+          {noteType ? (typeOptions.find(t => t.type === noteType)?.label || 'New Tile') : 'New Tile'}
         </h1>
         <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.88rem', color: 'rgba(200,188,165,0.50)', marginTop: '6px' }}>
           Add a piece to the mosaic
@@ -128,7 +130,7 @@ export default function WriteLetterPage() {
 
               <div>
                 <label style={labelStyle}>
-                  {noteType === "open-when" ? "Open when..." : noteType === "invite" ? "Invitation" : "Title"}
+                  {noteType === "open-when" ? "Open when..." : noteType === "invite" ? "Invitation" : noteType === "pillar" ? "Pillar" : "Title"}
                 </label>
                 {noteType === "open-when" && (
                   <div className="flex items-center gap-0 mb-0">
@@ -147,7 +149,7 @@ export default function WriteLetterPage() {
                 )}
                 {noteType !== "open-when" && (
                   <input value={title} onChange={e => setTitle(e.target.value)}
-                    placeholder={noteType === "invite" ? "Movie night?" : "Thinking of you"}
+                    placeholder={noteType === "pillar" ? "Communication" : noteType === "invite" ? "Movie night?" : "Thinking of you"}
                     style={inputStyle} />
                 )}
               </div>
@@ -184,7 +186,8 @@ export default function WriteLetterPage() {
                 <textarea value={content}
                   onChange={e => { if (e.target.value.length <= MAX_CHARS) setContent(e.target.value); }}
                   placeholder={
-                    noteType === "invite" ? "Pack a bag. Surprise trip."
+                    noteType === "pillar" ? "We always talk things through, even when it's hard."
+                    : noteType === "invite" ? "Pack a bag. Surprise trip."
                     : noteType === "open-when" ? "I want you to know that..."
                     : "Tonight is ours."
                   }
@@ -209,7 +212,7 @@ export default function WriteLetterPage() {
                 className="flex items-center justify-center gap-2.5 w-full"
                 style={{
                   fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-                  background: sent ? 'hsl(160,40%,42%)' : noteType === 'open-when' ? 'hsl(222,48%,18%)' : 'hsl(218,70%,28%)',
+                  background: sent ? 'hsl(160,40%,42%)' : noteType === 'open-when' ? 'hsl(222,48%,18%)' : noteType === 'pillar' ? 'hsl(168,45%,28%)' : noteType === 'invite' ? 'hsl(338,45%,38%)' : 'hsl(218,70%,28%)',
                   color: 'hsl(42,30%,96%)', borderRadius: '4px', padding: '15px 20px',
                   border: 'none', marginTop: '4px',
                   opacity: (!title.trim() || !content.trim()) ? 0.5 : 1,

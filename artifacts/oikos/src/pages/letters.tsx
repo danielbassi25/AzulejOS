@@ -1,9 +1,9 @@
-import { useState, useCallback, useEffect } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { getAllLetters, isCustomItem, deleteCustomLetter, updateCustomLetter } from "@/data/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { LockKeyhole, MessageSquare, Sparkles, CalendarHeart, PenLine, Pencil, Trash2 } from "lucide-react";
+import { LockKeyhole, MessageSquare, Sparkles, CalendarHeart, Shield, PenLine, Pencil, Trash2, Shuffle, ArrowDownUp, Layers } from "lucide-react";
 import { Link } from "wouter";
 import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Letter, NoteType } from "@/types";
@@ -13,6 +13,8 @@ const noteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' v
 const openWhenTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.16'%3E%3Cpath d='M30 6l8.5 8.5L30 23l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M30 37l8.5 8.5L30 54l-8.5-8.5z' stroke-width='0.6'/%3E%3Cpath d='M6 30l8.5-8.5L23 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Cpath d='M37 30l8.5-8.5L54 30l-8.5 8.5z' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='4' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='1.5' stroke-width='0.4'/%3E%3Cpath d='M0 0l60 60M60 0L0 60' stroke-width='0.3'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const inviteTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.20'%3E%3Ccircle cx='30' cy='30' r='14' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='8' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='2.5' stroke-width='0.5'/%3E%3Cpath d='M30 16v-16M30 44v16M16 30H0M44 30h16' stroke-width='0.4'/%3E%3Cpath d='M20.1 20.1L6 6M39.9 20.1L54 6M20.1 39.9L6 54M39.9 39.9L54 54' stroke-width='0.35'/%3E%3Ccircle cx='30' cy='16' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='30' cy='44' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='16' cy='30' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='44' cy='30' r='1.8' stroke-width='0.45'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
+
+const pillarTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Crect x='10' y='10' width='40' height='40' stroke-width='0.5'/%3E%3Crect x='18' y='18' width='24' height='24' stroke-width='0.5'/%3E%3Cpath d='M10 10l8 8M50 10l-8 8M10 50l8-8M50 50l-8-8' stroke-width='0.45'/%3E%3Cpath d='M30 10v8M30 42v8M10 30h8M42 30h8' stroke-width='0.4'/%3E%3Ccircle cx='30' cy='30' r='5' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='2' stroke-width='0.4'/%3E%3Cpath d='M30 25v-7M30 35v7M25 30h-7M35 30h7' stroke-width='0.35'/%3E%3Ccircle cx='10' cy='10' r='3' stroke-width='0.35'/%3E%3Ccircle cx='50' cy='10' r='3' stroke-width='0.35'/%3E%3Ccircle cx='10' cy='50' r='3' stroke-width='0.35'/%3E%3Ccircle cx='50' cy='50' r='3' stroke-width='0.35'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const TILE_STYLES: Record<string, { bg: string; grad: string; pattern: string; border: string; shadow: string }> = {
   note: {
@@ -36,12 +38,44 @@ const TILE_STYLES: Record<string, { bg: string; grad: string; pattern: string; b
     border: '1px solid rgba(120,20,50,0.50)',
     shadow: '2px 4px 14px rgba(80,15,35,0.30)',
   },
+  pillar: {
+    bg: 'hsl(168,45%,28%)',
+    grad: 'linear-gradient(155deg, hsl(168,42%,24%) 0%, hsl(170,48%,32%) 100%)',
+    pattern: pillarTilePattern,
+    border: '1px solid rgba(20,100,80,0.50)',
+    shadow: '2px 4px 14px rgba(15,60,50,0.30)',
+  },
 };
 
 function noteTypeLabel(t?: NoteType): string {
   if (t === "open-when") return "Open When";
   if (t === "invite") return "Invite";
+  if (t === "pillar") return "Pillar";
   return "Note";
+}
+
+const TYPE_ORDER: Record<string, number> = { pillar: 0, note: 1, "open-when": 2, invite: 3 };
+
+type SortMode = "date" | "type" | "shuffle";
+
+function sortLetters(letters: Letter[], mode: SortMode, shuffleSeed: number): Letter[] {
+  const arr = [...letters];
+  if (mode === "shuffle") {
+    for (let i = arr.length - 1; i > 0; i--) {
+      const j = Math.abs(((shuffleSeed * (i + 1) * 9301 + 49297) % 233280)) % (i + 1);
+      [arr[i], arr[j]] = [arr[j], arr[i]];
+    }
+    return arr;
+  }
+  if (mode === "type") {
+    return arr.sort((a, b) => {
+      const typeA = TYPE_ORDER[a.noteType || 'note'] ?? 99;
+      const typeB = TYPE_ORDER[b.noteType || 'note'] ?? 99;
+      if (typeA !== typeB) return typeA - typeB;
+      return (b.id || '').localeCompare(a.id || '');
+    });
+  }
+  return arr.sort((a, b) => (b.id || '').localeCompare(a.id || ''));
 }
 
 export default function LettersPage() {
@@ -50,6 +84,8 @@ export default function LettersPage() {
   const [editValues, setEditValues] = useState<Record<string, string>>({});
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [quickDeleteId, setQuickDeleteId] = useState<string | null>(null);
+  const [sortMode, setSortMode] = useState<SortMode>("date");
+  const [shuffleSeed, setShuffleSeed] = useState(() => Date.now());
 
   const reload = useCallback(() => setLetters(getAllLetters()), []);
 
@@ -57,6 +93,13 @@ export default function LettersPage() {
     const interval = setInterval(() => { setLetters(getAllLetters()); }, 60000);
     return () => clearInterval(interval);
   }, []);
+
+  const sortedLetters = useMemo(() => sortLetters(letters, sortMode, shuffleSeed), [letters, sortMode, shuffleSeed]);
+
+  const handleShuffle = () => {
+    setShuffleSeed(Date.now());
+    setSortMode("shuffle");
+  };
 
   const openEdit = (letter: Letter) => {
     setEditingLetter(letter);
@@ -92,6 +135,16 @@ export default function LettersPage() {
     reload();
   };
 
+  const sortBtnStyle = (active: boolean): React.CSSProperties => ({
+    fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+    letterSpacing: '0.10em', textTransform: 'uppercase',
+    background: active ? 'hsl(218,70%,28%)' : 'rgba(30,60,130,0.06)',
+    color: active ? 'hsl(42,30%,96%)' : 'hsl(220,18%,55%)',
+    border: active ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.08)',
+    borderRadius: '3px', padding: '5px 8px',
+    display: 'flex', alignItems: 'center', gap: '3px',
+  });
+
   return (
     <AppShell>
       <SectionHeader title="Parede" subtitle="Words laid tile by tile"
@@ -106,13 +159,27 @@ export default function LettersPage() {
       />
 
       <div className="px-4 pt-5 pb-14">
-        <div className="flex items-center justify-center gap-3 mb-5">
+        <div className="flex items-center justify-center gap-3 mb-4">
           <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
           <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'hsl(220,18%,60%)' }}>
             {letters.length} {letters.length === 1 ? 'tile' : 'tiles'}
           </p>
           <div style={{ flex: 1, height: 1, background: 'rgba(30,60,130,0.08)' }} />
         </div>
+
+        {letters.length > 1 && (
+          <div className="flex items-center justify-center gap-2 mb-5">
+            <motion.button whileTap={{ scale: 0.93 }} onClick={handleShuffle} style={sortBtnStyle(sortMode === 'shuffle')}>
+              <Shuffle className="w-2.5 h-2.5" /> Shuffle
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.93 }} onClick={() => setSortMode('date')} style={sortBtnStyle(sortMode === 'date')}>
+              <ArrowDownUp className="w-2.5 h-2.5" /> Date
+            </motion.button>
+            <motion.button whileTap={{ scale: 0.93 }} onClick={() => setSortMode('type')} style={sortBtnStyle(sortMode === 'type')}>
+              <Layers className="w-2.5 h-2.5" /> Type
+            </motion.button>
+          </div>
+        )}
 
         {letters.length === 0 && (
           <div className="text-center py-16">
@@ -132,7 +199,7 @@ export default function LettersPage() {
         )}
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
-          {letters.map((letter, idx) => {
+          {sortedLetters.map((letter, idx) => {
             const typeLabel = noteTypeLabel(letter.noteType);
             const style = TILE_STYLES[letter.noteType || 'note'] || TILE_STYLES.note;
             const isEditable = isCustomItem(letter.id);
@@ -140,9 +207,10 @@ export default function LettersPage() {
             return (
               <motion.div
                 key={letter.id}
+                layout
                 initial={{ opacity: 0, scale: 0.92 }}
                 animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: idx * 0.06, duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ delay: idx * 0.04, duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
                 className="relative"
                 style={{ aspectRatio: '1' }}
               >
@@ -183,9 +251,9 @@ export default function LettersPage() {
                         background: 'rgba(255,252,248,0.88)',
                         backdropFilter: 'blur(10px)',
                         WebkitBackdropFilter: 'blur(10px)',
-                        padding: '8px 14px 10px',
+                        padding: '10px 14px 10px',
                         borderTop: '1px solid rgba(255,252,245,0.30)',
-                        height: '54px',
+                        height: '62px',
                         display: 'flex',
                         flexDirection: 'column',
                         justifyContent: 'center',

@@ -12,7 +12,7 @@ export interface Memory {
   gallery?: string[];
 }
 
-export type NoteType = "note" | "open-when" | "invite";
+export type NoteType = "note" | "open-when" | "invite" | "pillar";
 
 export interface Letter {
   id: string;

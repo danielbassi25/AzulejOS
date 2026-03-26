@@ -3,7 +3,7 @@ import AppShell from "@/components/AppShell";
 import { getAllLetters, isCustomItem, deleteCustomLetter, updateCustomLetter } from "@/data/store";
 import { Link, useRoute, Redirect, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
-import { ArrowLeft, LockKeyhole, Heart, MessageSquare, Sparkles, CalendarHeart, Pencil, Trash2 } from "lucide-react";
+import { ArrowLeft, LockKeyhole, Heart, MessageSquare, Sparkles, CalendarHeart, Shield, Pencil, Trash2 } from "lucide-react";
 import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Letter, NoteType } from "@/types";
 
@@ -12,12 +12,14 @@ const openWhenTilePattern = `url("data:image/svg+xml,%3Csvg width='60' height='6
 function noteTypeLabel(t?: NoteType): string {
   if (t === "open-when") return "Open When";
   if (t === "invite") return "Invite";
+  if (t === "pillar") return "Pillar";
   return "Note";
 }
 
 function noteTypeIcon(t?: NoteType) {
   if (t === "open-when") return Sparkles;
   if (t === "invite") return CalendarHeart;
+  if (t === "pillar") return Shield;
   return MessageSquare;
 }
 
