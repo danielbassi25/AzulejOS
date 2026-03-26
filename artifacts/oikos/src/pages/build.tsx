@@ -1,19 +1,20 @@
-import { useState, useMemo } from "react";
+import { useState, useMemo, useCallback } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
-import { getAllGoals } from "@/data/store";
+import { getAllGoals, isCustomItem, deleteCustomGoal, updateCustomGoal } from "@/data/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { Check, Plus, Plane, Film, UtensilsCrossed, Sparkles } from "lucide-react";
+import { Check, Plus, Plane, Film, UtensilsCrossed, Sparkles, Pencil } from "lucide-react";
 import { Link } from "wouter";
+import EditDeleteModal from "@/components/EditDeleteModal";
 import type { Goal } from "@/types";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
 const CATEGORY_META: Record<string, { icon: typeof Sparkles; emoji: string }> = {
-  Activities: { icon: Sparkles, emoji: "✦" },
-  Travel: { icon: Plane, emoji: "✈" },
-  Movies: { icon: Film, emoji: "◉" },
-  Food: { icon: UtensilsCrossed, emoji: "◈" },
+  Activities: { icon: Sparkles, emoji: "\u2726" },
+  Travel: { icon: Plane, emoji: "\u2708" },
+  Movies: { icon: Film, emoji: "\u25C9" },
+  Food: { icon: UtensilsCrossed, emoji: "\u25C8" },
 };
 
 const CATEGORIES = ["All", "Activities", "Travel", "Movies", "Food"];
@@ -23,8 +24,8 @@ const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' vi
 const bgMosaicPattern = `url("data:image/svg+xml,%3Csvg width='48' height='48' viewBox='0 0 48 48' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' opacity='0.04'%3E%3Ccircle cx='24' cy='24' r='10' stroke-width='0.5'/%3E%3Ccircle cx='24' cy='24' r='4' stroke-width='0.4'/%3E%3Cpath d='M24 14l-10 10 10 10 10-10z' stroke-width='0.4'/%3E%3Cpath d='M24 0v14M24 34v14M0 24h14M34 24h14' stroke-width='0.3'/%3E%3Ccircle cx='0' cy='0' r='6' stroke-width='0.3'/%3E%3Ccircle cx='48' cy='0' r='6' stroke-width='0.3'/%3E%3Ccircle cx='0' cy='48' r='6' stroke-width='0.3'/%3E%3Ccircle cx='48' cy='48' r='6' stroke-width='0.3'/%3E%3C/g%3E%3C/svg%3E")`;
 
 export default function BuildPage() {
-  const allGoals = getAllGoals();
   const [goals, setGoals] = useState<Goal[]>(() => {
+    const allGoals = getAllGoals();
     try {
       const overrides: Record<string, boolean> = JSON.parse(localStorage.getItem("oikos-goal-status") || "{}");
       return allGoals.map(g => ({
@@ -36,6 +37,22 @@ export default function BuildPage() {
     }
   });
   const [activeCategory, setActiveCategory] = useState("All");
+  const [editingGoal, setEditingGoal] = useState<Goal | null>(null);
+  const [editValues, setEditValues] = useState<Record<string, string>>({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+
+  const reload = useCallback(() => {
+    const allGoals = getAllGoals();
+    try {
+      const overrides: Record<string, boolean> = JSON.parse(localStorage.getItem("oikos-goal-status") || "{}");
+      setGoals(allGoals.map(g => ({
+        ...g,
+        completed: overrides[g.id] !== undefined ? overrides[g.id] : g.completed,
+      })));
+    } catch {
+      setGoals(allGoals);
+    }
+  }, []);
 
   const toggleGoal = (id: string) => {
     setGoals(prev => {
@@ -47,13 +64,39 @@ export default function BuildPage() {
     });
   };
 
+  const openEdit = (goal: Goal) => {
+    setEditingGoal(goal);
+    setEditValues({
+      text: goal.text,
+      category: goal.category || '',
+    });
+    setShowDeleteConfirm(false);
+  };
+
+  const handleSave = () => {
+    if (!editingGoal) return;
+    updateCustomGoal(editingGoal.id, {
+      text: editValues.text,
+      category: editValues.category || undefined,
+    });
+    setEditingGoal(null);
+    reload();
+  };
+
+  const handleDelete = () => {
+    if (!editingGoal) return;
+    deleteCustomGoal(editingGoal.id);
+    setEditingGoal(null);
+    reload();
+  };
+
   const filteredGoals = useMemo(() =>
     activeCategory === "All" ? goals : goals.filter(g => g.category === activeCategory),
     [goals, activeCategory]
   );
 
   const completedCount = goals.filter(g => g.completed).length;
-  const progressPercent = Math.round((completedCount / goals.length) * 100);
+  const progressPercent = goals.length > 0 ? Math.round((completedCount / goals.length) * 100) : 0;
 
   const categoryCounts = useMemo(() => {
     const map: Record<string, { total: number; done: number }> = {};
@@ -108,7 +151,7 @@ export default function BuildPage() {
                 letterSpacing: '0.20em', textTransform: 'uppercase',
                 color: 'rgba(180,165,140,0.48)', marginBottom: '8px',
               }}>
-                ✦ &nbsp; Our List
+                \u2726 &nbsp; Our List
               </p>
               <p style={{
                 fontFamily: 'Inter, sans-serif', fontWeight: 300, fontSize: '0.82rem',
@@ -189,81 +232,104 @@ export default function BuildPage() {
         )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
-          {filteredGoals.map((goal, idx) => (
-            <motion.div
-              key={goal.id}
-              initial={{ opacity: 0, x: 10 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.05 + idx * 0.025, duration: 0.40 }}
-            >
+          {filteredGoals.map((goal, idx) => {
+            const isCustom = isCustomItem(goal.id);
+            return (
               <motion.div
-                onClick={() => toggleGoal(goal.id)}
-                whileTap={{ scale: 0.985 }}
-                whileHover={{ y: -1 }}
-                transition={{ type: "spring", stiffness: 380, damping: 28 }}
-                className="flex items-center gap-4 px-5 py-4 cursor-pointer select-none"
-                style={{
-                  background: goal.completed ? 'hsl(218,68%,27%)' : 'hsl(38,30%,99%)',
-                  backgroundImage: goal.completed ? azulejoPattern : 'none',
-                  backgroundSize: '60px 60px',
-                  border: goal.completed ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.08)',
-                  borderRadius: '4px',
-                  boxShadow: goal.completed
-                    ? '1px 2px 10px rgba(12,25,72,0.22)'
-                    : '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 10px rgba(20,40,100,0.05)',
-                  transition: 'all 0.30s ease',
-                }}
+                key={goal.id}
+                initial={{ opacity: 0, x: 10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 + idx * 0.025, duration: 0.40 }}
               >
-                <motion.div
-                  className="flex items-center justify-center shrink-0"
-                  style={{
-                    width: 22, height: 22, borderRadius: '2px',
-                    border: goal.completed ? 'none' : '1.5px solid rgba(30,60,130,0.26)',
-                    background: goal.completed ? 'rgba(255,252,245,0.15)' : 'transparent',
-                  }}
-                  animate={{ scale: goal.completed ? [1, 1.18, 1] : 1 }}
-                  transition={{ duration: 0.25 }}
-                >
-                  <AnimatePresence>
-                    {goal.completed && (
-                      <motion.div
-                        initial={{ scale: 0, opacity: 0 }}
-                        animate={{ scale: 1, opacity: 1 }}
-                        exit={{ scale: 0, opacity: 0 }}
-                        transition={{ duration: 0.18 }}
-                      >
-                        <Check className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)', strokeWidth: 2.5 }} />
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-                </motion.div>
+                <div className="relative">
+                  <motion.div
+                    onClick={() => toggleGoal(goal.id)}
+                    whileTap={{ scale: 0.985 }}
+                    whileHover={{ y: -1 }}
+                    transition={{ type: "spring", stiffness: 380, damping: 28 }}
+                    className="flex items-center gap-4 px-5 py-4 cursor-pointer select-none"
+                    style={{
+                      background: goal.completed ? 'hsl(218,68%,27%)' : 'hsl(38,30%,99%)',
+                      backgroundImage: goal.completed ? azulejoPattern : 'none',
+                      backgroundSize: '60px 60px',
+                      border: goal.completed ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.08)',
+                      borderRadius: '4px',
+                      boxShadow: goal.completed
+                        ? '1px 2px 10px rgba(12,25,72,0.22)'
+                        : '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 10px rgba(20,40,100,0.05)',
+                      transition: 'all 0.30s ease',
+                      paddingRight: isCustom ? '52px' : '20px',
+                    }}
+                  >
+                    <motion.div
+                      className="flex items-center justify-center shrink-0"
+                      style={{
+                        width: 22, height: 22, borderRadius: '2px',
+                        border: goal.completed ? 'none' : '1.5px solid rgba(30,60,130,0.26)',
+                        background: goal.completed ? 'rgba(255,252,245,0.15)' : 'transparent',
+                      }}
+                      animate={{ scale: goal.completed ? [1, 1.18, 1] : 1 }}
+                      transition={{ duration: 0.25 }}
+                    >
+                      <AnimatePresence>
+                        {goal.completed && (
+                          <motion.div
+                            initial={{ scale: 0, opacity: 0 }}
+                            animate={{ scale: 1, opacity: 1 }}
+                            exit={{ scale: 0, opacity: 0 }}
+                            transition={{ duration: 0.18 }}
+                          >
+                            <Check className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)', strokeWidth: 2.5 }} />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.div>
 
-                <div className="flex-1 min-w-0">
-                  <p style={{
-                    fontFamily: "'Cormorant Garamond', Georgia, serif",
-                    fontWeight: goal.completed ? 400 : 500,
-                    fontSize: '1.05rem', letterSpacing: '0.01em', lineHeight: 1.35,
-                    color: goal.completed ? 'rgba(215,205,188,0.78)' : 'hsl(222,38%,22%)',
-                    textDecoration: goal.completed ? 'line-through' : 'none',
-                    textDecorationColor: 'rgba(180,165,140,0.35)',
-                    transition: 'all 0.30s ease',
-                  }}>
-                    {goal.text}
-                  </p>
-                  {goal.category && (
-                    <p style={{
-                      fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600,
-                      letterSpacing: '0.12em', textTransform: 'uppercase',
-                      color: goal.completed ? 'rgba(175,162,140,0.35)' : 'hsl(220,18%,60%)',
-                      marginTop: '4px',
-                    }}>
-                      {CATEGORY_META[goal.category]?.emoji || '✦'} &nbsp;{goal.category}
-                    </p>
+                    <div className="flex-1 min-w-0">
+                      <p style={{
+                        fontFamily: "'Cormorant Garamond', Georgia, serif",
+                        fontWeight: goal.completed ? 400 : 500,
+                        fontSize: '1.05rem', letterSpacing: '0.01em', lineHeight: 1.35,
+                        color: goal.completed ? 'rgba(215,205,188,0.78)' : 'hsl(222,38%,22%)',
+                        textDecoration: goal.completed ? 'line-through' : 'none',
+                        textDecorationColor: 'rgba(180,165,140,0.35)',
+                        transition: 'all 0.30s ease',
+                      }}>
+                        {goal.text}
+                      </p>
+                      {goal.category && (
+                        <p style={{
+                          fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600,
+                          letterSpacing: '0.12em', textTransform: 'uppercase',
+                          color: goal.completed ? 'rgba(175,162,140,0.35)' : 'hsl(220,18%,60%)',
+                          marginTop: '4px',
+                        }}>
+                          {CATEGORY_META[goal.category]?.emoji || '\u2726'} &nbsp;{goal.category}
+                        </p>
+                      )}
+                    </div>
+                  </motion.div>
+
+                  {isCustom && (
+                    <motion.button
+                      onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(goal); }}
+                      whileTap={{ scale: 0.90 }}
+                      className="absolute flex items-center justify-center z-10"
+                      style={{
+                        top: '50%', right: 12, transform: 'translateY(-50%)',
+                        width: 30, height: 30, borderRadius: '4px',
+                        background: goal.completed ? 'rgba(255,252,245,0.14)' : 'hsl(218,70%,28%)',
+                        border: goal.completed ? '1px solid rgba(180,200,255,0.20)' : '1px solid rgba(15,45,115,0.42)',
+                        boxShadow: '0 2px 6px rgba(12,25,72,0.18)',
+                      }}
+                    >
+                      <Pencil className="w-3 h-3" style={{ color: goal.completed ? 'rgba(200,215,255,0.70)' : 'hsl(42,30%,94%)' }} />
+                    </motion.button>
                   )}
                 </div>
               </motion.div>
-            </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         <motion.div
@@ -281,6 +347,23 @@ export default function BuildPage() {
           </p>
         </motion.div>
       </div>
+
+      <EditDeleteModal
+        isOpen={!!editingGoal}
+        onClose={() => setEditingGoal(null)}
+        onSave={handleSave}
+        onDelete={() => setShowDeleteConfirm(true)}
+        title="Edit Goal"
+        fields={[
+          { key: 'text', label: 'What will we do?', type: 'text', placeholder: 'Goal description' },
+          { key: 'category', label: 'Category', type: 'select', options: ['Activities', 'Travel', 'Movies', 'Food'] },
+        ]}
+        values={editValues}
+        onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
+        showDeleteConfirm={showDeleteConfirm}
+        onDeleteConfirm={handleDelete}
+        onDeleteCancel={() => setShowDeleteConfirm(false)}
+      />
     </AppShell>
   );
 }

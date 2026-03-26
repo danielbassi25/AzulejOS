@@ -2,9 +2,11 @@ import { useState, useMemo, useCallback, useRef } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockQuestions } from "@/data/mock";
+import { isCustomItem, getCustomQuestions, deleteCustomQuestion, updateCustomQuestion } from "@/data/store";
 import type { Question } from "@/types";
 import { motion, AnimatePresence } from "framer-motion";
-import { RefreshCw, Heart, Shuffle, Check, ChevronDown, Plus, X } from "lucide-react";
+import { RefreshCw, Heart, Shuffle, Check, ChevronDown, Plus, X, Pencil } from "lucide-react";
+import EditDeleteModal from "@/components/EditDeleteModal";
 
 const CATEGORIES = ["All", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That"];
 
@@ -30,13 +32,13 @@ export default function PlayPage() {
   const [shuffleMode, setShuffleMode] = useState(false);
   const [showCategoryPicker, setShowCategoryPicker] = useState(false);
   const [showAddForm, setShowAddForm] = useState(false);
-  const [customQuestions, setCustomQuestions] = useState<Question[]>(() => {
-    try { const stored = localStorage.getItem("oikos-custom-questions"); return stored ? JSON.parse(stored) : []; }
-    catch { return []; }
-  });
+  const [customQuestions, setCustomQuestions] = useState<Question[]>(() => getCustomQuestions());
   const [newQuestionText, setNewQuestionText] = useState("");
   const [newQuestionCategory, setNewQuestionCategory] = useState("Deep");
   const shuffleSeedRef = useRef(0);
+  const [editingQuestion, setEditingQuestion] = useState<Question | null>(null);
+  const [editValues, setEditValues] = useState<Record<string, string>>({});
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const allQuestions = useMemo(() => [...mockQuestions, ...customQuestions], [customQuestions]);
 
@@ -79,6 +81,35 @@ export default function PlayPage() {
     setShowAddForm(false);
   }, [newQuestionText, newQuestionCategory]);
 
+  const openEdit = (question: Question) => {
+    setEditingQuestion(question);
+    setEditValues({
+      text: question.text,
+      category: question.category,
+    });
+    setShowDeleteConfirm(false);
+  };
+
+  const handleSave = () => {
+    if (!editingQuestion) return;
+    updateCustomQuestion(editingQuestion.id, {
+      text: editValues.text,
+      category: editValues.category,
+    });
+    setCustomQuestions(getCustomQuestions());
+    setEditingQuestion(null);
+  };
+
+  const handleDelete = () => {
+    if (!editingQuestion) return;
+    deleteCustomQuestion(editingQuestion.id);
+    setCustomQuestions(getCustomQuestions());
+    setEditingQuestion(null);
+    if (currentIndex >= filteredQuestions.length - 1) {
+      setCurrentIndex(0);
+    }
+  };
+
   const categoryCount = useMemo(() => {
     const map: Record<string, number> = { All: allQuestions.length };
     allQuestions.forEach(q => { map[q.category] = (map[q.category] || 0) + 1; });
@@ -87,6 +118,7 @@ export default function PlayPage() {
 
   const isFav = currentQuestion ? favorites.has(currentQuestion.id) : false;
   const isAns = currentQuestion ? answered.has(currentQuestion.id) : false;
+  const isCurrentCustom = currentQuestion ? isCustomItem(currentQuestion.id) : false;
 
   return (
     <AppShell>
@@ -127,7 +159,6 @@ export default function PlayPage() {
       />
 
       <div className="flex flex-col">
-        {/* Add custom question form */}
         <AnimatePresence>
           {showAddForm && (
             <motion.div
@@ -181,7 +212,6 @@ export default function PlayPage() {
           )}
         </AnimatePresence>
 
-        {/* Category selector */}
         <div className="relative" style={{ borderBottom: '1px solid rgba(30,60,130,0.09)' }}>
           <button
             onClick={() => setShowCategoryPicker(!showCategoryPicker)}
@@ -225,7 +255,6 @@ export default function PlayPage() {
           </AnimatePresence>
         </div>
 
-        {/* Question card with swipe */}
         <div className="flex flex-col items-center px-4 pt-6 pb-4">
           <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '3/4' }}>
             <AnimatePresence mode="wait" custom={direction}>
@@ -270,7 +299,22 @@ export default function PlayPage() {
                     {isAns && <Check className="w-3 h-3" style={{ color: 'rgba(140,220,180,0.50)' }} />}
                   </div>
 
-                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem', color: 'rgba(200,185,160,0.16)', lineHeight: 1, marginBottom: '20px' }}>✦</div>
+                  {isCurrentCustom && (
+                    <motion.button
+                      onClick={() => currentQuestion && openEdit(currentQuestion)}
+                      whileTap={{ scale: 0.90 }}
+                      className="absolute top-6 left-5 flex items-center justify-center z-10"
+                      style={{
+                        width: 26, height: 26, borderRadius: '4px',
+                        background: 'rgba(255,252,245,0.12)',
+                        border: '1px solid rgba(180,200,255,0.20)',
+                      }}
+                    >
+                      <Pencil className="w-3 h-3" style={{ color: 'rgba(200,215,255,0.60)' }} />
+                    </motion.button>
+                  )}
+
+                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem', color: 'rgba(200,185,160,0.16)', lineHeight: 1, marginBottom: '20px' }}>{'\u2726'}</div>
 
                   <h2 style={{
                     fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 500,
@@ -290,7 +334,6 @@ export default function PlayPage() {
             </AnimatePresence>
           </div>
 
-          {/* Action row */}
           <div className="flex items-center gap-2.5 w-full justify-center" style={{ marginTop: '24px', maxWidth: 340 }}>
             <motion.button onClick={() => currentQuestion && toggleFavorite(currentQuestion.id)} whileTap={{ scale: 0.92 }}
               className="flex items-center justify-center"
@@ -313,7 +356,6 @@ export default function PlayPage() {
             </motion.button>
           </div>
 
-          {/* Stats bar */}
           <div className="flex items-center justify-between w-full px-4 py-3"
             style={{ maxWidth: 340, marginTop: '16px', borderRadius: '4px', background: 'hsl(40,22%,95%)', border: '1px solid rgba(30,60,130,0.06)' }}>
             <div className="flex items-center gap-1.5">
@@ -330,6 +372,23 @@ export default function PlayPage() {
           </div>
         </div>
       </div>
+
+      <EditDeleteModal
+        isOpen={!!editingQuestion}
+        onClose={() => setEditingQuestion(null)}
+        onSave={handleSave}
+        onDelete={() => setShowDeleteConfirm(true)}
+        title="Edit Question"
+        fields={[
+          { key: 'text', label: 'Question', type: 'textarea', placeholder: 'Your question...', rows: 3 },
+          { key: 'category', label: 'Category', type: 'select', options: CATEGORIES.filter(c => c !== 'All') },
+        ]}
+        values={editValues}
+        onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
+        showDeleteConfirm={showDeleteConfirm}
+        onDeleteConfirm={handleDelete}
+        onDeleteCancel={() => setShowDeleteConfirm(false)}
+      />
     </AppShell>
   );
 }
