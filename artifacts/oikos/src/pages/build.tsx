@@ -10,11 +10,11 @@ import type { Goal } from "@/types";
 
 const EASE = [0.22, 1, 0.36, 1] as const;
 
-const CATEGORY_META: Record<string, { icon: typeof Sparkles; emoji: string }> = {
-  Activities: { icon: Sparkles, emoji: "\u2726" },
-  Travel: { icon: Plane, emoji: "\u2708" },
-  Movies: { icon: Film, emoji: "\u25C9" },
-  Food: { icon: UtensilsCrossed, emoji: "\u25C8" },
+const CATEGORY_META: Record<string, { icon: typeof Sparkles; emoji: string; bg: string; gradient: string; border: string }> = {
+  Activities: { icon: Sparkles, emoji: "\u2726", bg: 'hsl(218,70%,28%)', gradient: 'hsl(218,72%,32%)', border: 'rgba(15,45,115,0.50)' },
+  Travel: { icon: Plane, emoji: "\u2708", bg: 'hsl(168,45%,28%)', gradient: 'hsl(166,42%,32%)', border: 'rgba(15,80,70,0.50)' },
+  Movies: { icon: Film, emoji: "\u25C9", bg: 'hsl(338,45%,38%)', gradient: 'hsl(336,42%,42%)', border: 'rgba(120,20,50,0.50)' },
+  Food: { icon: UtensilsCrossed, emoji: "\u25C8", bg: 'hsl(222,52%,18%)', gradient: 'hsl(220,50%,22%)', border: 'rgba(15,35,90,0.55)' },
 };
 
 const CATEGORIES = ["All", "Activities", "Travel", "Movies", "Food"];
@@ -111,7 +111,7 @@ export default function BuildPage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Eventually we will" subtitle="Future plans, together"
+      <SectionHeader title="Eventually we will" subtitle="Painting together"
         action={
           <Link href="/build/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
@@ -151,7 +151,7 @@ export default function BuildPage() {
                 letterSpacing: '0.20em', textTransform: 'uppercase',
                 color: 'rgba(180,165,140,0.48)', marginBottom: '8px',
               }}>
-                \u2726 &nbsp; Our List
+                {'\u2726'} &nbsp; Our List
               </p>
               <p style={{
                 fontFamily: 'Inter, sans-serif', fontWeight: 300, fontSize: '0.82rem',
@@ -202,9 +202,9 @@ export default function BuildPage() {
                 style={{
                   fontFamily: 'Inter, sans-serif', fontSize: '8.5px', fontWeight: 600,
                   letterSpacing: '0.12em', textTransform: 'uppercase',
-                  background: activeCategory === cat ? 'hsl(218,70%,28%)' : 'hsl(40,22%,95%)',
+                  background: activeCategory === cat ? (meta?.bg || 'hsl(218,70%,28%)') : 'hsl(40,22%,95%)',
                   color: activeCategory === cat ? 'hsl(42,30%,94%)' : 'hsl(222,30%,34%)',
-                  border: activeCategory === cat ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.06)',
+                  border: activeCategory === cat ? `1px solid ${meta?.border || 'rgba(15,45,115,0.40)'}` : '1px solid rgba(30,60,130,0.06)',
                   borderRadius: '3px',
                 }}
               >
@@ -234,6 +234,10 @@ export default function BuildPage() {
         <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginTop: '4px' }}>
           {filteredGoals.map((goal, idx) => {
             const isCustom = isCustomItem(goal.id);
+            const catColor = CATEGORY_META[goal.category || ''];
+            const tileBg = catColor?.bg || 'hsl(218,68%,27%)';
+            const tileGrad = catColor?.gradient || 'hsl(218,72%,32%)';
+            const tileBorder = catColor?.border || 'rgba(15,45,115,0.42)';
             return (
               <motion.div
                 key={goal.id}
@@ -249,10 +253,10 @@ export default function BuildPage() {
                     transition={{ type: "spring", stiffness: 380, damping: 28 }}
                     className="flex items-center gap-4 px-5 py-4 cursor-pointer select-none"
                     style={{
-                      background: goal.completed ? 'hsl(218,68%,27%)' : 'hsl(38,30%,99%)',
-                      backgroundImage: goal.completed ? azulejoPattern : 'none',
-                      backgroundSize: '60px 60px',
-                      border: goal.completed ? '1px solid rgba(15,45,115,0.42)' : '1px solid rgba(30,60,130,0.08)',
+                      background: goal.completed ? tileBg : 'hsl(38,30%,99%)',
+                      backgroundImage: goal.completed ? `${azulejoPattern}, linear-gradient(155deg, ${tileBg} 0%, ${tileGrad} 100%)` : 'none',
+                      backgroundSize: goal.completed ? '60px 60px, 100% 100%' : undefined,
+                      border: goal.completed ? `1px solid ${tileBorder}` : '1px solid rgba(30,60,130,0.08)',
                       borderRadius: '4px',
                       boxShadow: goal.completed
                         ? '1px 2px 10px rgba(12,25,72,0.22)'
@@ -371,6 +375,7 @@ export default function BuildPage() {
 function CategoryHeader({ category, count, done }: { category: string; count: number; done: number }) {
   const meta = CATEGORY_META[category];
   const Icon = meta?.icon || Sparkles;
+  const catBg = meta?.bg || 'hsl(218,70%,28%)';
   return (
     <div
       className="flex items-center justify-between px-4 py-3"
@@ -381,7 +386,9 @@ function CategoryHeader({ category, count, done }: { category: string; count: nu
       }}
     >
       <div className="flex items-center gap-2.5">
-        <Icon className="w-4 h-4" style={{ color: 'hsl(218,70%,28%)', opacity: 0.6 }} />
+        <div className="flex items-center justify-center" style={{ width: 20, height: 20, borderRadius: '3px', background: catBg }}>
+          <Icon className="w-3 h-3" style={{ color: 'hsl(42,30%,94%)' }} />
+        </div>
         <span style={{
           fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700,
           letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(218,60%,30%)',

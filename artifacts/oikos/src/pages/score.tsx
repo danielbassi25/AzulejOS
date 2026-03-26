@@ -340,7 +340,7 @@ export default function ScorePage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Score" subtitle="A friendly competition"
+      <SectionHeader title="L.A.T.E." subtitle="Lovers always taking eternity"
         action={
           <motion.button onClick={triggerConfetti} whileTap={{ scale: 0.93 }} className="flex items-center gap-2"
             style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.18)', borderRadius: '3px', color: 'rgba(215,205,185,0.70)', padding: '8px 14px' }}>
