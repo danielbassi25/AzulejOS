@@ -8,7 +8,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { RefreshCw, Heart, Shuffle, Check, ChevronDown, Plus, X, Pencil } from "lucide-react";
 import EditDeleteModal from "@/components/EditDeleteModal";
 
-const CATEGORIES = ["All", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That"];
+const CATEGORIES = ["All", "Favorites", "Deep", "Spicy", "Playful", "Memories", "Future", "Everyday", "Would You Rather", "This or That"];
 
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.45' opacity='0.11'%3E%3Ccircle cx='18' cy='18' r='6'/%3E%3Cline x1='18' y1='0' x2='18' y2='12'/%3E%3Cline x1='18' y1='24' x2='18' y2='36'/%3E%3Cline x1='0' y1='18' x2='12' y2='18'/%3E%3Cline x1='24' y1='18' x2='36' y2='18'/%3E%3Cline x1='3.5' y1='3.5' x2='11' y2='11'/%3E%3Cline x1='25' y1='25' x2='32.5' y2='32.5'/%3E%3Cline x1='32.5' y1='3.5' x2='25' y2='11'/%3E%3Cline x1='11' y1='25' x2='3.5' y2='32.5'/%3E%3C/g%3E%3C/svg%3E")`;
 
@@ -43,9 +43,14 @@ export default function PlayPage() {
   const allQuestions = useMemo(() => [...mockQuestions, ...customQuestions], [customQuestions]);
 
   const filteredQuestions = useMemo(() => {
-    const qs = activeCategory === "All"
-      ? allQuestions
-      : allQuestions.filter((q) => q.category === activeCategory);
+    let qs: Question[];
+    if (activeCategory === "Favorites") {
+      qs = allQuestions.filter(q => favorites.has(q.id));
+    } else if (activeCategory === "All") {
+      qs = allQuestions;
+    } else {
+      qs = allQuestions.filter((q) => q.category === activeCategory);
+    }
     if (shuffleMode) {
       const seed = shuffleSeedRef.current;
       return [...qs].sort((a, b) => {
@@ -56,13 +61,20 @@ export default function PlayPage() {
     }
     return qs;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [activeCategory, shuffleMode, shuffleSeedRef.current, allQuestions]);
+  }, [activeCategory, shuffleMode, shuffleSeedRef.current, allQuestions, favorites]);
 
   const currentQuestion = filteredQuestions[currentIndex % filteredQuestions.length] || filteredQuestions[0];
 
   const handleNext = useCallback(() => {
     setDirection(1);
-    setCurrentIndex((prev) => (prev + 1) % filteredQuestions.length);
+    if (filteredQuestions.length <= 1) return;
+    setCurrentIndex(prev => {
+      let next = prev;
+      while (next === prev) {
+        next = Math.floor(Math.random() * filteredQuestions.length);
+      }
+      return next;
+    });
   }, [filteredQuestions.length]);
 
   const toggleFavorite = useCallback((id: string) => {
@@ -111,10 +123,10 @@ export default function PlayPage() {
   };
 
   const categoryCount = useMemo(() => {
-    const map: Record<string, number> = { All: allQuestions.length };
+    const map: Record<string, number> = { All: allQuestions.length, Favorites: allQuestions.filter(q => favorites.has(q.id)).length };
     allQuestions.forEach(q => { map[q.category] = (map[q.category] || 0) + 1; });
     return map;
-  }, [allQuestions]);
+  }, [allQuestions, favorites]);
 
   const isFav = currentQuestion ? favorites.has(currentQuestion.id) : false;
   const isAns = currentQuestion ? answered.has(currentQuestion.id) : false;
