@@ -48,7 +48,7 @@ OikOS is a private relationship operating system for Daniel and Sofia. It is a f
 - `src/components/AppShell.tsx` — Main app shell with bottom nav
 - `src/components/BottomNav.tsx` — Mobile bottom navigation (6 tabs)
 - `src/pages/system.tsx` — Dashboard/home page
-- `src/pages/saudade.tsx` — Memory timeline
+- `src/pages/saudade.tsx` — Memory timeline (vertical timeline layout with year groupings)
 - `src/pages/saudade-detail.tsx` — Memory detail page
 - `src/pages/letters.tsx` — Letters (locked/unlocked)
 - `src/pages/build.tsx` — Shared goals with progress
