@@ -7,7 +7,6 @@ import { RefreshCw } from "lucide-react";
 
 const categories = ["All", "Deep Questions", "Conversation Starters", "Would You Rather"];
 
-// Azulejo motif only on the card — the centrepiece
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='36' height='36' viewBox='0 0 36 36' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.45' opacity='0.11'%3E%3Ccircle cx='18' cy='18' r='6'/%3E%3Cline x1='18' y1='0' x2='18' y2='12'/%3E%3Cline x1='18' y1='24' x2='18' y2='36'/%3E%3Cline x1='0' y1='18' x2='12' y2='18'/%3E%3Cline x1='24' y1='18' x2='36' y2='18'/%3E%3Cline x1='3.5' y1='3.5' x2='11' y2='11'/%3E%3Cline x1='25' y1='25' x2='32.5' y2='32.5'/%3E%3Cline x1='32.5' y1='3.5' x2='25' y2='11'/%3E%3Cline x1='11' y1='25' x2='3.5' y2='32.5'/%3E%3C/g%3E%3C/svg%3E")`;
 
 export default function PlayPage() {
@@ -32,21 +31,21 @@ export default function PlayPage() {
       <SectionHeader title="Play" subtitle="Discover each other, again" />
 
       <div className="flex flex-col">
-        {/* Category tabs — clean, flat, architectural */}
-        <div
-          className="flex overflow-x-auto no-scrollbar"
-          style={{ borderBottom: '1px solid rgba(30,60,130,0.09)' }}
-        >
+        {/* Category tabs */}
+        <div className="flex overflow-x-auto no-scrollbar" style={{ borderBottom: '1px solid rgba(30,60,130,0.09)' }}>
           {categories.map((cat, i) => (
             <button
               key={cat}
               onClick={() => { setActiveCategory(cat); setCurrentIndex(0); }}
-              className="flex-shrink-0 px-4 py-3 font-sans font-semibold uppercase tracking-widest transition-all duration-250"
+              className="flex-shrink-0 px-4 py-3.5 transition-all duration-250"
               style={{
+                fontFamily: 'Inter, sans-serif',
                 fontSize: '8.5px',
-                letterSpacing: '0.11em',
+                fontWeight: 600,
+                letterSpacing: '0.12em',
+                textTransform: 'uppercase',
                 background: activeCategory === cat ? 'hsl(218,70%,28%)' : 'transparent',
-                color: activeCategory === cat ? 'hsl(42,30%,94%)' : 'hsl(220,20%,54%)',
+                color: activeCategory === cat ? 'hsl(42,30%,94%)' : 'hsl(220,18%,55%)',
                 borderRight: i < categories.length - 1 ? '1px solid rgba(30,60,130,0.08)' : 'none',
                 borderRadius: 0,
               }}
@@ -56,8 +55,8 @@ export default function PlayPage() {
           ))}
         </div>
 
-        {/* Question card — the one dominant element */}
-        <div className="flex flex-col items-center px-4 pt-6 pb-6">
+        {/* Question card — the centrepiece, only cobalt on screen */}
+        <div className="flex flex-col items-center px-4 pt-7 pb-8">
           <div className="relative w-full" style={{ maxWidth: 340, aspectRatio: '3/4' }}>
             <AnimatePresence mode="wait" custom={direction}>
               <motion.div
@@ -74,65 +73,63 @@ export default function PlayPage() {
                   backgroundSize: '36px 36px, 100% 100%',
                   border: '1px solid rgba(15,45,115,0.50)',
                   borderRadius: '4px',
-                  boxShadow: '4px 8px 28px rgba(12,25,72,0.28), -1px -1px 0 rgba(255,255,255,0.06) inset',
+                  boxShadow: '4px 8px 30px rgba(12,25,72,0.28), -1px -1px 0 rgba(255,255,255,0.06) inset',
                 }}
               >
-                {/* Warm light leak at top */}
-                <div
-                  className="absolute top-0 left-0 right-0 h-24 pointer-events-none"
-                  style={{
-                    background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)',
-                  }}
+                {/* Warm top glow */}
+                <div className="absolute top-0 left-0 right-0 pointer-events-none"
+                  style={{ height: 80, background: 'linear-gradient(to bottom, rgba(255,252,245,0.05) 0%, transparent 100%)' }}
                 />
-
                 {/* Corner details */}
-                <div className="absolute top-0 left-0 w-8 h-8 border-b border-r" style={{ borderColor: 'rgba(180,200,255,0.12)' }} />
-                <div className="absolute top-0 right-0 w-8 h-8 border-b border-l" style={{ borderColor: 'rgba(180,200,255,0.12)' }} />
-                <div className="absolute bottom-0 left-0 w-8 h-8 border-t border-r" style={{ borderColor: 'rgba(180,200,255,0.12)' }} />
-                <div className="absolute bottom-0 right-0 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.12)' }} />
+                <div className="absolute top-0 left-0 w-8 h-8 border-b border-r" style={{ borderColor: 'rgba(180,200,255,0.11)' }} />
+                <div className="absolute top-0 right-0 w-8 h-8 border-b border-l" style={{ borderColor: 'rgba(180,200,255,0.11)' }} />
+                <div className="absolute bottom-0 left-0 w-8 h-8 border-t border-r" style={{ borderColor: 'rgba(180,200,255,0.11)' }} />
+                <div className="absolute bottom-0 right-0 w-8 h-8 border-t border-l" style={{ borderColor: 'rgba(180,200,255,0.11)' }} />
 
                 <div className="absolute inset-0 flex flex-col items-center justify-center text-center px-10">
-                  {/* Category label */}
+                  {/* Category badge */}
                   <div className="absolute top-7 left-0 right-0 flex justify-center">
-                    <span
-                      className="font-sans font-bold uppercase tracking-widest px-3 py-1"
-                      style={{
-                        fontSize: '7.5px',
-                        border: '1px solid rgba(180,200,255,0.18)',
-                        borderRadius: '2px',
-                        color: 'rgba(195,210,255,0.48)',
-                        letterSpacing: '0.15em',
-                      }}
-                    >
+                    <span style={{
+                      fontFamily: 'Inter, sans-serif',
+                      fontSize: '7.5px',
+                      fontWeight: 700,
+                      letterSpacing: '0.16em',
+                      textTransform: 'uppercase',
+                      border: '1px solid rgba(180,200,255,0.16)',
+                      borderRadius: '2px',
+                      color: 'rgba(195,210,255,0.46)',
+                      padding: '4px 12px',
+                    }}>
                       {currentQuestion?.category}
                     </span>
                   </div>
 
-                  {/* Decorative ornament */}
-                  <div
-                    className="mb-7 font-serif"
-                    style={{ fontSize: '1.6rem', color: 'rgba(200,185,160,0.18)', lineHeight: 1 }}
-                  >
+                  {/* Ornament */}
+                  <div style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1.5rem', color: 'rgba(200,185,160,0.16)', lineHeight: 1, marginBottom: '24px' }}>
                     ✦
                   </div>
 
-                  <h2
-                    className="font-serif italic font-medium leading-snug"
-                    style={{
-                      fontSize: '1.40rem',
-                      color: 'hsl(42,30%,95%)',
-                      letterSpacing: '-0.01em',
-                      lineHeight: 1.45,
-                    }}
-                  >
+                  <h2 style={{
+                    fontFamily: "'Cormorant Garamond', Georgia, serif",
+                    fontStyle: 'italic',
+                    fontWeight: 500,
+                    fontSize: '1.52rem',
+                    letterSpacing: '0.01em',
+                    lineHeight: 1.42,
+                    color: 'hsl(42,30%,96%)',
+                  }}>
                     "{currentQuestion?.text}"
                   </h2>
 
                   {/* Counter */}
-                  <p
-                    className="absolute bottom-6 font-sans font-bold uppercase tracking-widest"
-                    style={{ fontSize: '8px', color: 'rgba(175,162,140,0.30)' }}
-                  >
+                  <p className="absolute bottom-6" style={{
+                    fontFamily: 'Inter, sans-serif',
+                    fontSize: '8px',
+                    fontWeight: 600,
+                    letterSpacing: '0.16em',
+                    textTransform: 'uppercase',
+                    color: 'rgba(175,162,140,0.28)',
+                  }}>
                     {(currentIndex % filteredQuestions.length) + 1} / {filteredQuestions.length}
                   </p>
                 </div>
@@ -140,22 +137,27 @@ export default function PlayPage() {
             </AnimatePresence>
           </div>
 
-          {/* Next — clean tile button */}
+          {/* Next button — clean ceramic */}
           <motion.button
             onClick={handleNext}
             whileTap={{ scale: 0.97 }}
             whileHover={{ y: -1.5 }}
             transition={{ type: "spring", stiffness: 400, damping: 28 }}
             disabled={filteredQuestions.length === 0}
-            className="mt-7 flex items-center gap-3 px-8 py-3.5 font-sans font-bold uppercase tracking-widest"
+            className="flex items-center gap-3"
             style={{
+              marginTop: '28px',
+              fontFamily: 'Inter, sans-serif',
               fontSize: '9px',
+              fontWeight: 700,
+              letterSpacing: '0.16em',
+              textTransform: 'uppercase',
               background: 'hsl(38,30%,99%)',
-              border: '1px solid rgba(30,60,130,0.14)',
+              border: '1px solid rgba(30,60,130,0.12)',
               borderRadius: '4px',
               color: 'hsl(218,68%,30%)',
-              boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 4px 12px rgba(20,40,100,0.08)',
-              letterSpacing: '0.14em',
+              boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 4px 12px rgba(20,40,100,0.07)',
+              padding: '14px 28px',
             }}
           >
             <RefreshCw className="w-3.5 h-3.5" />

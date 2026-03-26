@@ -17,24 +17,26 @@ export default function SectionHeader({ title, subtitle, action }: SectionHeader
       style={{
         background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)',
         borderBottom: '1px solid rgba(15,40,110,0.35)',
-        padding: '32px 24px 28px',
+        padding: '36px 28px 30px',
       }}
     >
-      {/* Very subtle light leak top-right — warmth, not pattern */}
+      {/* Warm light leak — subtle, not decorative */}
       <div
-        className="absolute top-0 right-0 w-48 h-48 pointer-events-none"
+        className="absolute top-0 right-0 w-56 h-56 pointer-events-none"
         style={{
-          background: 'radial-gradient(ellipse at top right, rgba(255,252,245,0.06) 0%, transparent 65%)',
+          background: 'radial-gradient(ellipse at top right, rgba(255,252,245,0.07) 0%, transparent 60%)',
         }}
       />
 
       <div className="flex items-end justify-between relative z-10">
         <div>
           <h1
-            className="font-serif font-semibold leading-none"
             style={{
-              fontSize: '2.4rem',
-              letterSpacing: '-0.025em',
+              fontFamily: "'Cormorant Garamond', Georgia, serif",
+              fontWeight: 600,
+              fontSize: '2.6rem',
+              letterSpacing: '0.01em',
+              lineHeight: 1,
               color: 'hsl(42, 30%, 96%)',
             }}
           >
@@ -42,18 +44,21 @@ export default function SectionHeader({ title, subtitle, action }: SectionHeader
           </h1>
           {subtitle && (
             <p
-              className="font-serif italic mt-2"
               style={{
-                fontSize: '0.78rem',
-                letterSpacing: '0.02em',
-                color: 'rgba(215, 205, 185, 0.58)',
+                fontFamily: "'Cormorant Garamond', Georgia, serif",
+                fontStyle: 'italic',
+                fontWeight: 400,
+                fontSize: '0.92rem',
+                letterSpacing: '0.03em',
+                color: 'rgba(215, 205, 185, 0.55)',
+                marginTop: '8px',
               }}
             >
               {subtitle}
             </p>
           )}
         </div>
-        {action && <div className="mb-0.5">{action}</div>}
+        {action && <div className="mb-1">{action}</div>}
       </div>
     </motion.div>
   );
