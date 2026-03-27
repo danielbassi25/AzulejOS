@@ -215,71 +215,83 @@ export default function SaudadePage() {
                         <motion.div
                           whileHover={{ y: -2 }} whileTap={{ scale: 0.99 }}
                           transition={{ type: "spring", stiffness: 360, damping: 28 }}
-                          className="overflow-hidden relative"
+                          className="overflow-hidden"
                           style={{
                             borderRadius: '4px',
-                            border: mt.border,
-                            boxShadow: mt.shadow,
-                            backgroundColor: mt.bg,
-                            backgroundImage: `${mt.pattern}, linear-gradient(155deg, ${mt.bg} 0%, ${mt.gradient} 100%)`,
-                            backgroundSize: '60px 60px, 100% 100%',
+                            border: '1px solid rgba(30,60,130,0.10)',
+                            boxShadow: '0 1px 0 rgba(255,255,255,0.88) inset, 2px 4px 14px rgba(20,40,100,0.08)',
+                            background: 'hsl(38,30%,99%)',
                           }}>
 
-                          <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t border-l" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
-                          <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t border-r" style={{ borderColor: 'rgba(255,252,245,0.18)' }} />
-                          <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b border-l" style={{ borderColor: 'rgba(255,252,245,0.10)' }} />
-                          <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b border-r" style={{ borderColor: 'rgba(255,252,245,0.10)' }} />
+                          <div className="absolute top-0 left-0 bottom-0" style={{
+                            width: '4px', borderRadius: '4px 0 0 4px',
+                            background: `linear-gradient(to bottom, ${mt.bg}, ${mt.gradient})`,
+                            zIndex: 2,
+                          }} />
 
-                          <div style={{ padding: hasImage ? '14px 14px 0 14px' : '14px' }}>
-                            <div className="flex items-start gap-3">
-                              <div className="flex-1 min-w-0" style={{ padding: hasImage ? '0' : '6px 0' }}>
-                                <div className="flex items-center gap-2 mb-1.5">
-                                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,252,245,0.45)' }}>
-                                    {mt.label}
-                                  </span>
-                                  <div style={{ flex: 1, height: '0.5px', background: 'rgba(255,252,245,0.10)' }} />
-                                </div>
-                                <h3 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.15rem', letterSpacing: '0.01em', lineHeight: 1.25, color: 'hsl(42,30%,96%)' }}>
-                                  {memory.title}
-                                </h3>
-                                <div className="flex items-center gap-1.5 mt-2">
-                                  <MapPin className="w-2.5 h-2.5" style={{ color: 'rgba(255,252,245,0.40)' }} />
-                                  <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 600, letterSpacing: '0.08em', textTransform: 'uppercase', color: 'rgba(255,252,245,0.50)' }}>
-                                    {memory.location}
-                                  </span>
-                                </div>
+                          {hasImage ? (
+                            <div className="relative overflow-hidden" style={{ height: 140 }}>
+                              <img src={memory.imageUrl} alt={memory.title} className="w-full h-full object-cover"
+                                style={{ filter: 'saturate(0.80) brightness(0.88)' }} />
+                              <div className="absolute inset-0" style={{
+                                background: `linear-gradient(to top, ${mt.bg}dd 0%, ${mt.bg}44 50%, transparent 100%)`,
+                              }} />
+
+                              <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1"
+                                style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(12,25,72,0.45)', backdropFilter: 'blur(8px)', border: '1px solid rgba(180,200,255,0.18)', borderRadius: '2px', color: 'rgba(200,215,255,0.88)' }}>
+                                <MapPin className="w-2.5 h-2.5" />{memory.location}
                               </div>
 
-                              {hasImage && (
-                                <div className="shrink-0 overflow-hidden" style={{
-                                  width: 72, height: 72, borderRadius: '3px',
-                                  border: '1px solid rgba(255,252,245,0.15)',
-                                  boxShadow: '0 2px 8px rgba(0,0,0,0.20)',
+                              <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
+                                <h3 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.15rem', letterSpacing: '0.01em', lineHeight: 1.2, color: 'rgba(240,238,232,0.96)', textShadow: '0 2px 10px rgba(0,0,30,0.50)' }}>
+                                  {memory.title}
+                                </h3>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="relative overflow-hidden" style={{
+                              height: 80,
+                              backgroundColor: mt.bg,
+                              backgroundImage: `${mt.pattern}, linear-gradient(155deg, ${mt.bg} 0%, ${mt.gradient} 100%)`,
+                              backgroundSize: '60px 60px, 100% 100%',
+                            }}>
+                              <div className="absolute bottom-0 left-0 right-0 px-4 pb-3">
+                                <h3 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.15rem', letterSpacing: '0.01em', lineHeight: 1.2, color: 'rgba(240,238,232,0.96)' }}>
+                                  {memory.title}
+                                </h3>
+                              </div>
+                              <div className="absolute top-2.5 right-2.5 flex items-center gap-1 px-2 py-1"
+                                style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.10em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.15)', borderRadius: '2px', color: 'rgba(255,252,245,0.60)' }}>
+                                <MapPin className="w-2.5 h-2.5" />{memory.location}
+                              </div>
+                            </div>
+                          )}
+
+                          <div className="relative px-4 py-3.5" style={{
+                            backgroundImage: mt.pattern,
+                            backgroundSize: '60px 60px',
+                          }}>
+                            <div className="absolute inset-0" style={{ background: 'rgba(255,252,248,0.92)' }} />
+                            <div className="relative">
+                              <div className="flex items-center justify-between mb-2">
+                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'hsl(220,16%,62%)' }}>
+                                  {memory.date}
+                                </p>
+                                <span style={{
+                                  fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+                                  letterSpacing: '0.10em', textTransform: 'uppercase',
+                                  background: mt.bg, color: 'hsl(42,30%,96%)',
+                                  padding: '2px 6px', borderRadius: '2px',
                                 }}>
-                                  <img src={memory.imageUrl} alt={memory.title}
-                                    className="w-full h-full object-cover"
-                                    style={{ filter: 'saturate(0.85) brightness(0.90)' }} />
-                                </div>
+                                  {mt.label}
+                                </span>
+                              </div>
+                              {memory.preview && (
+                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '0.72rem', fontWeight: 400, lineHeight: 1.55, color: 'hsl(220,15%,45%)' }} className="line-clamp-2">
+                                  {memory.preview}
+                                </p>
                               )}
                             </div>
-                          </div>
-
-                          <div style={{
-                            margin: '0 14px',
-                            padding: '10px 0 14px',
-                            borderTop: '1px solid rgba(255,252,245,0.08)',
-                            marginTop: '10px',
-                          }}>
-                            <div className="flex items-center justify-between mb-1.5">
-                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', color: 'rgba(255,252,245,0.40)' }}>
-                                {memory.date}
-                              </p>
-                            </div>
-                            {memory.preview && (
-                              <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 400, fontSize: '0.82rem', lineHeight: 1.5, color: 'rgba(255,252,245,0.60)' }} className="line-clamp-2">
-                                {memory.preview}
-                              </p>
-                            )}
                           </div>
                         </motion.div>
                       </Link>
@@ -290,13 +302,14 @@ export default function SaudadePage() {
                           whileTap={{ scale: 0.90 }}
                           className="absolute flex items-center justify-center z-10"
                           style={{
-                            bottom: 10, right: 10,
-                            width: 28, height: 28, borderRadius: '3px',
-                            background: 'rgba(255,252,245,0.12)',
-                            border: '1px solid rgba(255,252,245,0.18)',
+                            bottom: 12, right: 12,
+                            width: 32, height: 32, borderRadius: '4px',
+                            background: mt.bg,
+                            border: `1px solid ${mt.border}`,
+                            boxShadow: '0 2px 8px rgba(12,25,72,0.22)',
                           }}
                         >
-                          <Pencil className="w-3 h-3" style={{ color: 'rgba(255,252,245,0.60)' }} />
+                          <Pencil className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)' }} />
                         </motion.button>
                       )}
                     </div>
