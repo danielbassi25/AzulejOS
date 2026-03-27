@@ -27,7 +27,7 @@ if (!basePath) {
 }
 
 export default defineConfig({
-  base: "/test/",
+  base: "/AzulejOS/",
   plugins: [
     react(),
     tailwindcss(),
