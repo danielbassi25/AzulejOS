@@ -42,6 +42,7 @@ export default function BuildPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [sortMode, setSortMode] = useState<'date' | 'type' | 'shuffle'>('date');
   const [shuffleKey, setShuffleKey] = useState(0);
+  const [showCompleted, setShowCompleted] = useState<'all' | 'done' | 'todo'>('all');
 
   const reload = useCallback(() => {
     const allGoals = getAllGoals();
@@ -96,6 +97,8 @@ export default function BuildPage() {
 
   const filteredGoals = useMemo(() => {
     let arr = activeCategory === "All" ? [...goals] : goals.filter(g => g.category === activeCategory);
+    if (showCompleted === 'done') arr = arr.filter(g => g.completed);
+    else if (showCompleted === 'todo') arr = arr.filter(g => !g.completed);
     if (sortMode === 'shuffle') {
       void shuffleKey;
       for (let i = arr.length - 1; i > 0; i--) {
@@ -114,7 +117,7 @@ export default function BuildPage() {
     }
     return arr;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [goals, activeCategory, sortMode, shuffleKey]);
+  }, [goals, activeCategory, sortMode, shuffleKey, showCompleted]);
 
   const completedCount = goals.filter(g => g.completed).length;
   const progressPercent = goals.length > 0 ? Math.round((completedCount / goals.length) * 100) : 0;
@@ -236,6 +239,31 @@ export default function BuildPage() {
               </button>
             );
           })}
+        </div>
+
+        <div className="flex items-center gap-1.5 mb-3">
+          {([
+            { key: 'all' as const, label: 'All', count: activeCategory === 'All' ? goals.length : goals.filter(g => g.category === activeCategory).length },
+            { key: 'done' as const, label: 'Done', count: (activeCategory === 'All' ? goals : goals.filter(g => g.category === activeCategory)).filter(g => g.completed).length },
+            { key: 'todo' as const, label: 'To Do', count: (activeCategory === 'All' ? goals : goals.filter(g => g.category === activeCategory)).filter(g => !g.completed).length },
+          ]).map(btn => (
+            <button
+              key={btn.key}
+              onClick={() => setShowCompleted(btn.key)}
+              className="flex-shrink-0 flex items-center gap-1 px-2.5 py-1.5 transition-all duration-200"
+              style={{
+                fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700,
+                letterSpacing: '0.10em', textTransform: 'uppercase',
+                background: showCompleted === btn.key ? 'hsl(218,70%,28%)' : 'transparent',
+                color: showCompleted === btn.key ? 'hsl(42,30%,96%)' : 'hsl(220,18%,55%)',
+                border: showCompleted === btn.key ? '1px solid rgba(15,45,115,0.40)' : '1px solid rgba(30,60,130,0.08)',
+                borderRadius: '3px',
+              }}
+            >
+              {btn.key === 'done' && <Check className="w-2.5 h-2.5" />}
+              {btn.label} <span style={{ opacity: 0.5 }}>({btn.count})</span>
+            </button>
+          ))}
         </div>
 
         {activeCategory !== "All" && (
