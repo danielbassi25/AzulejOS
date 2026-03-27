@@ -27,6 +27,7 @@ export default function WriteLetterPage() {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [author, setAuthor] = useState("Daniel");
+  const [suggestedDate, setSuggestedDate] = useState("");
   const [sent, setSent] = useState(false);
 
   const handleSend = () => {
@@ -40,6 +41,7 @@ export default function WriteLetterPage() {
       author,
       content: content.trim(),
       noteType,
+      ...(noteType === 'invite' && suggestedDate.trim() ? { suggestedDate: suggestedDate.trim() } : {}),
     };
     try {
       const existing = JSON.parse(localStorage.getItem("oikos-custom-letters") || "[]");
@@ -194,6 +196,21 @@ export default function WriteLetterPage() {
                   rows={4}
                   style={{ ...inputStyle, resize: 'none' as const, fontStyle: 'italic', lineHeight: 1.75 }} />
               </div>
+
+              {noteType === "invite" && (
+                <div>
+                  <label style={labelStyle}>Suggested Date</label>
+                  <div className="flex items-center gap-3">
+                    <CalendarHeart className="w-4 h-4 shrink-0" style={{ color: 'hsl(338,45%,38%)' }} />
+                    <input value={suggestedDate} onChange={e => setSuggestedDate(e.target.value)}
+                      placeholder="Saturday evening, June 14"
+                      style={inputStyle} />
+                  </div>
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 500, color: 'hsl(220,16%,62%)', marginTop: '6px' }}>
+                    Optional — propose when this should happen
+                  </p>
+                </div>
+              )}
 
               {noteType === "open-when" && (
                 <div className="flex items-center gap-3 px-4 py-3"

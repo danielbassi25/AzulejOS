@@ -28,6 +28,7 @@ export interface Letter {
   content?: string;
   mood?: string;
   noteType?: NoteType;
+  suggestedDate?: string;
 }
 
 export interface Goal {

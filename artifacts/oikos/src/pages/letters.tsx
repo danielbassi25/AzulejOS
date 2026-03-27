@@ -114,6 +114,7 @@ export default function LettersPage() {
       title: letter.title,
       content: letter.content || '',
       author: letter.author || 'Daniel',
+      suggestedDate: letter.suggestedDate || '',
     });
     setShowDeleteConfirm(false);
   };
@@ -124,6 +125,7 @@ export default function LettersPage() {
       title: editValues.title,
       content: editValues.content,
       author: editValues.author,
+      ...(editingLetter.noteType === 'invite' ? { suggestedDate: editValues.suggestedDate || undefined } : {}),
     });
     setEditingLetter(null);
     reload();
@@ -301,13 +303,26 @@ export default function LettersPage() {
                         }}>
                           {letter.title}
                         </h3>
-                        <p style={{
-                          fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500,
-                          color: 'hsl(220,16%,52%)', marginTop: '2px',
-                          letterSpacing: '0.04em',
-                        }}>
-                          {letter.author || ''}
-                        </p>
+                        {letter.noteType === 'invite' && letter.suggestedDate && (
+                          <p style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '6.5px', fontWeight: 600,
+                            color: 'hsl(338,45%,38%)', marginTop: '2px',
+                            letterSpacing: '0.06em',
+                            display: 'flex', alignItems: 'center', gap: '3px',
+                          }}>
+                            <CalendarHeart className="w-2 h-2" style={{ flexShrink: 0 }} />
+                            {letter.suggestedDate}
+                          </p>
+                        )}
+                        {!(letter.noteType === 'invite' && letter.suggestedDate) && (
+                          <p style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 500,
+                            color: 'hsl(220,16%,52%)', marginTop: '2px',
+                            letterSpacing: '0.04em',
+                          }}>
+                            {letter.author || ''}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -389,6 +404,7 @@ export default function LettersPage() {
           { key: 'title', label: 'Title', type: 'text', placeholder: 'Note title' },
           { key: 'author', label: 'From', type: 'select', options: ['Daniel', 'Sofia'] },
           { key: 'content', label: 'Message', type: 'textarea', placeholder: 'Your message...', rows: 4 },
+          ...(editingLetter?.noteType === 'invite' ? [{ key: 'suggestedDate', label: 'Suggested Date', type: 'text' as const, placeholder: 'Saturday evening, June 14' }] : []),
         ]}
         values={editValues}
         onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}

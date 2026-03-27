@@ -46,6 +46,7 @@ export default function LetterDetailPage() {
       title: letter.noteType === "open-when" ? letter.title.replace(/^Open when /i, '') : letter.title,
       content: letter.content || '',
       author: letter.author || 'Daniel',
+      suggestedDate: letter.suggestedDate || '',
     });
     setShowDeleteConfirm(false);
   };
@@ -59,6 +60,7 @@ export default function LetterDetailPage() {
       title: newTitle,
       content: editValues.content,
       author: editValues.author,
+      ...(editingLetter.noteType === 'invite' ? { suggestedDate: editValues.suggestedDate || undefined } : {}),
     });
     setEditingLetter(null);
     reload();
@@ -196,6 +198,7 @@ export default function LetterDetailPage() {
             { key: 'title', label: letter.noteType === 'open-when' ? 'Open when...' : 'Title', type: 'text', placeholder: 'Title' },
             { key: 'author', label: 'From', type: 'select', options: ['Daniel', 'Sofia'] },
             { key: 'content', label: 'Message', type: 'textarea', placeholder: 'Your message...', rows: 4 },
+            ...(letter.noteType === 'invite' ? [{ key: 'suggestedDate', label: 'Suggested Date', type: 'text' as const, placeholder: 'Saturday evening, June 14' }] : []),
           ]}
           values={editValues}
           onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
@@ -281,6 +284,15 @@ export default function LetterDetailPage() {
             <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,55%)' }}>
               {letter.unlockDate}
             </span>
+            {letter.noteType === 'invite' && letter.suggestedDate && (
+              <>
+                <div style={{ width: 1, height: 10, background: 'rgba(30,60,130,0.10)' }} />
+                <span className="flex items-center gap-1.5" style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, color: 'hsl(338,45%,38%)' }}>
+                  <CalendarHeart className="w-3 h-3" />
+                  {letter.suggestedDate}
+                </span>
+              </>
+            )}
           </motion.div>
 
           <motion.div
@@ -322,6 +334,7 @@ export default function LetterDetailPage() {
           { key: 'title', label: letter.noteType === 'open-when' ? 'Open when...' : 'Title', type: 'text', placeholder: 'Title' },
           { key: 'author', label: 'From', type: 'select', options: ['Daniel', 'Sofia'] },
           { key: 'content', label: 'Message', type: 'textarea', placeholder: 'Your message...', rows: 4 },
+          ...(letter.noteType === 'invite' ? [{ key: 'suggestedDate', label: 'Suggested Date', type: 'text' as const, placeholder: 'Saturday evening, June 14' }] : []),
         ]}
         values={editValues}
         onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
