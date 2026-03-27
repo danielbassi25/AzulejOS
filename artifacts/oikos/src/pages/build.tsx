@@ -241,7 +241,7 @@ export default function BuildPage() {
           })}
         </div>
 
-        <div className="flex items-center gap-1.5 mb-3">
+        <div className="flex items-center justify-center gap-1.5 mb-3">
           {([
             { key: 'all' as const, label: 'All', count: activeCategory === 'All' ? goals.length : goals.filter(g => g.category === activeCategory).length },
             { key: 'done' as const, label: 'Done', count: (activeCategory === 'All' ? goals : goals.filter(g => g.category === activeCategory)).filter(g => g.completed).length },
