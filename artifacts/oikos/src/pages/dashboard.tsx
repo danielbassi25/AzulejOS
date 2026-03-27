@@ -1,8 +1,10 @@
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
 import { mockDashboard } from "@/data/mock";
+import { getAllMemories } from "@/data/store";
 import { motion, AnimatePresence } from "framer-motion";
-import { Sparkles, Sun, Moon, CloudSun, MapPin, Calendar, Pencil, X, Check } from "lucide-react";
+import { Sparkles, Sun, Moon, CloudSun, MapPin, Calendar, Pencil, X, Check, Clock } from "lucide-react";
+import { Link } from "wouter";
 import { useState, useEffect, useCallback } from "react";
 import { differenceInDays, differenceInHours, differenceInMinutes, format } from "date-fns";
 
@@ -57,6 +59,25 @@ const tile = (i: number) => ({
 const azulejoMotif = `url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' stroke-width='0.5' opacity='0.13'%3E%3Ccircle cx='16' cy='16' r='5'/%3E%3Cline x1='16' y1='0' x2='16' y2='11'/%3E%3Cline x1='16' y1='21' x2='16' y2='32'/%3E%3Cline x1='0' y1='16' x2='11' y2='16'/%3E%3Cline x1='21' y1='16' x2='32' y2='16'/%3E%3Cline x1='3' y1='3' x2='10' y2='10'/%3E%3Cline x1='22' y1='22' x2='29' y2='29'/%3E%3Cline x1='29' y1='3' x2='22' y2='10'/%3E%3Cline x1='10' y1='22' x2='3' y2='29'/%3E%3C/g%3E%3C/svg%3E")`;
 
 const azulejoLight = `url("data:image/svg+xml,%3Csvg width='32' height='32' viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' stroke-width='0.5' opacity='0.035'%3E%3Ccircle cx='16' cy='16' r='5'/%3E%3Cline x1='16' y1='0' x2='16' y2='11'/%3E%3Cline x1='16' y1='21' x2='16' y2='32'/%3E%3Cline x1='0' y1='16' x2='11' y2='16'/%3E%3Cline x1='21' y1='16' x2='32' y2='16'/%3E%3Cline x1='3' y1='3' x2='10' y2='10'/%3E%3Cline x1='22' y1='22' x2='29' y2='29'/%3E%3Cline x1='29' y1='3' x2='22' y2='10'/%3E%3Cline x1='10' y1='22' x2='3' y2='29'/%3E%3C/g%3E%3C/svg%3E")`;
+
+const rosePattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.20'%3E%3Ccircle cx='30' cy='30' r='14' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='8' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='2.5' stroke-width='0.5'/%3E%3Cpath d='M30 16v-16M30 44v16M16 30H0M44 30h16' stroke-width='0.4'/%3E%3Cpath d='M20.1 20.1L6 6M39.9 20.1L54 6M20.1 39.9L6 54M39.9 39.9L54 54' stroke-width='0.35'/%3E%3Ccircle cx='30' cy='16' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='30' cy='44' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='16' cy='30' r='1.8' stroke-width='0.45'/%3E%3Ccircle cx='44' cy='30' r='1.8' stroke-width='0.45'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
+
+function getOnThisDayMemories() {
+  const today = new Date();
+  const todayMonth = today.getMonth();
+  const todayDay = today.getDate();
+  const todayYear = today.getFullYear();
+
+  return getAllMemories().filter(m => {
+    const d = new Date(m.date);
+    if (isNaN(d.getTime())) return false;
+    return d.getMonth() === todayMonth && d.getDate() === todayDay && d.getFullYear() < todayYear;
+  }).map(m => {
+    const d = new Date(m.date);
+    const yearsAgo = todayYear - d.getFullYear();
+    return { ...m, yearsAgo };
+  });
+}
 
 const bgPattern = `url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%231e3c82' stroke-width='0.35' opacity='0.045'%3E%3Ccircle cx='20' cy='20' r='7'/%3E%3Cline x1='20' y1='0' x2='20' y2='13'/%3E%3Cline x1='20' y1='27' x2='20' y2='40'/%3E%3Cline x1='0' y1='20' x2='13' y2='20'/%3E%3Cline x1='27' y1='20' x2='40' y2='20'/%3E%3Cline x1='4' y1='4' x2='12' y2='12'/%3E%3Cline x1='28' y1='28' x2='36' y2='36'/%3E%3Cline x1='36' y1='4' x2='28' y2='12'/%3E%3Cline x1='12' y1='28' x2='4' y2='36'/%3E%3C/g%3E%3C/svg%3E")`;
 
@@ -471,6 +492,97 @@ export default function DashboardPage() {
               </motion.div>
             )}
           </AnimatePresence>
+
+          {/* ═══ ON THIS DAY — rose card ═══ */}
+          {(() => {
+            const anniversaries = getOnThisDayMemories();
+            if (anniversaries.length === 0) return null;
+            return (
+              <>
+                <div className="flex items-center gap-3 mt-2 mb-1">
+                  <div style={{ width: 16, height: 1, background: 'rgba(130,25,55,0.20)' }} />
+                  <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase', color: 'hsl(338,35%,50%)' }}>
+                    On This Day
+                  </p>
+                  <div style={{ flex: 1, height: 1, background: 'rgba(130,25,55,0.10)' }} />
+                </div>
+                {anniversaries.map((memory, idx) => (
+                  <Link key={memory.id} href={`/saudade/${memory.id}`}>
+                    <motion.div
+                      {...tile(5 + idx)}
+                      className="relative overflow-hidden cursor-pointer"
+                      style={{
+                        backgroundColor: 'hsl(338,45%,38%)',
+                        backgroundImage: `${rosePattern}, linear-gradient(155deg, hsl(338,42%,34%) 0%, hsl(340,48%,42%) 100%)`,
+                        backgroundSize: '60px 60px, 100% 100%',
+                        border: '1px solid rgba(120,20,50,0.50)', borderRadius: '4px',
+                        boxShadow: '0 8px 28px rgba(80,15,35,0.25), 0 1px 0 rgba(255,255,255,0.06) inset',
+                        padding: 0,
+                      }}
+                    >
+                      <div className="absolute top-2 left-2 w-2.5 h-2.5 border-t border-l" style={{ borderColor: 'rgba(255,252,245,0.14)' }} />
+                      <div className="absolute top-2 right-2 w-2.5 h-2.5 border-t border-r" style={{ borderColor: 'rgba(255,252,245,0.14)' }} />
+                      <div className="absolute bottom-2 left-2 w-2.5 h-2.5 border-b border-l" style={{ borderColor: 'rgba(255,252,245,0.14)' }} />
+                      <div className="absolute bottom-2 right-2 w-2.5 h-2.5 border-b border-r" style={{ borderColor: 'rgba(255,252,245,0.14)' }} />
+
+                      {memory.imageUrl ? (
+                        <div className="relative" style={{ height: 120 }}>
+                          <img src={memory.imageUrl} alt={memory.title} className="w-full h-full object-cover"
+                            style={{ filter: 'saturate(0.75) brightness(0.80)' }} />
+                          <div className="absolute inset-0" style={{
+                            background: 'linear-gradient(to top, hsl(338,45%,38%) 0%, rgba(130,25,55,0.40) 50%, transparent 100%)',
+                          }} />
+                        </div>
+                      ) : null}
+
+                      <div className="relative z-10" style={{ padding: memory.imageUrl ? '0 20px 18px' : '20px' }}>
+                        {!memory.imageUrl && (
+                          <div className="mb-3">
+                            <Clock className="w-5 h-5" style={{ color: 'rgba(255,252,245,0.25)' }} />
+                          </div>
+                        )}
+                        <div className="flex items-center gap-2 mb-2">
+                          <span style={{
+                            fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700,
+                            letterSpacing: '0.14em', textTransform: 'uppercase',
+                            background: 'rgba(255,252,245,0.12)', border: '1px solid rgba(255,252,245,0.18)',
+                            borderRadius: '2px', padding: '2px 8px',
+                            color: 'rgba(255,220,200,0.70)',
+                          }}>
+                            {memory.yearsAgo} {memory.yearsAgo === 1 ? 'year' : 'years'} ago
+                          </span>
+                        </div>
+                        <h3 style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif",
+                          fontWeight: 600, fontSize: '1.25rem', letterSpacing: '0.01em',
+                          lineHeight: 1.25, color: 'rgba(255,248,240,0.95)',
+                        }}>
+                          {memory.title}
+                        </h3>
+                        {memory.location && (
+                          <div className="flex items-center gap-1.5 mt-2">
+                            <MapPin className="w-2.5 h-2.5" style={{ color: 'rgba(255,220,200,0.45)' }} />
+                            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'rgba(255,220,200,0.50)' }}>
+                              {memory.location}
+                            </span>
+                          </div>
+                        )}
+                        {memory.preview && (
+                          <p className="line-clamp-2" style={{
+                            fontFamily: "'Cormorant Garamond', Georgia, serif",
+                            fontStyle: 'italic', fontWeight: 400, fontSize: '0.85rem',
+                            lineHeight: 1.55, color: 'rgba(255,230,215,0.55)', marginTop: '8px',
+                          }}>
+                            {memory.preview}
+                          </p>
+                        )}
+                      </div>
+                    </motion.div>
+                  </Link>
+                ))}
+              </>
+            );
+          })()}
 
         </div>
       </div>
