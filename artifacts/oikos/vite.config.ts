@@ -2,49 +2,59 @@ import { defineConfig } from "vite";
 import react from "@vitejs/plugin-react";
 import tailwindcss from "@tailwindcss/vite";
 import path from "path";
-import runtimeErrorOverlay from "@replit/vite-plugin-runtime-error-modal";
+
+const isCI = !!process.env.CI;
+const isReplit = !!process.env.REPL_ID;
 
 const rawPort = process.env.PORT;
+let port = 3000;
 
-if (!rawPort) {
-  throw new Error(
-    "PORT environment variable is required but was not provided.",
-  );
+if (isReplit) {
+  if (!rawPort) {
+    throw new Error(
+      "PORT environment variable is required but was not provided.",
+    );
+  }
+  port = Number(rawPort);
+  if (Number.isNaN(port) || port <= 0) {
+    throw new Error(`Invalid PORT value: "${rawPort}"`);
+  }
+
+  if (!process.env.BASE_PATH) {
+    throw new Error(
+      "BASE_PATH environment variable is required but was not provided.",
+    );
+  }
+} else if (rawPort) {
+  port = Number(rawPort);
 }
 
-const port = Number(rawPort);
-
-if (Number.isNaN(port) || port <= 0) {
-  throw new Error(`Invalid PORT value: "${rawPort}"`);
-}
-
-const basePath = process.env.BASE_PATH;
-
-if (!basePath) {
-  throw new Error(
-    "BASE_PATH environment variable is required but was not provided.",
-  );
-}
+const replitPlugins = async () => {
+  if (!isReplit) return [];
+  const plugins = [];
+  try {
+    const errorOverlay = await import("@replit/vite-plugin-runtime-error-modal");
+    plugins.push(errorOverlay.default());
+  } catch {}
+  if (process.env.NODE_ENV !== "production") {
+    try {
+      const cartographer = await import("@replit/vite-plugin-cartographer");
+      plugins.push(cartographer.cartographer({ root: path.resolve(import.meta.dirname, "..") }));
+    } catch {}
+    try {
+      const devBanner = await import("@replit/vite-plugin-dev-banner");
+      plugins.push(devBanner.devBanner());
+    } catch {}
+  }
+  return plugins;
+};
 
 export default defineConfig({
-  base: "/AzulejOS/",
+  base: isReplit ? (process.env.BASE_PATH || "/") : "/AzulejOS/",
   plugins: [
     react(),
     tailwindcss(),
-    runtimeErrorOverlay(),
-    ...(process.env.NODE_ENV !== "production" &&
-    process.env.REPL_ID !== undefined
-      ? [
-          await import("@replit/vite-plugin-cartographer").then((m) =>
-            m.cartographer({
-              root: path.resolve(import.meta.dirname, ".."),
-            }),
-          ),
-          await import("@replit/vite-plugin-dev-banner").then((m) =>
-            m.devBanner(),
-          ),
-        ]
-      : []),
+    ...(await replitPlugins()),
   ],
   resolve: {
     alias: {

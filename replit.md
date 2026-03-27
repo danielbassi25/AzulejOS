@@ -161,3 +161,15 @@ Generated React Query hooks and fetch client from the OpenAPI spec (e.g. `useHea
 ### `scripts` (`@workspace/scripts`)
 
 Utility scripts package. Each script is a `.ts` file in `src/` with a corresponding npm script in `package.json`. Run scripts via `pnpm --filter @workspace/scripts run <script>`. Scripts can import any workspace package (e.g., `@workspace/db`) by adding it as a dependency in `scripts/package.json`.
+
+## GitHub Pages Deployment
+
+The project deploys the `oikos` frontend to GitHub Pages via `.github/workflows/deploy.yml`. The workflow uses pnpm (not npm) and deploys the built output from `artifacts/oikos/dist/public`.
+
+- **Base path**: `/AzulejOS/` for GitHub Pages, Replit's `BASE_PATH` for dev
+- **Trigger**: push to `main` or manual dispatch
+- **pnpm version**: declared in root `package.json` via `packageManager` field
+
+## Supabase Sync
+
+The app uses a key-value sync layer (`src/data/supabase-sync.ts`) that mirrors localStorage to a Supabase `kv_store` table. All `oikos-*` localStorage keys are automatically synced. On startup, data is pulled from Supabase; on every write, data is pushed in the background. Zero page-level code changes needed — the sync patches `localStorage.setItem`/`removeItem` transparently.
