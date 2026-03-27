@@ -1,8 +1,9 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { initSupabaseSync } from "@/data/supabase-sync";
 import NotFound from "@/pages/not-found";
 import DashboardPage from "@/pages/dashboard";
 import SaudadePage from "@/pages/saudade";
@@ -48,13 +49,58 @@ function Router() {
   );
 }
 
+function SyncLoader({ children }: { children: React.ReactNode }) {
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    initSupabaseSync().then(() => setReady(true));
+  }, []);
+
+  if (!ready) {
+    return (
+      <div style={{
+        minHeight: '100vh',
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+        background: 'linear-gradient(160deg, hsl(220,70%,26%) 0%, hsl(218,72%,30%) 100%)',
+      }}>
+        <h1 style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontWeight: 600,
+          fontSize: '2.4rem',
+          letterSpacing: '0.02em',
+          color: 'hsl(42,30%,96%)',
+        }}>
+          Azulej<span style={{ color: 'hsl(42,36%,70%)' }}>OS</span>
+        </h1>
+        <p style={{
+          fontFamily: "'Cormorant Garamond', Georgia, serif",
+          fontStyle: 'italic',
+          fontWeight: 400,
+          fontSize: '0.9rem',
+          color: 'rgba(200,188,165,0.50)',
+          marginTop: '12px',
+        }}>
+          Syncing your tiles...
+        </p>
+      </div>
+    );
+  }
+
+  return <>{children}</>;
+}
+
 function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
-          <Router />
-        </WouterRouter>
+        <SyncLoader>
+          <WouterRouter base={import.meta.env.BASE_URL.replace(/\/$/, "")}>
+            <Router />
+          </WouterRouter>
+        </SyncLoader>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>
