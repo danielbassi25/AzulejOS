@@ -4,11 +4,11 @@ import { motion } from "framer-motion";
 
 const navItems = [
   { path: "/dashboard", icon: Home, label: "Home" },
-  { path: "/saudade", icon: Heart, label: "Saudade" },
-  { path: "/letters", icon: Mail, label: "Tiles" },
-  { path: "/build", icon: Target, label: "Build" },
-  { path: "/play", icon: Dices, label: "Play" },
-  { path: "/score", icon: Trophy, label: "Score" },
+  { path: "/saudade", icon: Heart, label: "History" },
+  { path: "/letters", icon: Mail, label: "Notes" },
+  { path: "/build", icon: Target, label: "Future" },
+  { path: "/play", icon: Dices, label: "Games" },
+  { path: "/score", icon: Trophy, label: "Scores" },
 ];
 
 export default function BottomNav() {

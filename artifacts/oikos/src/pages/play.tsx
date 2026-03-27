@@ -151,8 +151,8 @@ export default function PlayPage() {
   return (
     <AppShell>
       <SectionHeader
-        title="Play"
-        subtitle="Discover each other, again"
+        title="Entrelinhas"
+        subtitle="Painting details that bring us closer"
         action={
           <div className="flex items-center gap-2">
             <motion.button

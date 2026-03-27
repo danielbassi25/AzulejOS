@@ -1,12 +1,11 @@
 import { useState, useCallback } from "react";
 import AppShell from "@/components/AppShell";
 import SectionHeader from "@/components/SectionHeader";
-import { getAllMemories, isCustomItem, deleteCustomMemory, updateCustomMemory } from "@/data/store";
+import { getAllMemories, isCustomItem } from "@/data/store";
 import { motion } from "framer-motion";
 import { Link } from "wouter";
 import { MapPin, Plus, Sparkles, Pencil } from "lucide-react";
-import EditDeleteModal from "@/components/EditDeleteModal";
-import type { Memory, MemoryColor } from "@/types";
+import type { Memory } from "@/types";
 
 const cobaltPattern = `url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.18'%3E%3Ccircle cx='30' cy='30' r='16' stroke-width='0.5'/%3E%3Ccircle cx='30' cy='30' r='9' stroke-width='0.6'/%3E%3Ccircle cx='30' cy='30' r='3' stroke-width='0.5'/%3E%3Cpath d='M30 14c4.5 4 4.5 12 0 16c-4.5-4-4.5-12 0-16z' stroke-width='0.55'/%3E%3Cpath d='M14 30c4-4.5 12-4.5 16 0c-4 4.5-12 4.5-16 0z' stroke-width='0.55'/%3E%3Cpath d='M30 14c-4.5 4-4.5 12 0 16' stroke-width='0.55'/%3E%3Cpath d='M46 30c-4 4.5-12 4.5-16 0' stroke-width='0.55'/%3E%3Cpath d='M18.7 18.7c3.2 1.5 6.8 1.5 10 0' stroke-width='0.4'/%3E%3Cpath d='M41.3 18.7c-3.2 1.5-6.8 1.5-10 0' stroke-width='0.4'/%3E%3Cpath d='M18.7 41.3c3.2-1.5 6.8-1.5 10 0' stroke-width='0.4'/%3E%3Cpath d='M41.3 41.3c-3.2-1.5-6.8-1.5-10 0' stroke-width='0.4'/%3E%3Crect x='0' y='0' width='60' height='60' stroke-width='0.6'/%3E%3C/g%3E%3C/svg%3E")`;
 
@@ -43,8 +42,6 @@ const MEMORY_TILES: Record<string, { bg: string; gradient: string; pattern: stri
   },
 };
 
-const COLOR_OPTIONS: MemoryColor[] = ['cobalt', 'teal', 'rose', 'navy'];
-
 function parseDate(dateStr: string): Date {
   const d = new Date(dateStr);
   if (isNaN(d.getTime())) return new Date();
@@ -70,43 +67,8 @@ const tile = (i: number) => ({
 
 export default function SaudadePage() {
   const [memories, setMemories] = useState(() => getAllMemories());
-  const [editingMemory, setEditingMemory] = useState<Memory | null>(null);
-  const [editValues, setEditValues] = useState<Record<string, string>>({});
-  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   const reload = useCallback(() => setMemories(getAllMemories()), []);
-
-  const openEdit = (memory: Memory) => {
-    setEditingMemory(memory);
-    setEditValues({
-      title: memory.title,
-      date: memory.date,
-      location: memory.location,
-      content: memory.content || '',
-      memoryColor: memory.memoryColor || 'cobalt',
-    });
-    setShowDeleteConfirm(false);
-  };
-
-  const handleSave = () => {
-    if (!editingMemory) return;
-    updateCustomMemory(editingMemory.id, {
-      title: editValues.title,
-      date: editValues.date,
-      location: editValues.location,
-      content: editValues.content,
-      memoryColor: (editValues.memoryColor as MemoryColor) || 'cobalt',
-    });
-    setEditingMemory(null);
-    reload();
-  };
-
-  const handleDelete = () => {
-    if (!editingMemory) return;
-    deleteCustomMemory(editingMemory.id);
-    setEditingMemory(null);
-    reload();
-  };
 
   const sorted = [...memories].sort((a, b) => parseDate(b.date).getTime() - parseDate(a.date).getTime());
 
@@ -297,20 +259,22 @@ export default function SaudadePage() {
                       </Link>
 
                       {isCustom && (
-                        <motion.button
-                          onClick={(e) => { e.preventDefault(); e.stopPropagation(); openEdit(memory); }}
-                          whileTap={{ scale: 0.90 }}
-                          className="absolute flex items-center justify-center z-10"
-                          style={{
-                            bottom: 12, right: 12,
-                            width: 32, height: 32, borderRadius: '4px',
-                            background: mt.bg,
-                            border: `1px solid ${mt.border}`,
-                            boxShadow: '0 2px 8px rgba(12,25,72,0.22)',
-                          }}
-                        >
-                          <Pencil className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)' }} />
-                        </motion.button>
+                        <Link href={`/saudade/edit/${memory.id}`}>
+                          <motion.div
+                            whileTap={{ scale: 0.90 }}
+                            className="absolute flex items-center justify-center z-10"
+                            style={{
+                              bottom: 12, right: 12,
+                              width: 32, height: 32, borderRadius: '4px',
+                              background: mt.bg,
+                              border: `1px solid ${mt.border}`,
+                              boxShadow: '0 2px 8px rgba(12,25,72,0.22)',
+                              cursor: 'pointer',
+                            }}
+                          >
+                            <Pencil className="w-3.5 h-3.5" style={{ color: 'hsl(42,30%,94%)' }} />
+                          </motion.div>
+                        </Link>
                       )}
                     </div>
                   </motion.div>
@@ -329,26 +293,6 @@ export default function SaudadePage() {
           </motion.div>
         </div>
       </div>
-
-      <EditDeleteModal
-        isOpen={!!editingMemory}
-        onClose={() => setEditingMemory(null)}
-        onSave={handleSave}
-        onDelete={() => setShowDeleteConfirm(true)}
-        title="Edit Memory"
-        fields={[
-          { key: 'title', label: 'Title', type: 'text', placeholder: 'Memory title' },
-          { key: 'date', label: 'Date', type: 'text', placeholder: 'March 15, 2024' },
-          { key: 'location', label: 'Location', type: 'text', placeholder: 'Lisbon, Portugal' },
-          { key: 'content', label: 'Story', type: 'textarea', placeholder: 'The story...', rows: 4 },
-          { key: 'memoryColor', label: 'Color', type: 'select', options: COLOR_OPTIONS },
-        ]}
-        values={editValues}
-        onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
-        showDeleteConfirm={showDeleteConfirm}
-        onDeleteConfirm={handleDelete}
-        onDeleteCancel={() => setShowDeleteConfirm(false)}
-      />
     </AppShell>
   );
 }

@@ -154,7 +154,7 @@ export default function LettersPage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Parede" subtitle="Words laid tile by tile"
+      <SectionHeader title="Parede" subtitle="Decorating our shared wall"
         action={
           <Link href="/letters/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"

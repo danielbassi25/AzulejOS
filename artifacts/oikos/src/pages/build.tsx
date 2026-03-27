@@ -132,7 +132,7 @@ export default function BuildPage() {
 
   return (
     <AppShell>
-      <SectionHeader title="Eventually we will" subtitle="Painting together"
+      <SectionHeader title="Desenhos" subtitle="What we are slowly painting together"
         action={
           <Link href="/build/new">
             <motion.div whileTap={{ scale: 0.92 }} className="flex items-center gap-1.5"
