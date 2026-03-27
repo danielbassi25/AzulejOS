@@ -557,30 +557,12 @@ export const mockQuestions: Question[] = [
 ];
 
 export const mockScore: ScoreData = {
-  daniel: 1240,
-  sofia: 1185,
+  daniel: 0,
+  sofia: 0,
   milestones: [
-    { title: "First to 500", winner: "Daniel", target: 500 },
-    { title: "First to 1000", winner: "Sofia", target: 1000 },
-    { title: "First to 2000", winner: null, target: 2000 },
   ],
   recentActivities: [
-    { id: "act-1", user: "Daniel", action: "Wrote a letter", points: 50, date: "Today" },
-    { id: "act-2", user: "Sofia", action: "Saved a memory", points: 30, date: "Today" },
-    { id: "act-3", user: "Daniel", action: "Completed a goal", points: 40, date: "Yesterday" },
-    { id: "act-4", user: "Sofia", action: "Answered 3 questions", points: 45, date: "Yesterday" },
-    { id: "act-5", user: "Daniel", action: "Added a new goal", points: 15, date: "2 days ago" },
   ],
   history: [
-    { week: "W1", daniel: 120, sofia: 100 },
-    { week: "W2", daniel: 240, sofia: 260 },
-    { week: "W3", daniel: 380, sofia: 350 },
-    { week: "W4", daniel: 520, sofia: 480 },
-    { week: "W5", daniel: 640, sofia: 650 },
-    { week: "W6", daniel: 780, sofia: 770 },
-    { week: "W7", daniel: 920, sofia: 890 },
-    { week: "W8", daniel: 1050, sofia: 1020 },
-    { week: "W9", daniel: 1150, sofia: 1100 },
-    { week: "W10", daniel: 1240, sofia: 1185 },
   ],
 };
