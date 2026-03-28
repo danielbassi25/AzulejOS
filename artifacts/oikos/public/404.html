@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>AzulejOS</title>
+    <script>
+      // GitHub Pages SPA fallback: redirect any 404 to the app root
+      // The hash-based router will handle the route from there
+      var base = '/AzulejOS/';
+      var path = window.location.pathname.replace(base, '');
+      var hash = path ? '#/' + path.replace(/^\//, '') : '';
+      window.location.replace(base + hash + window.location.search);
+    </script>
+  </head>
+  <body></body>
+</html>
