@@ -1,30 +1,66 @@
 import { supabase } from './supabase';
 
 const OIKOS_PREFIX = 'oikos-';
-const SYNC_FLAG = 'oikos-supabase-synced';
 
 let syncReady = false;
 let syncPromise: Promise<void> | null = null;
 
+const retryQueue: Map<string, string> = new Map();
+let retryTimer: ReturnType<typeof setTimeout> | null = null;
+
 function isOikosKey(key: string): boolean {
   return key.startsWith(OIKOS_PREFIX);
+}
+
+function scheduleRetry() {
+  if (retryTimer) return;
+  retryTimer = setTimeout(async () => {
+    retryTimer = null;
+    if (retryQueue.size === 0) return;
+    await flushRetryQueue();
+  }, 5000);
+}
+
+async function flushRetryQueue() {
+  if (!supabase || retryQueue.size === 0) return;
+
+  const entries = Array.from(retryQueue.entries());
+  retryQueue.clear();
+
+  const rows = entries.map(([key, rawValue]) => {
+    let value: unknown;
+    try { value = JSON.parse(rawValue); } catch { value = rawValue; }
+    return { key, value, updated_at: new Date().toISOString() };
+  });
+
+  const { error } = await supabase
+    .from('kv_store')
+    .upsert(rows, { onConflict: 'key' });
+
+  if (error) {
+    console.warn('Supabase retry flush error:', error.message);
+    for (const [key, val] of entries) {
+      retryQueue.set(key, val);
+    }
+    scheduleRetry();
+  }
 }
 
 function pushToSupabase(key: string, rawValue: string) {
   if (!supabase) return;
 
   let value: unknown;
-  try {
-    value = JSON.parse(rawValue);
-  } catch {
-    value = rawValue;
-  }
+  try { value = JSON.parse(rawValue); } catch { value = rawValue; }
 
   supabase
     .from('kv_store')
     .upsert({ key, value, updated_at: new Date().toISOString() }, { onConflict: 'key' })
     .then(({ error }) => {
-      if (error) console.warn(`Supabase sync error for ${key}:`, error.message);
+      if (error) {
+        console.warn(`Supabase sync error for ${key}:`, error.message);
+        retryQueue.set(key, rawValue);
+        scheduleRetry();
+      }
     });
 }
 
@@ -96,11 +132,7 @@ async function pushAllToSupabase(): Promise<void> {
     if (raw === null) continue;
 
     let value: unknown;
-    try {
-      value = JSON.parse(raw);
-    } catch {
-      value = raw;
-    }
+    try { value = JSON.parse(raw); } catch { value = raw; }
     rows.push({ key, value, updated_at: now });
   }
 
@@ -110,9 +142,30 @@ async function pushAllToSupabase(): Promise<void> {
     .from('kv_store')
     .upsert(rows, { onConflict: 'key' });
 
-  if (error) {
-    console.warn('Supabase initial push error:', error.message);
-  }
+  if (error) console.warn('Supabase initial push error:', error.message);
+}
+
+function setupVisibilitySync() {
+  document.addEventListener('visibilitychange', () => {
+    if (document.visibilityState === 'visible' && syncReady) {
+      pullFromSupabase();
+    }
+    if (document.visibilityState === 'hidden') {
+      flushRetryQueue();
+    }
+  });
+
+  window.addEventListener('focus', () => {
+    if (syncReady) pullFromSupabase();
+  });
+
+  window.addEventListener('beforeunload', () => {
+    flushRetryQueue();
+  });
+
+  setInterval(() => {
+    if (syncReady) pullFromSupabase();
+  }, 30_000);
 }
 
 export async function initSupabaseSync(): Promise<void> {
@@ -133,6 +186,7 @@ export async function initSupabaseSync(): Promise<void> {
     }
 
     syncReady = true;
+    setupVisibilitySync();
   })();
 
   return syncPromise;
