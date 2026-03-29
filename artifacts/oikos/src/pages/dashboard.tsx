@@ -90,6 +90,7 @@ function getGreeting(): { text: string; icon: typeof Sun } {
 
 interface NextMeeting {
   date: string;
+  time: string;
   location: string;
   note: string;
 }
@@ -99,29 +100,40 @@ function loadMeeting(): NextMeeting {
     const raw = localStorage.getItem("oikos-next-meeting");
     if (raw) return JSON.parse(raw);
   } catch {}
-  return { date: "", location: "", note: "" };
+  return { date: "", time: "", location: "", note: "" };
 }
 
 function saveMeeting(m: NextMeeting) {
   localStorage.setItem("oikos-next-meeting", JSON.stringify(m));
 }
 
-function useCountdown(targetDate: string) {
+function parseLisbonTarget(dateStr: string, timeStr: string): Date {
+  const t = timeStr || "00:00";
+  const refDate = new Date(`${dateStr}T${t}:00Z`);
+  const lisbonStr = refDate.toLocaleString("sv", { timeZone: "Europe/Lisbon" });
+  const lisbonAsDate = new Date(lisbonStr.replace(" ", "T") + "Z");
+  const offsetMs = lisbonAsDate.getTime() - refDate.getTime();
+  return new Date(refDate.getTime() - offsetMs);
+}
+
+function useCountdown(targetDate: string, targetTime: string) {
   const [now, setNow] = useState(() => new Date());
   useEffect(() => {
     if (!targetDate) return;
-    const id = setInterval(() => setNow(new Date()), 60_000);
+    const id = setInterval(() => setNow(new Date()), 1_000);
     return () => clearInterval(id);
   }, [targetDate]);
 
   if (!targetDate) return null;
-  const target = new Date(targetDate + "T00:00:00");
+  const target = parseLisbonTarget(targetDate, targetTime);
   if (isNaN(target.getTime())) return null;
+  const totalMs = target.getTime() - now.getTime();
+  if (totalMs < 0) return { days: 0, hours: 0, minutes: 0, seconds: 0, passed: true };
   const days = differenceInDays(target, now);
   const hours = differenceInHours(target, now) % 24;
   const minutes = differenceInMinutes(target, now) % 60;
-  if (days < 0) return { days: 0, hours: 0, minutes: 0, passed: true };
-  return { days, hours: Math.max(0, hours), minutes: Math.max(0, minutes), passed: false };
+  const seconds = Math.floor((totalMs / 1000) % 60);
+  return { days, hours: Math.max(0, hours), minutes: Math.max(0, minutes), seconds: Math.max(0, seconds), passed: false };
 }
 
 function CountdownUnit({ value, label, large }: { value: number; label: string; large?: boolean }) {
@@ -162,7 +174,7 @@ export default function DashboardPage() {
   const [meeting, setMeeting] = useState<NextMeeting>(loadMeeting);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<NextMeeting>(meeting);
-  const countdown = useCountdown(meeting.date);
+  const countdown = useCountdown(meeting.date, meeting.time);
 
   const startEdit = useCallback(() => {
     setDraft(meeting);
@@ -178,7 +190,7 @@ export default function DashboardPage() {
   }, [draft]);
 
   const clearMeeting = useCallback(() => {
-    const empty = { date: "", location: "", note: "" };
+    const empty = { date: "", time: "", location: "", note: "" };
     setMeeting(empty);
     saveMeeting(empty);
     setEditing(false);
@@ -315,20 +327,37 @@ export default function DashboardPage() {
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
-                  <div>
-                    <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(220,16%,56%)', display: 'block', marginBottom: '5px' }}>
-                      <Calendar className="w-3 h-3 inline-block mr-1 -mt-0.5" />Date
-                    </label>
-                    <input
-                      type="date"
-                      value={draft.date}
-                      onChange={e => setDraft(d => ({ ...d, date: e.target.value }))}
-                      style={{
-                        width: '100%', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontWeight: 600,
-                        color: 'hsl(222,45%,16%)', background: 'hsl(42,28%,95%)', border: '1px solid rgba(30,60,130,0.12)',
-                        borderRadius: '3px', padding: '8px 10px', outline: 'none',
-                      }}
-                    />
+                  <div style={{ display: 'flex', gap: '10px' }}>
+                    <div style={{ flex: 1 }}>
+                      <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(220,16%,56%)', display: 'block', marginBottom: '5px' }}>
+                        <Calendar className="w-3 h-3 inline-block mr-1 -mt-0.5" />Date
+                      </label>
+                      <input
+                        type="date"
+                        value={draft.date}
+                        onChange={e => setDraft(d => ({ ...d, date: e.target.value }))}
+                        style={{
+                          width: '100%', fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontWeight: 600,
+                          color: 'hsl(222,45%,16%)', background: 'hsl(42,28%,95%)', border: '1px solid rgba(30,60,130,0.12)',
+                          borderRadius: '3px', padding: '8px 10px', outline: 'none',
+                        }}
+                      />
+                    </div>
+                    <div style={{ flex: '0 0 auto' }}>
+                      <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(220,16%,56%)', display: 'block', marginBottom: '5px' }}>
+                        <Clock className="w-3 h-3 inline-block mr-1 -mt-0.5" />Time (Lisbon)
+                      </label>
+                      <input
+                        type="time"
+                        value={draft.time}
+                        onChange={e => setDraft(d => ({ ...d, time: e.target.value }))}
+                        style={{
+                          fontFamily: "'Cormorant Garamond', Georgia, serif", fontSize: '1rem', fontWeight: 600,
+                          color: 'hsl(222,45%,16%)', background: 'hsl(42,28%,95%)', border: '1px solid rgba(30,60,130,0.12)',
+                          borderRadius: '3px', padding: '8px 10px', outline: 'none',
+                        }}
+                      />
+                    </div>
                   </div>
                   <div>
                     <label style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'hsl(220,16%,56%)', display: 'block', marginBottom: '5px' }}>
@@ -428,6 +457,12 @@ export default function DashboardPage() {
                     <CountdownUnit value={countdown.hours} label="hours" />
                     <div style={{ width: 1, height: 36, background: 'rgba(200,185,160,0.15)', marginBottom: 6 }} />
                     <CountdownUnit value={countdown.minutes} label="min" />
+                    {meeting.time && (
+                      <>
+                        <div style={{ width: 1, height: 36, background: 'rgba(200,185,160,0.15)', marginBottom: 6 }} />
+                        <CountdownUnit value={countdown.seconds} label="sec" />
+                      </>
+                    )}
                   </div>
                 )}
 
@@ -447,6 +482,11 @@ export default function DashboardPage() {
                       <Calendar className="w-3 h-3 shrink-0" style={{ color: 'rgba(200,185,160,0.45)' }} />
                       <span style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '0.95rem', color: 'rgba(240,235,225,0.88)' }}>
                         {format(new Date(meeting.date + "T00:00:00"), "EEEE, MMMM d")}
+                        {meeting.time && (
+                          <span style={{ color: 'rgba(200,185,160,0.60)', fontWeight: 400, marginLeft: '6px' }}>
+                            · {meeting.time}
+                          </span>
+                        )}
                       </span>
                     </div>
                     {meeting.location && (
