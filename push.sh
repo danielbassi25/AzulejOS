@@ -3,7 +3,7 @@ set -e
 
 mkdir -p ~/.ssh
 
-echo "$GITHUB_DEPLOY_KEY" > ~/.ssh/github_deploy
+echo "$GITHUB_DEPLOY_KEY_B64" | base64 -d > ~/.ssh/github_deploy
 chmod 600 ~/.ssh/github_deploy
 
 cat > ~/.ssh/config << 'EOF'
