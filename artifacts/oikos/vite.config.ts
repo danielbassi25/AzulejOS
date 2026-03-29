@@ -4,29 +4,20 @@ import tailwindcss from "@tailwindcss/vite";
 import path from "path";
 
 const isCI = !!process.env.CI;
-const isReplit = !!process.env.REPL_ID;
+const isReplit = !!process.env.REPL_ID && !isCI;
 
-const rawPort = process.env.PORT;
 let port = 3000;
 
 if (isReplit) {
-  if (!rawPort) {
-    throw new Error(
-      "PORT environment variable is required but was not provided.",
-    );
-  }
+  const rawPort = process.env.PORT;
+  if (!rawPort) throw new Error("PORT environment variable is required but was not provided.");
   port = Number(rawPort);
-  if (Number.isNaN(port) || port <= 0) {
-    throw new Error(`Invalid PORT value: "${rawPort}"`);
-  }
+  if (Number.isNaN(port) || port <= 0) throw new Error(`Invalid PORT value: "${rawPort}"`);
 
-  if (!process.env.BASE_PATH) {
-    throw new Error(
-      "BASE_PATH environment variable is required but was not provided.",
-    );
-  }
-} else if (rawPort) {
-  port = Number(rawPort);
+  if (!process.env.BASE_PATH) throw new Error("BASE_PATH environment variable is required but was not provided.");
+} else {
+  const rawPort = process.env.PORT;
+  if (rawPort) port = Number(rawPort);
 }
 
 const replitPlugins = async () => {
