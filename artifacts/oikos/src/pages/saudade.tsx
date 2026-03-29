@@ -176,17 +176,17 @@ export default function SaudadePage() {
                                 {memory.title}
                               </h3>
                               {memory.preview && (
-                                <p className="line-clamp-2" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.80rem', lineHeight: 1.55, color: 'rgba(220,210,192,0.52)', marginTop: '5px' }}>
+                                <p className="line-clamp-2" style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.80rem', lineHeight: 1.55, color: 'rgba(235,225,208,0.88)', marginTop: '5px' }}>
                                   {memory.preview}
                                 </p>
                               )}
                             </div>
                             <div className="text-right shrink-0">
-                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.08em', color: 'rgba(205,192,170,0.45)', whiteSpace: 'nowrap' }}>
+                              <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 600, letterSpacing: '0.08em', color: 'rgba(220,208,188,0.82)', whiteSpace: 'nowrap' }}>
                                 {formatMonthDay(memory.date)}
                               </p>
                               {memory.location && (
-                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 500, color: 'rgba(195,185,165,0.35)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '90px' }}>
+                                <p style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 500, color: 'rgba(210,200,180,0.75)', marginTop: '2px', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', maxWidth: '90px' }}>
                                   {memory.location}
                                 </p>
                               )}
