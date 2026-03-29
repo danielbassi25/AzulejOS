@@ -3,7 +3,8 @@ import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save, Camera, X } from "lucide-react";
-import type { MemoryColor } from "@/types";
+import { useKV } from "@/data/kv-store";
+import type { MemoryColor, Memory } from "@/types";
 
 const MEMORY_COLORS: { key: MemoryColor; label: string; bg: string; border: string }[] = [
   { key: 'cobalt', label: 'Everyday', bg: 'hsl(218,70%,28%)', border: 'rgba(15,45,115,0.40)' },
@@ -14,6 +15,7 @@ const MEMORY_COLORS: { key: MemoryColor; label: string; bg: string; border: stri
 
 export default function CreateMemoryPage() {
   const [, setLocation] = useLocation();
+  const { data, set } = useKV();
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [location, setLocationVal] = useState("");
@@ -42,7 +44,7 @@ export default function CreateMemoryPage() {
 
   const handleSave = () => {
     if (!title.trim()) return;
-    const memory = {
+    const memory: Memory = {
       id: `mem-custom-${Date.now()}`,
       title: title.trim(),
       date: date || new Date().toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' }),
@@ -53,10 +55,8 @@ export default function CreateMemoryPage() {
       imageUrl: coverImage || '',
       memoryColor,
     };
-    try {
-      const existing = JSON.parse(localStorage.getItem("oikos-custom-memories") || "[]");
-      localStorage.setItem("oikos-custom-memories", JSON.stringify([...existing, memory]));
-    } catch {}
+    const existing = (data['oikos-custom-memories'] as Memory[]) || [];
+    set('oikos-custom-memories', [...existing, memory]);
     setSaved(true);
     setTimeout(() => setLocation("/saudade"), 1200);
   };

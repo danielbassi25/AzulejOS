@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Trophy, Plus, Minus, Pencil, Trash2, X, Save, Award, Crown, RotateCcw, Star } from "lucide-react";
 import confetti from "canvas-confetti";
 import type { Milestone, Activity, SeasonResult, ScoreSnapshot } from "@/types";
+import { useKV } from "@/data/kv-store";
 
 const MONTHS = ["January","February","March","April","May","June","July","August","September","October","November","December"];
 
@@ -13,56 +14,9 @@ function getCurrentMonthKey(): string {
   return `${MONTHS[d.getMonth()]} ${d.getFullYear()}`;
 }
 
-function safeParseInt(val: string | null): number {
-  const n = parseInt(val || "0", 10);
+function safeParseInt(val: unknown): number {
+  const n = typeof val === 'number' ? val : parseInt(String(val || "0"), 10);
   return Number.isFinite(n) ? Math.max(0, n) : 0;
-}
-
-function getScoreState() {
-  try {
-    const storedSeason = localStorage.getItem("oikos-score-season");
-    return {
-      daniel: safeParseInt(localStorage.getItem("oikos-score-daniel")),
-      sofia: safeParseInt(localStorage.getItem("oikos-score-sofia")),
-      currentSeason: storedSeason || getCurrentMonthKey(),
-    };
-  } catch {
-    return { daniel: 0, sofia: 0, currentSeason: getCurrentMonthKey() };
-  }
-}
-
-function getMilestones(): Milestone[] {
-  try { return JSON.parse(localStorage.getItem("oikos-score-milestones") || "[]"); } catch { return []; }
-}
-function saveMilestonesLS(m: Milestone[]) { localStorage.setItem("oikos-score-milestones", JSON.stringify(m)); }
-
-function getActivities(): Activity[] {
-  try { return JSON.parse(localStorage.getItem("oikos-score-activities") || "[]"); } catch { return []; }
-}
-function saveActivitiesLS(list: Activity[]) { localStorage.setItem("oikos-score-activities", JSON.stringify(list)); }
-function pushActivity(a: Activity) {
-  const list = getActivities();
-  list.unshift(a);
-  if (list.length > 50) list.length = 50;
-  saveActivitiesLS(list);
-}
-
-function getSeasons(): SeasonResult[] {
-  try { return normalizeSeasons(JSON.parse(localStorage.getItem("oikos-score-seasons") || "[]")); } catch { return []; }
-}
-function saveSeasonsLS(s: SeasonResult[]) { localStorage.setItem("oikos-score-seasons", JSON.stringify(s)); }
-
-function getSnapshots(): ScoreSnapshot[] {
-  try { return JSON.parse(localStorage.getItem("oikos-score-snapshots") || "[]"); } catch { return []; }
-}
-function saveSnapshotsLS(s: ScoreSnapshot[]) { localStorage.setItem("oikos-score-snapshots", JSON.stringify(s)); }
-function pushSnapshot(d: number, s: number) {
-  const list = getSnapshots();
-  const now = Date.now();
-  const label = new Date(now).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-  list.push({ daniel: d, sofia: s, date: label, ts: now });
-  if (list.length > 200) list.splice(0, list.length - 200);
-  saveSnapshotsLS(list);
 }
 
 const azulejoPattern = `url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='%23ffffff' opacity='0.13'%3E%3Cpath d='M0 0h80v80H0z' stroke-width='0.4'/%3E%3Cpath d='M40 0v80M0 40h80' stroke-width='0.3'/%3E%3Cpath d='M0 0l40 40M80 0l-40 40M0 80l40-40M80 80l-40-40' stroke-width='0.3'/%3E%3Ccircle cx='40' cy='40' r='18' stroke-width='0.5'/%3E%3Ccircle cx='40' cy='40' r='4' stroke-width='0.4'/%3E%3Cpath d='M40 22l-18 18 18 18 18-18z' stroke-width='0.45'/%3E%3Cpath d='M22 40a18 18 0 0 0 18 18' stroke-width='0.4'/%3E%3Cpath d='M58 40a18 18 0 0 0-18-18' stroke-width='0.4'/%3E%3Cpath d='M40 22a18 18 0 0 0-18 18' stroke-width='0.4'/%3E%3Cpath d='M40 58a18 18 0 0 0 18-18' stroke-width='0.4'/%3E%3Ccircle cx='0' cy='0' r='10' stroke-width='0.4'/%3E%3Ccircle cx='80' cy='0' r='10' stroke-width='0.4'/%3E%3Ccircle cx='0' cy='80' r='10' stroke-width='0.4'/%3E%3Ccircle cx='80' cy='80' r='10' stroke-width='0.4'/%3E%3C/g%3E%3C/svg%3E")`;
@@ -157,11 +111,28 @@ function CenterModal({ isOpen, onClose, children }: { isOpen: boolean; onClose: 
 }
 
 export default function ScorePage() {
-  const [scores, setScores] = useState(getScoreState);
-  const [milestones, setMilestones] = useState<Milestone[]>(getMilestones);
-  const [activities, setActivities] = useState<Activity[]>(getActivities);
-  const [seasons, setSeasons] = useState<SeasonResult[]>(getSeasons);
-  const [snapshots, setSnapshots] = useState<ScoreSnapshot[]>(getSnapshots);
+  const { data, set } = useKV();
+
+  const [scores, setScores] = useState(() => ({
+    daniel: 0, sofia: 0, currentSeason: getCurrentMonthKey(),
+  }));
+  const [milestones, setMilestones] = useState<Milestone[]>([]);
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [seasons, setSeasons] = useState<SeasonResult[]>([]);
+  const [snapshots, setSnapshots] = useState<ScoreSnapshot[]>([]);
+
+  useEffect(() => {
+    setScores({
+      daniel: safeParseInt(data['oikos-score-daniel']),
+      sofia: safeParseInt(data['oikos-score-sofia']),
+      currentSeason: (data['oikos-score-season'] as string) || getCurrentMonthKey(),
+    });
+    setMilestones((data['oikos-score-milestones'] as Milestone[]) || []);
+    setActivities((data['oikos-score-activities'] as Activity[]) || []);
+    setSeasons(normalizeSeasons((data['oikos-score-seasons'] as SeasonResult[]) || []));
+    setSnapshots((data['oikos-score-snapshots'] as ScoreSnapshot[]) || []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [data]);
 
   const [showMilestoneModal, setShowMilestoneModal] = useState(false);
   const [editingMilestone, setEditingMilestone] = useState<Milestone | null>(null);
@@ -196,25 +167,36 @@ export default function ScorePage() {
     setScores(prev => {
       const newVal = Math.max(0, prev[user] + delta);
       if (newVal === prev[user]) return prev;
-      localStorage.setItem(`oikos-score-${user}`, String(newVal));
+      set(`oikos-score-${user}` as 'oikos-score-daniel' | 'oikos-score-sofia', newVal);
       const updated = { ...prev, [user]: newVal };
-      pushSnapshot(updated.daniel, updated.sofia);
-      setSnapshots(getSnapshots());
-      pushActivity({
+      const now = Date.now();
+      const label = new Date(now).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+      setSnapshots(prevSnaps => {
+        const newSnaps = [...prevSnaps, { daniel: updated.daniel, sofia: updated.sofia, date: label, ts: now }].slice(-200);
+        set('oikos-score-snapshots', newSnaps);
+        return newSnaps;
+      });
+      const newActivity: Activity = {
         id: `act-${Date.now()}`, user: user === 'daniel' ? 'Daniel' : 'Sofia',
         action: delta > 0 ? 'earned a point' : 'lost a point', points: delta,
         date: new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric', hour: 'numeric', minute: '2-digit' }),
+      };
+      setActivities(prevActs => {
+        const newActs = [newActivity, ...prevActs].slice(0, 50);
+        set('oikos-score-activities', newActs);
+        return newActs;
       });
-      setActivities(getActivities());
       return updated;
     });
-  }, []);
+  }, [set]);
 
   const deleteActivity = useCallback((id: string) => {
-    const updated = getActivities().filter(a => a.id !== id);
-    saveActivitiesLS(updated);
-    setActivities(updated);
-  }, []);
+    setActivities(prev => {
+      const updated = prev.filter(a => a.id !== id);
+      set('oikos-score-activities', updated);
+      return updated;
+    });
+  }, [set]);
 
   const danielWins = useMemo(() => seasons.filter(s => s.winner === 'Daniel').length, [seasons]);
   const sofiaWins = useMemo(() => seasons.filter(s => s.winner === 'Sofia').length, [seasons]);
@@ -235,45 +217,46 @@ export default function ScorePage() {
       const newM: Milestone = { id: `ms-${Date.now()}`, title: milestoneForm.title.trim(), reward: milestoneForm.reward.trim(), targetPoints: parseInt(milestoneForm.targetPoints, 10) || 5, completed: false, winner: null };
       updated = [...milestones, newM];
     }
-    setMilestones(updated); saveMilestonesLS(updated);
+    setMilestones(updated); set('oikos-score-milestones', updated);
     setShowMilestoneModal(false); setEditingMilestone(null);
   };
 
   const deleteMilestone = () => {
     if (!editingMilestone) return;
     const updated = milestones.filter(m => m.id !== editingMilestone.id);
-    setMilestones(updated); saveMilestonesLS(updated);
+    setMilestones(updated); set('oikos-score-milestones', updated);
     setShowMilestoneModal(false); setEditingMilestone(null); setMilestoneDeleteConfirm(false);
   };
 
   const completeMilestone = (id: string, winner: string) => {
     const updated = milestones.map(m => m.id === id ? { ...m, completed: true, winner } : m);
-    setMilestones(updated); saveMilestonesLS(updated); triggerConfetti();
+    setMilestones(updated); set('oikos-score-milestones', updated); triggerConfetti();
   };
 
   const resetMilestone = (id: string) => {
     const updated = milestones.map(m => m.id === id ? { ...m, completed: false, winner: null } : m);
-    setMilestones(updated); saveMilestonesLS(updated);
+    setMilestones(updated); set('oikos-score-milestones', updated);
   };
 
   const startNewSeason = () => {
     if (!seasonForm.name.trim()) return;
-    localStorage.setItem("oikos-score-season", seasonForm.name.trim());
-    localStorage.setItem("oikos-score-season-trophy", seasonForm.trophyName.trim());
-    localStorage.setItem("oikos-score-season-desc", seasonForm.description.trim());
-    localStorage.setItem("oikos-score-daniel", "0");
-    localStorage.setItem("oikos-score-sofia", "0");
-    saveSnapshotsLS([]);
+    const name = seasonForm.name.trim();
+    set('oikos-score-season', name);
+    set('oikos-score-season-trophy', seasonForm.trophyName.trim());
+    set('oikos-score-season-desc', seasonForm.description.trim());
+    set('oikos-score-daniel', 0);
+    set('oikos-score-sofia', 0);
+    set('oikos-score-snapshots', []);
     setSnapshots([]);
-    setScores({ daniel: 0, sofia: 0, currentSeason: seasonForm.name.trim() });
+    setScores({ daniel: 0, sofia: 0, currentSeason: name });
     setShowNewSeason(false);
     setSeasonForm({ name: '', trophyName: '', description: '' });
   };
 
   const endSeason = () => {
     const winner = scores.daniel > scores.sofia ? 'Daniel' : scores.sofia > scores.daniel ? 'Sofia' : 'Tie';
-    const trophyName = localStorage.getItem("oikos-score-season-trophy") || '';
-    const desc = localStorage.getItem("oikos-score-season-desc") || '';
+    const trophyName = (data['oikos-score-season-trophy'] as string) || '';
+    const desc = (data['oikos-score-season-desc'] as string) || '';
     const parts = scores.currentSeason.split(' ');
     const result: SeasonResult = {
       id: `season-${Date.now()}`, name: scores.currentSeason,
@@ -282,15 +265,15 @@ export default function ScorePage() {
       danielPoints: scores.daniel, sofiaPoints: scores.sofia, winner,
     };
     const updated = [result, ...seasons];
-    setSeasons(updated); saveSeasonsLS(updated);
-    localStorage.setItem("oikos-score-daniel", "0");
-    localStorage.setItem("oikos-score-sofia", "0");
-    localStorage.removeItem("oikos-score-season-trophy");
-    localStorage.removeItem("oikos-score-season-desc");
-    saveSnapshotsLS([]);
+    setSeasons(updated); set('oikos-score-seasons', updated);
+    set('oikos-score-daniel', 0);
+    set('oikos-score-sofia', 0);
+    set('oikos-score-season-trophy', '');
+    set('oikos-score-season-desc', '');
+    set('oikos-score-snapshots', []);
     setSnapshots([]);
     const newSeason = getCurrentMonthKey();
-    localStorage.setItem("oikos-score-season", newSeason);
+    set('oikos-score-season', newSeason);
     setScores({ daniel: 0, sofia: 0, currentSeason: newSeason });
     setShowEndSeason(false); triggerConfetti();
   };
@@ -309,29 +292,29 @@ export default function ScorePage() {
       description: seasonEditForm.description.trim(),
       winner: seasonEditForm.winner || s.winner,
     } : s);
-    setSeasons(updated); saveSeasonsLS(updated); setEditingSeason(null);
+    setSeasons(updated); set('oikos-score-seasons', updated); setEditingSeason(null);
   };
 
   const deleteSeason = () => {
     if (!editingSeason) return;
     const updated = seasons.filter(s => s.id !== editingSeason.id);
-    setSeasons(updated); saveSeasonsLS(updated); setEditingSeason(null); setSeasonDeleteConfirm(false);
+    setSeasons(updated); set('oikos-score-seasons', updated); setEditingSeason(null); setSeasonDeleteConfirm(false);
   };
 
   const openEditCurrentSeason = () => {
     setCurrentSeasonEditForm({
       name: scores.currentSeason,
-      trophyName: localStorage.getItem("oikos-score-season-trophy") || '',
-      description: localStorage.getItem("oikos-score-season-desc") || '',
+      trophyName: (data['oikos-score-season-trophy'] as string) || '',
+      description: (data['oikos-score-season-desc'] as string) || '',
     });
     setShowEditCurrentSeason(true);
   };
 
   const saveCurrentSeasonEdit = () => {
     const newName = currentSeasonEditForm.name.trim() || scores.currentSeason;
-    localStorage.setItem("oikos-score-season", newName);
-    localStorage.setItem("oikos-score-season-trophy", currentSeasonEditForm.trophyName.trim());
-    localStorage.setItem("oikos-score-season-desc", currentSeasonEditForm.description.trim());
+    set('oikos-score-season', newName);
+    set('oikos-score-season-trophy', currentSeasonEditForm.trophyName.trim());
+    set('oikos-score-season-desc', currentSeasonEditForm.description.trim());
     setScores(prev => ({ ...prev, currentSeason: newName }));
     setShowEditCurrentSeason(false);
   };
@@ -528,7 +511,7 @@ export default function ScorePage() {
                 <div className="flex items-center justify-between mb-2">
                   <motion.button
                     whileTap={{ scale: 0.92 }}
-                    onClick={() => { saveSnapshotsLS([]); setSnapshots([]); }}
+                    onClick={() => { set('oikos-score-snapshots', []); setSnapshots([]); }}
                     className="flex items-center gap-1"
                     style={{ padding: '3px 8px', borderRadius: '3px', background: 'hsl(40,20%,93%)', border: '1px solid rgba(30,60,130,0.08)', cursor: 'pointer' }}>
                     <RotateCcw className="w-3 h-3" style={{ color: 'hsl(220,16%,56%)' }} />

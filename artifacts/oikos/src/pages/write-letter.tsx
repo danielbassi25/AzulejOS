@@ -3,7 +3,8 @@ import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, Send, LockKeyhole, MessageSquare, Sparkles, CalendarHeart, Shield } from "lucide-react";
-import type { NoteType } from "@/types";
+import { useKV } from "@/data/kv-store";
+import type { NoteType, Letter } from "@/types";
 
 const MAX_CHARS = 200;
 
@@ -23,6 +24,7 @@ const typeOptions: { type: NoteType; icon: typeof MessageSquare; label: string; 
 
 export default function WriteLetterPage() {
   const [, setLocation] = useLocation();
+  const { data, set } = useKV();
   const [noteType, setNoteType] = useState<NoteType | null>(null);
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
@@ -33,7 +35,7 @@ export default function WriteLetterPage() {
   const handleSend = () => {
     if (!title.trim() || !content.trim() || !noteType) return;
     const now = new Date();
-    const letter = {
+    const letter: Letter = {
       id: `note-${Date.now()}`,
       title: noteType === "open-when" ? `Open when ${title.trim().toLowerCase()}` : title.trim(),
       unlockDate: now.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }),
@@ -43,10 +45,8 @@ export default function WriteLetterPage() {
       noteType,
       ...(noteType === 'invite' && suggestedDate.trim() ? { suggestedDate: suggestedDate.trim() } : {}),
     };
-    try {
-      const existing = JSON.parse(localStorage.getItem("oikos-custom-letters") || "[]");
-      localStorage.setItem("oikos-custom-letters", JSON.stringify([...existing, letter]));
-    } catch {}
+    const existing = (data['oikos-custom-letters'] as Letter[]) || [];
+    set('oikos-custom-letters', [...existing, letter]);
     setSent(true);
     setTimeout(() => setLocation("/letters"), 1000);
   };

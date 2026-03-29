@@ -1,6 +1,7 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useMemo } from "react";
 import AppShell from "@/components/AppShell";
-import { getAllLetters, isCustomItem, deleteCustomLetter, updateCustomLetter } from "@/data/store";
+import { getAllLettersFromKV, isCustomItem } from "@/data/store";
+import { useKV } from "@/data/kv-store";
 import { Link, useRoute, Redirect, useLocation } from "wouter";
 import { motion, AnimatePresence } from "framer-motion";
 import { ArrowLeft, LockKeyhole, Heart, MessageSquare, Sparkles, CalendarHeart, Shield, Pencil, Trash2 } from "lucide-react";
@@ -26,7 +27,8 @@ function noteTypeIcon(t?: NoteType) {
 export default function LetterDetailPage() {
   const [, params] = useRoute("/letters/:id");
   const [, setLocation] = useLocation();
-  const [allLetters, setAllLetters] = useState(() => getAllLetters());
+  const { data, set } = useKV();
+  const allLetters = useMemo(() => getAllLettersFromKV(data), [data]);
   const [showConfirm, setShowConfirm] = useState(false);
   const [revealed, setRevealed] = useState(false);
   const [editingLetter, setEditingLetter] = useState<Letter | null>(null);
@@ -34,7 +36,6 @@ export default function LetterDetailPage() {
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [showQuickDelete, setShowQuickDelete] = useState(false);
 
-  const reload = useCallback(() => setAllLetters(getAllLetters()), []);
   const letter = allLetters.find((l) => l.id === params?.id);
   if (!letter) return <Redirect to="/letters" />;
 
@@ -51,81 +52,68 @@ export default function LetterDetailPage() {
     setShowDeleteConfirm(false);
   };
 
-  const handleSave = () => {
+  const handleSave = useCallback(() => {
     if (!editingLetter) return;
     const newTitle = editingLetter.noteType === "open-when"
       ? `Open when ${editValues.title.toLowerCase()}`
       : editValues.title;
-    updateCustomLetter(editingLetter.id, {
+    const custom = (data['oikos-custom-letters'] as Letter[]) || [];
+    const updated = custom.map(l => l.id === editingLetter.id ? {
+      ...l,
       title: newTitle,
       content: editValues.content,
       author: editValues.author,
       ...(editingLetter.noteType === 'invite' ? { suggestedDate: editValues.suggestedDate || undefined } : {}),
-    });
+    } : l);
+    set('oikos-custom-letters', updated);
     setEditingLetter(null);
-    reload();
-  };
+  }, [editingLetter, editValues, data, set]);
 
-  const handleDelete = () => {
+  const handleDelete = useCallback(() => {
     if (!editingLetter) return;
-    deleteCustomLetter(editingLetter.id);
+    const custom = (data['oikos-custom-letters'] as Letter[]) || [];
+    set('oikos-custom-letters', custom.filter(l => l.id !== editingLetter.id));
     setEditingLetter(null);
     setLocation("/letters");
-  };
+  }, [editingLetter, data, set, setLocation]);
 
-  const handleQuickDelete = () => {
-    deleteCustomLetter(letter.id);
+  const handleQuickDelete = useCallback(() => {
+    const custom = (data['oikos-custom-letters'] as Letter[]) || [];
+    set('oikos-custom-letters', custom.filter(l => l.id !== letter.id));
     setShowQuickDelete(false);
     setLocation("/letters");
-  };
+  }, [letter.id, data, set, setLocation]);
 
   if (letter.noteType === "open-when" && letter.isLocked && !revealed) {
     return (
       <AppShell>
         <div className="min-h-screen flex flex-col">
-          <div
-            className="relative overflow-hidden"
-            style={{
-              backgroundColor: 'hsl(222,52%,18%)',
-              backgroundImage: `${openWhenTilePattern}, linear-gradient(160deg, hsl(222,50%,16%) 0%, hsl(222,55%,22%) 100%)`,
-              backgroundSize: '60px 60px, 100% 100%',
-              padding: '36px 28px 48px',
-            }}
-          >
+          <div className="relative overflow-hidden"
+            style={{ backgroundColor: 'hsl(222,52%,18%)', backgroundImage: `${openWhenTilePattern}, linear-gradient(160deg, hsl(222,50%,16%) 0%, hsl(222,55%,22%) 100%)`, backgroundSize: '60px 60px, 100% 100%', padding: '36px 28px 48px' }}>
             <div className="flex items-center justify-between mb-8">
-              <Link href="/letters" className="flex items-center gap-2"
-                style={{ color: 'rgba(200,215,255,0.78)' }}>
+              <Link href="/letters" className="flex items-center gap-2" style={{ color: 'rgba(200,215,255,0.78)' }}>
                 <ArrowLeft className="w-4 h-4" />
-                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                  Back to Parede
-                </span>
+                <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Back to Parede</span>
               </Link>
               {isEditable && (
                 <div className="flex gap-2">
-                  <motion.button onClick={openEdit} whileTap={{ scale: 0.90 }}
-                    className="flex items-center justify-center"
+                  <motion.button onClick={openEdit} whileTap={{ scale: 0.90 }} className="flex items-center justify-center"
                     style={{ width: 30, height: 30, borderRadius: '4px', background: 'rgba(255,252,245,0.12)', border: '1px solid rgba(255,252,245,0.18)' }}>
                     <Pencil className="w-3 h-3" style={{ color: 'rgba(222,212,194,0.70)' }} />
                   </motion.button>
-                  <motion.button onClick={() => setShowQuickDelete(true)} whileTap={{ scale: 0.90 }}
-                    className="flex items-center justify-center"
+                  <motion.button onClick={() => setShowQuickDelete(true)} whileTap={{ scale: 0.90 }} className="flex items-center justify-center"
                     style={{ width: 30, height: 30, borderRadius: '4px', background: 'rgba(180,40,40,0.20)', border: '1px solid rgba(180,40,40,0.30)' }}>
                     <Trash2 className="w-3 h-3" style={{ color: 'rgba(255,180,180,0.70)' }} />
                   </motion.button>
                 </div>
               )}
             </div>
-
             <div className="flex flex-col items-center text-center relative z-10">
               <div className="w-14 h-14 flex items-center justify-center mb-5"
                 style={{ background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(180,200,255,0.16)', borderRadius: '4px' }}>
                 <LockKeyhole className="w-5 h-5" style={{ color: 'rgba(200,215,255,0.55)' }} />
               </div>
-              <span style={{
-                fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-                background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(180,200,255,0.14)',
-                borderRadius: '2px', padding: '3px 10px', color: 'rgba(195,210,255,0.45)', marginBottom: '14px',
-              }}>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '7px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.08)', border: '1px solid rgba(180,200,255,0.14)', borderRadius: '2px', padding: '3px 10px', color: 'rgba(195,210,255,0.45)', marginBottom: '14px' }}>
                 Open When
               </span>
               <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.6rem', letterSpacing: '0.01em', color: 'rgba(222,210,192,0.82)', lineHeight: 1.25 }}>
@@ -139,35 +127,21 @@ export default function LetterDetailPage() {
 
           <AnimatePresence mode="wait">
             {!showConfirm ? (
-              <motion.div key="prompt" className="flex-1 flex flex-col items-center justify-center p-8 gap-6"
-                initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
+              <motion.div key="prompt" className="flex-1 flex flex-col items-center justify-center p-8 gap-6" initial={{ opacity: 1 }} exit={{ opacity: 0 }}>
                 <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '1.1rem', color: 'hsl(220,18%,52%)', textAlign: 'center', lineHeight: 1.65 }}>
                   This tile is sealed.<br />It was written for a moment like this.
                 </p>
-                <motion.button
-                  onClick={() => setShowConfirm(true)}
-                  whileTap={{ scale: 0.97 }}
-                  className="flex items-center justify-center gap-2"
-                  style={{
-                    fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase',
-                    background: 'hsl(222,48%,18%)', color: 'hsl(42,30%,96%)', borderRadius: '4px', padding: '14px 28px',
-                    border: '1px solid rgba(10,30,80,0.50)', boxShadow: '2px 4px 14px rgba(8,18,55,0.25)',
-                  }}
-                >
-                  <LockKeyhole className="w-3.5 h-3.5" />
-                  Open this tile
+                <motion.button onClick={() => setShowConfirm(true)} whileTap={{ scale: 0.97 }} className="flex items-center justify-center gap-2"
+                  style={{ fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700, letterSpacing: '0.14em', textTransform: 'uppercase', background: 'hsl(222,48%,18%)', color: 'hsl(42,30%,96%)', borderRadius: '4px', padding: '14px 28px', border: '1px solid rgba(10,30,80,0.50)', boxShadow: '2px 4px 14px rgba(8,18,55,0.25)' }}>
+                  <LockKeyhole className="w-3.5 h-3.5" /> Open this tile
                 </motion.button>
               </motion.div>
             ) : (
-              <motion.div key="confirm" className="flex-1 flex flex-col items-center justify-center p-8 gap-5"
-                initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}>
-                <div className="w-14 h-14 flex items-center justify-center"
-                  style={{ background: 'rgba(30,50,100,0.06)', borderRadius: '50%' }}>
+              <motion.div key="confirm" className="flex-1 flex flex-col items-center justify-center p-8 gap-5" initial={{ opacity: 0, scale: 0.96 }} animate={{ opacity: 1, scale: 1 }}>
+                <div className="w-14 h-14 flex items-center justify-center" style={{ background: 'rgba(30,50,100,0.06)', borderRadius: '50%' }}>
                   <Sparkles className="w-5 h-5" style={{ color: 'hsl(218,50%,38%)' }} />
                 </div>
-                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.35rem', color: 'hsl(222,45%,18%)', textAlign: 'center', lineHeight: 1.35 }}>
-                  Are you sure?
-                </p>
+                <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.35rem', color: 'hsl(222,45%,18%)', textAlign: 'center', lineHeight: 1.35 }}>Are you sure?</p>
                 <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontWeight: 400, fontSize: '0.92rem', color: 'hsl(220,16%,52%)', textAlign: 'center', lineHeight: 1.6 }}>
                   Once opened, this tile cannot be sealed again.<br />Is this the right moment?
                 </p>
@@ -187,7 +161,6 @@ export default function LetterDetailPage() {
         </div>
 
         <DeleteConfirmModal show={showQuickDelete} onCancel={() => setShowQuickDelete(false)} onConfirm={handleQuickDelete} />
-
         <EditDeleteModal
           isOpen={!!editingLetter}
           onClose={() => setEditingLetter(null)}
@@ -198,7 +171,7 @@ export default function LetterDetailPage() {
             { key: 'title', label: letter.noteType === 'open-when' ? 'Open when...' : 'Title', type: 'text', placeholder: 'Title' },
             { key: 'author', label: 'From', type: 'select', options: ['Daniel', 'Sofia'] },
             { key: 'content', label: 'Message', type: 'textarea', placeholder: 'Your message...', rows: 4 },
-            ...(letter.noteType === 'invite' ? [{ key: 'suggestedDate', label: 'Suggested Date', type: 'text' as const, placeholder: 'Saturday evening, June 14' }] : []),
+            ...(editingLetter?.noteType === 'invite' ? [{ key: 'suggestedDate', label: 'Suggested Date', type: 'text' as const, placeholder: 'Saturday evening, June 14' }] : []),
           ]}
           values={editValues}
           onChange={(key, val) => setEditValues(prev => ({ ...prev, [key]: val }))}
@@ -210,80 +183,48 @@ export default function LetterDetailPage() {
     );
   }
 
-  const TypeIcon = noteTypeIcon(letter.noteType);
+  void noteTypeIcon;
 
   return (
     <AppShell>
       <div className="min-h-screen">
-        <div
-          className="relative overflow-hidden"
-          style={{
-            background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)',
-            padding: '36px 28px 36px',
-          }}
-        >
-          <div className="absolute top-0 right-0 w-56 h-56 pointer-events-none"
-            style={{ background: 'radial-gradient(ellipse at top right, rgba(255,252,245,0.06) 0%, transparent 60%)' }} />
-
+        <div className="relative overflow-hidden" style={{ background: 'linear-gradient(160deg, hsl(220, 68%, 26%) 0%, hsl(218, 72%, 30%) 100%)', padding: '36px 28px 36px' }}>
+          <div className="absolute top-0 right-0 w-56 h-56 pointer-events-none" style={{ background: 'radial-gradient(ellipse at top right, rgba(255,252,245,0.06) 0%, transparent 60%)' }} />
           <div className="flex items-center justify-between mb-8 relative z-10">
-            <Link href="/letters" className="flex items-center gap-2"
-              style={{ color: 'rgba(200,215,255,0.78)' }}>
+            <Link href="/letters" className="flex items-center gap-2" style={{ color: 'rgba(200,215,255,0.78)' }}>
               <ArrowLeft className="w-4 h-4" />
-              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>
-                Back to Parede
-              </span>
+              <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '9px', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase' }}>Back to Parede</span>
             </Link>
             {isEditable && (
               <div className="flex gap-2">
-                <motion.button onClick={openEdit} whileTap={{ scale: 0.90 }}
-                  className="flex items-center justify-center"
+                <motion.button onClick={openEdit} whileTap={{ scale: 0.90 }} className="flex items-center justify-center"
                   style={{ width: 30, height: 30, borderRadius: '4px', background: 'rgba(255,252,245,0.12)', border: '1px solid rgba(255,252,245,0.18)' }}>
                   <Pencil className="w-3 h-3" style={{ color: 'rgba(222,212,194,0.70)' }} />
                 </motion.button>
-                <motion.button onClick={() => setShowQuickDelete(true)} whileTap={{ scale: 0.90 }}
-                  className="flex items-center justify-center"
+                <motion.button onClick={() => setShowQuickDelete(true)} whileTap={{ scale: 0.90 }} className="flex items-center justify-center"
                   style={{ width: 30, height: 30, borderRadius: '4px', background: 'rgba(180,40,40,0.20)', border: '1px solid rgba(180,40,40,0.30)' }}>
                   <Trash2 className="w-3 h-3" style={{ color: 'rgba(255,180,180,0.70)' }} />
                 </motion.button>
               </div>
             )}
           </div>
-
           <div className="relative z-10">
-            <span style={{
-              fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase',
-              background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.16)',
-              borderRadius: '2px', padding: '4px 10px', color: 'rgba(200,185,160,0.60)',
-            }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '7.5px', fontWeight: 700, letterSpacing: '0.16em', textTransform: 'uppercase', background: 'rgba(255,252,245,0.10)', border: '1px solid rgba(255,252,245,0.16)', borderRadius: '2px', padding: '4px 10px', color: 'rgba(200,185,160,0.60)' }}>
               {noteTypeLabel(letter.noteType)}
             </span>
-            <h1 style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600,
-              fontSize: '1.85rem', letterSpacing: '0.01em', lineHeight: 1.2,
-              color: 'hsl(42,30%,96%)', marginTop: '14px',
-            }}>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 600, fontSize: '1.85rem', letterSpacing: '0.01em', lineHeight: 1.2, color: 'hsl(42,30%,96%)', marginTop: '14px' }}>
               {letter.title}
             </h1>
           </div>
         </div>
 
         <div className="px-4 pt-4 pb-20" style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <motion.div
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
+          <motion.div initial={{ opacity: 0, y: 12 }} animate={{ opacity: 1, y: 0 }}
             className="flex items-center gap-3 px-4 py-3"
-            style={{
-              background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px',
-              boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 10px rgba(20,40,100,0.06)',
-            }}
-          >
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,55%)' }}>
-              {letter.author || 'Unknown'}
-            </span>
+            style={{ background: 'hsl(38,30%,99%)', border: '1px solid rgba(30,60,130,0.08)', borderRadius: '4px', boxShadow: '0 1px 0 rgba(255,255,255,0.90) inset, 2px 3px 10px rgba(20,40,100,0.06)' }}>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,55%)' }}>{letter.author || 'Unknown'}</span>
             <div style={{ width: 1, height: 10, background: 'rgba(30,60,130,0.10)' }} />
-            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,55%)' }}>
-              {letter.unlockDate}
-            </span>
+            <span style={{ fontFamily: 'Inter, sans-serif', fontSize: '8px', fontWeight: 500, color: 'hsl(220,16%,55%)' }}>{letter.unlockDate}</span>
             {letter.noteType === 'invite' && letter.suggestedDate && (
               <>
                 <div style={{ width: 1, height: 10, background: 'rgba(30,60,130,0.10)' }} />
@@ -295,23 +236,9 @@ export default function LetterDetailPage() {
             )}
           </motion.div>
 
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.1 }}
-            className="px-6 py-7"
-            style={{
-              background: 'hsl(40, 26%, 95%)',
-              border: '1px solid rgba(30,60,130,0.06)',
-              borderRadius: '4px',
-            }}
-          >
-            <p style={{
-              fontFamily: "'Cormorant Garamond', Georgia, serif",
-              fontWeight: 400, fontStyle: 'italic',
-              fontSize: '1.25rem', lineHeight: 1.85,
-              letterSpacing: '0.01em', color: 'hsl(222,28%,26%)',
-            }}>
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.1 }}
+            className="px-6 py-7" style={{ background: 'hsl(40, 26%, 95%)', border: '1px solid rgba(30,60,130,0.06)', borderRadius: '4px' }}>
+            <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontWeight: 400, fontStyle: 'italic', fontSize: '1.25rem', lineHeight: 1.85, letterSpacing: '0.01em', color: 'hsl(222,28%,26%)' }}>
               {letter.content}
             </p>
           </motion.div>
@@ -323,7 +250,6 @@ export default function LetterDetailPage() {
       </div>
 
       <DeleteConfirmModal show={showQuickDelete} onCancel={() => setShowQuickDelete(false)} onConfirm={handleQuickDelete} />
-
       <EditDeleteModal
         isOpen={!!editingLetter}
         onClose={() => setEditingLetter(null)}
@@ -353,16 +279,12 @@ function DeleteConfirmModal({ show, onCancel, onConfirm }: { show: boolean; onCa
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
           className="fixed inset-0 z-50 flex items-center justify-center px-8"
           style={{ background: 'rgba(10,18,42,0.60)', backdropFilter: 'blur(4px)' }}
-          onClick={onCancel}
-        >
-          <motion.div
-            initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
+          onClick={onCancel}>
+          <motion.div initial={{ scale: 0.92, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} exit={{ scale: 0.92, opacity: 0 }}
             className="w-full max-w-xs p-6 flex flex-col items-center gap-4"
             style={{ background: 'hsl(42,28%,97%)', borderRadius: '6px', boxShadow: '0 16px 48px rgba(10,20,60,0.30)' }}
-            onClick={e => e.stopPropagation()}
-          >
-            <div className="w-12 h-12 flex items-center justify-center"
-              style={{ background: 'rgba(180,40,40,0.10)', borderRadius: '50%' }}>
+            onClick={e => e.stopPropagation()}>
+            <div className="w-12 h-12 flex items-center justify-center" style={{ background: 'rgba(180,40,40,0.10)', borderRadius: '50%' }}>
               <Trash2 className="w-5 h-5" style={{ color: 'hsl(0,50%,42%)' }} />
             </div>
             <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '1.1rem', color: 'hsl(222,38%,22%)', textAlign: 'center' }}>

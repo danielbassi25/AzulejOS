@@ -1,10 +1,10 @@
 import { Switch, Route, Router as WouterRouter, useLocation } from "wouter";
 import { useHashLocation } from "wouter/use-hash-location";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { useEffect, useState } from "react";
+import { useEffect } from "react";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
-import { initSupabaseSync } from "@/data/supabase-sync";
+import { KVProvider, useKV } from "@/data/kv-store";
 import NotFound from "@/pages/not-found";
 import DashboardPage from "@/pages/dashboard";
 import SaudadePage from "@/pages/saudade";
@@ -50,14 +50,10 @@ function Router() {
   );
 }
 
-function SyncLoader({ children }: { children: React.ReactNode }) {
-  const [ready, setReady] = useState(false);
+function AppLoader({ children }: { children: React.ReactNode }) {
+  const { loading } = useKV();
 
-  useEffect(() => {
-    initSupabaseSync().then(() => setReady(true));
-  }, []);
-
-  if (!ready) {
+  if (loading) {
     return (
       <div style={{
         minHeight: '100vh',
@@ -97,11 +93,13 @@ function App() {
   return (
     <QueryClientProvider client={queryClient}>
       <TooltipProvider>
-        <SyncLoader>
-          <WouterRouter hook={useHashLocation}>
-            <Router />
-          </WouterRouter>
-        </SyncLoader>
+        <KVProvider>
+          <AppLoader>
+            <WouterRouter hook={useHashLocation}>
+              <Router />
+            </WouterRouter>
+          </AppLoader>
+        </KVProvider>
         <Toaster />
       </TooltipProvider>
     </QueryClientProvider>

@@ -3,34 +3,30 @@ import AppShell from "@/components/AppShell";
 import { Link, useLocation } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, Save } from "lucide-react";
+import { useKV } from "@/data/kv-store";
+import type { Goal } from "@/types";
 
 const CATEGORIES = ["Activities", "Travel", "Movies", "Food"];
 
 export default function CreateGoalPage() {
   const [, setLocation] = useLocation();
+  const { data, set } = useKV();
   const [text, setText] = useState("");
   const [category, setCategory] = useState("");
   const [saved, setSaved] = useState(false);
-  const [saveError, setSaveError] = useState(false);
 
   const handleSave = () => {
     if (!text.trim() || !category) return;
-    const goal = {
+    const goal: Goal = {
       id: `goal-custom-${Date.now()}`,
       text: text.trim(),
       completed: false,
       category,
     };
-    try {
-      const existing = JSON.parse(localStorage.getItem("oikos-custom-goals") || "[]");
-      const updated = [...existing, goal];
-      localStorage.setItem("oikos-custom-goals", JSON.stringify(updated));
-      JSON.parse(localStorage.getItem("oikos-custom-goals") || "[]");
-      setSaved(true);
-      setTimeout(() => setLocation("/build"), 1200);
-    } catch {
-      setSaveError(true);
-    }
+    const existing = (data['oikos-custom-goals'] as Goal[]) || [];
+    set('oikos-custom-goals', [...existing, goal]);
+    setSaved(true);
+    setTimeout(() => setLocation("/build"), 1200);
   };
 
   const inputStyle = {
@@ -116,7 +112,7 @@ export default function CreateGoalPage() {
           style={{
             fontFamily: 'Inter, sans-serif', fontSize: '10px', fontWeight: 700,
             letterSpacing: '0.16em', textTransform: 'uppercase',
-            background: saved ? 'hsl(160,40%,42%)' : saveError ? 'hsl(0,50%,45%)' : 'hsl(218,70%,28%)',
+            background: saved ? 'hsl(160,40%,42%)' : 'hsl(218,70%,28%)',
             color: 'hsl(42,30%,96%)', borderRadius: '4px', padding: '16px 20px',
             border: 'none', marginTop: '8px',
             opacity: (!text.trim() || !category) ? 0.5 : 1,
@@ -124,7 +120,7 @@ export default function CreateGoalPage() {
           }}
         >
           <Save className="w-4 h-4" />
-          {saved ? 'Added ✦' : saveError ? 'Could not save' : 'Add to Our List'}
+          {saved ? 'Added ✦' : 'Add to Our List'}
         </motion.button>
       </div>
     </AppShell>

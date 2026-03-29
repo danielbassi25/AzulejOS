@@ -1,6 +1,7 @@
 import { useMemo } from "react";
 import AppShell from "@/components/AppShell";
-import { getAllMemories } from "@/data/store";
+import { getAllMemoriesFromKV } from "@/data/store";
+import { useKV } from "@/data/kv-store";
 import { Link, useRoute, Redirect } from "wouter";
 import { motion } from "framer-motion";
 import { ArrowLeft, MapPin, Calendar, Sparkles } from "lucide-react";
@@ -23,7 +24,8 @@ const MOOD_COLORS: Record<string, string> = {
 
 export default function SaudadeDetailPage() {
   const [, params] = useRoute("/saudade/:id");
-  const allMemories = useMemo(() => getAllMemories(), []);
+  const { data } = useKV();
+  const allMemories = useMemo(() => getAllMemoriesFromKV(data), [data]);
   const memory = allMemories.find((m) => m.id === params?.id);
   if (!memory) return <Redirect to="/saudade" />;
   const idx = allMemories.findIndex((m) => m.id === memory.id);
