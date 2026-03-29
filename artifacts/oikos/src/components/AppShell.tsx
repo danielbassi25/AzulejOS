@@ -1,5 +1,46 @@
-import { ReactNode } from "react";
+import { ReactNode, useEffect, useState } from "react";
 import BottomNav from "./BottomNav";
+import { getSyncStatus } from "@/data/supabase-sync";
+
+function SyncDot() {
+  const [status, setStatus] = useState(getSyncStatus());
+
+  useEffect(() => {
+    const id = setInterval(() => setStatus(getSyncStatus()), 2000);
+    return () => clearInterval(id);
+  }, []);
+
+  const colors: Record<string, string> = {
+    pending: 'rgba(200,185,140,0.6)',
+    ok: 'rgba(80,180,100,0.75)',
+    error: 'rgba(220,80,60,0.80)',
+    offline: 'rgba(160,160,160,0.5)',
+  };
+
+  const titles: Record<string, string> = {
+    pending: 'Syncing…',
+    ok: 'Synced',
+    error: 'Sync error — changes may not be saved',
+    offline: 'Offline mode',
+  };
+
+  return (
+    <div
+      title={titles[status]}
+      style={{
+        position: 'absolute',
+        top: 10,
+        right: 10,
+        width: 7,
+        height: 7,
+        borderRadius: '50%',
+        background: colors[status],
+        zIndex: 50,
+        transition: 'background 0.4s ease',
+      }}
+    />
+  );
+}
 
 export default function AppShell({ children }: { children: ReactNode }) {
   return (
@@ -7,7 +48,6 @@ export default function AppShell({ children }: { children: ReactNode }) {
       className="min-h-screen overflow-x-hidden"
       style={{ background: 'hsl(40, 22%, 93%)' }}
     >
-      {/* Warm grain texture over the whole background */}
       <div
         className="pointer-events-none fixed inset-0 z-[1] opacity-[0.035]"
         style={{
@@ -26,6 +66,7 @@ export default function AppShell({ children }: { children: ReactNode }) {
           boxShadow: '0 32px 80px rgba(15,30,80,0.16), 0 0 0 1px rgba(255,252,248,0.95) inset',
         }}
       >
+        <SyncDot />
         <main className="flex-1 overflow-y-auto w-full relative z-10 scroll-smooth">
           {children}
         </main>

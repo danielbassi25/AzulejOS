@@ -4,6 +4,14 @@ const OIKOS_PREFIX = 'oikos-';
 
 let syncReady = false;
 let syncPromise: Promise<void> | null = null;
+let lastSyncOk: boolean | null = null;
+
+export function getSyncStatus(): 'pending' | 'ok' | 'error' | 'offline' {
+  if (!supabase) return 'offline';
+  if (!syncReady) return 'pending';
+  if (lastSyncOk === false) return 'error';
+  return 'ok';
+}
 
 const retryQueue: Map<string, string> = new Map();
 let retryTimer: ReturnType<typeof setTimeout> | null = null;
@@ -104,8 +112,11 @@ async function pullFromSupabase(): Promise<void> {
 
   if (error) {
     console.warn('Supabase pull error:', error.message);
+    lastSyncOk = false;
     return;
   }
+
+  lastSyncOk = true;
 
   if (!data || data.length === 0) {
     await pushAllToSupabase();
