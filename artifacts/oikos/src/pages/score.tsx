@@ -724,7 +724,7 @@ export default function ScorePage() {
         {/* Footer */}
         <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }} className="mt-4 text-center">
           <p style={{ fontFamily: "'Cormorant Garamond', Georgia, serif", fontStyle: 'italic', fontSize: '0.88rem', color: 'rgba(30,60,130,0.28)' }}>
-            It's not about winning, it's about playing together.
+            Show me the Benfica mentalty...If you can
           </p>
         </motion.div>
       </div>
