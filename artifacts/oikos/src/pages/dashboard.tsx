@@ -48,7 +48,8 @@ function getDailyQuote() {
   const now = new Date();
   const ref = new Date(2026, 0, 1);
   const daysSinceRef = Math.floor((now.getTime() - ref.getTime()) / (1000 * 60 * 60 * 24));
-  return DAILY_QUOTES[((daysSinceRef % 30) + 30) % 30];
+  const n = DAILY_QUOTES.length;
+  return DAILY_QUOTES[((daysSinceRef % n) + n) % n];
 }
 
 const tile = (i: number) => ({
