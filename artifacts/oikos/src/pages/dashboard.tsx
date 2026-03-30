@@ -38,8 +38,8 @@ const DAILY_QUOTES = [
   { text: "Tenho em mim todos os sonhos do mundo.", author: "Fernando Pessoa" },
   { text: "Tudo vale a pena quando a alma não é pequena.", author: "Fernando Pessoa" },
   { text: "Gostar é provavelmente a melhor maneira de ter, ter deve ser a pior maneira de gostar.", author: "José Saramago" },
-  { text: "O amor é a companhia.", author: "Fernando Pessoa" },
   { text: "Foi sem querer que te quis tanto.", author: "Unknown (Portuguese)" },
+  { text: "O amor é a companhia.", author: "Fernando Pessoa" },
   { text: "Sei que vou te amar por toda a minha vida.", author: "Vinicius de Moraes" },
   { text: "És tudo para mim.", author: "Traditional (Portuguese)" },
 ];
